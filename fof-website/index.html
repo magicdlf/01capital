@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOF基金 - 专业投资管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">01 Capital</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">公司介绍</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#products-performance">产品介绍</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">联系我们</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 首页横幅 -->
+    <header class="hero-section">
+        <div class="container">
+            <div class="row min-vh-100 align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold">专业的FOF基金管理</h1>
+                    <p class="lead">以专业视角，为您提供全方位的资产配置解决方案</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 公司介绍 -->
+    <section id="about" class="py-5 bg-light anchor-fix">
+        <div class="container">
+            <h2 class="text-center mb-5">公司介绍</h2>
+            <div class="row">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <p>
+                        01 Capital是一家于2024年在开曼群岛注册的顶级投资管理机构，专注于基金中的基金（FOF）投资管理。我们致力于为高净值客户量身定制FOF产品，通过低回撤、高夏普比率及跨周期可持续收益的特征，提供稳健的投资体验。
+                    </p>
+                    <p>
+                        我们搭建了完整的资产配置框架与绩效评估体系，贯穿投资分析、组合运营、风险监控及绩效归因全流程管理。基于不同策略类型的风险收益特征，构建具有清晰风险收益比的均衡投资组合。
+                    </p>
+                    <p>
+                        通过精选境内外顶尖资产管理人，打造多策略、多资产的FOF组合。通过资产配置与策略轮动，动态调整量化对冲、CTA等大类资产配置比例。在复杂市场环境中，严格管控单一资产的敞口方向，通过策略分散降低单一资产波动影响，追求长期稳健收益。
+                    </p>
+                    <p>
+                        我们以多维度方式与全市场顶尖策略管理人展开合作，尤其注重挖掘新兴策略管理人。紧密跟踪量化方法演进带来的新晋管理人与策略，通过动态适应市场环境变化，实现跨周期的持续业绩表现。
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <!-- 右侧空白，方便后续放图片 -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 产品介绍与业绩展示 -->
+    <section id="products-performance" class="py-5 anchor-fix">
+        <div class="container">
+            <h2 class="text-center mb-5">产品介绍</h2>
+            <div class="row">
+                <!-- 产品列表 -->
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="list-group" id="product-list">
+                        <button class="list-group-item list-group-item-action active" data-product="stable">稳健型FOF</button>
+                        <button class="list-group-item list-group-item-action" data-product="balanced">平衡型FOF</button>
+                        <button class="list-group-item list-group-item-action" data-product="aggressive">进取型FOF</button>
+                    </div>
+                </div>
+                <!-- 业绩展示 -->
+                <div class="col-md-8 products-content-pl">
+                    <div id="product-performance-content">
+                        <!-- 默认展示稳健型FOF -->
+                        <h3>稳健型FOF</h3>
+                        <p>适合追求稳健收益的投资者，通过多元化的资产配置，降低投资风险。主要投资于固定收益类资产，辅以少量权益类资产。</p>
+                        <div class="performance-chart mb-3">
+                            <img src="images/performance-stable.png" alt="稳健型FOF业绩" class="img-fluid">
+                        </div>
+                        <ul class="list-unstyled">
+                            <li>近一年收益率：8.2%</li>
+                            <li>近三年年化收益率：7.5%</li>
+                            <li>成立以来年化收益率：7.1%</li>
+                        </ul>
+                        <!-- 平衡型FOF区间切换和图表容器（初始隐藏，js控制显示） -->
+                        <div id="balanced-chart-controls" style="display:none; margin-bottom:16px;">
+                            <button class="btn btn-outline-dark btn-sm me-2" data-range="7">近7天</button>
+                            <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
+                            <button class="btn btn-outline-dark btn-sm" data-range="365">近1年</button>
+                        </div>
+                        <div class="performance-chart mb-3" id="balanced-chart-container" style="display:none;">
+                            <canvas id="balancedChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系方式 -->
+    <section id="contact" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">联系我们</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>联系方式</h3>
+                    <ul class="list-unstyled">
+                        <li>地址：北京市朝阳区建国门外大街1号</li>
+                        <li>电话：010-8888-8888</li>
+                        <li>邮箱：contact@fof-fund.com</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <form>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="您的姓名" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" class="form-control" placeholder="您的邮箱" required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" rows="4" placeholder="您的咨询内容" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">提交咨询</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="py-4 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-0">© 2024 FOF基金. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 
