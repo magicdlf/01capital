@@ -1,0 +1,333 @@
+/* 全局样式 */
+body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #fff;
+}
+
+/* 导航栏样式 */
+.navbar {
+    background-color: #fff !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #000 !important;
+}
+
+.nav-link {
+    color: #333 !important;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: #000 !important;
+}
+
+/* 首页横幅样式（带下移背景图） */
+.hero-section {
+    background: #000;
+    color: white;
+    padding-top: 80px;
+    position: relative;
+    overflow: hidden;
+    min-height: 480px;
+}
+.hero-section::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: 0; bottom: 0;
+    background: url('../images/hero-bg2.png') no-repeat;
+    background-size: 100%;
+    opacity: 1;
+    z-index: 0;
+    background-position: right -50% bottom -5%;
+}
+.hero-section > .container, .hero-section .row {
+    position: relative;
+    z-index: 1;
+}
+.hero-section > .container {
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.hero-section .col-lg-6 {
+    text-align: left;
+    margin-top: -380px;
+}
+
+/* 卡片样式 */
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    background-color: #fff;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.card-title {
+    color: #000;
+    font-weight: 600;
+}
+
+/* 业绩图表样式 */
+.performance-chart {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 1px solid #eee;
+}
+
+/* 联系表单样式 */
+.form-control {
+    border: 1px solid #ddd;
+    padding: 12px;
+    background-color: #fff;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #000;
+}
+
+/* 按钮样式 */
+.btn-primary {
+    background: #000;
+    border: none;
+    padding: 12px 30px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #333;
+    transform: translateY(-2px);
+}
+
+/* 背景色调整 */
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+/* 标题样式 */
+h2 {
+    color: #000;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 2px;
+    background-color: #000;
+}
+
+/* 列表样式 */
+.list-unstyled li {
+    margin-bottom: 10px;
+    color: #666;
+}
+
+/* 页脚样式 */
+footer {
+    background-color: #000 !important;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 320px;
+        padding-top: 60px;
+    }
+    .hero-section::after {
+        background-position: left 0 top 0;
+    }
+    .hero-section > .container {
+        margin-top: 0;
+    }
+    .hero-section .col-lg-6 {
+        margin-top: -280px;
+    }
+}
+
+/* 动画效果 */
+.fade-in {
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 优势蜂巢环形布局 */
+.advantage-honeycomb {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0px;
+    height: 100%;
+}
+.advantage-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+    width: 48%;
+    min-width: 260px;
+    margin-right: 2%;
+}
+.advantage-item:nth-child(even) {
+    margin-left: 50px;
+}
+.advantage-circle {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #2176ae;
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.advantage-item.yellow .advantage-circle {
+    background: #f7b84b;
+    color: #fff;
+}
+.advantage-item.blue-dark .advantage-circle {
+    background: #183153;
+    color: #fff;
+}
+.advantage-title-main {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #2176ae;
+    margin-bottom: 2px;
+}
+.advantage-item.yellow .advantage-title-main {
+    color: #f7b84b;
+}
+.advantage-item.blue-dark .advantage-title-main {
+    color: #183153;
+}
+.advantage-title-sub {
+    font-size: 0.98rem;
+    color: #222;
+    font-weight: 400;
+}
+@media (max-width: 992px) {
+    .advantage-item {
+        width: 100%;
+        min-width: 0;
+        margin-right: 0;
+        margin-left: 0;
+    }
+    .advantage-item:nth-child(even) {
+        margin-left: 0;
+    }
+}
+@media (max-width: 576px) {
+    .advantage-honeycomb {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .advantage-item {
+        margin-bottom: 12px;
+    }
+    .advantage-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+        margin-right: 10px;
+    }
+    .advantage-title-main {
+        font-size: 1rem;
+    }
+    .advantage-title-sub {
+        font-size: 0.92rem;
+    }
+}
+
+/* 产品类型卡片按钮 */
+#product-list {
+    max-width: 270px;
+    margin-left: auto;
+    margin-right: auto;
+}
+#product-list .list-group-item {
+    background: #f5f6fa;
+    color: #1a2530;
+    border: none;
+    border-radius: 16px !important;
+    margin-bottom: 18px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    padding: 22px 28px;
+    text-align: center;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+#product-list .list-group-item:last-child {
+    margin-bottom: 0;
+}
+#product-list .list-group-item.active, #product-list .list-group-item:active {
+    background: #000;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(26,37,48,0.12);
+    border: none;
+}
+#product-list .list-group-item:hover:not(.active) {
+    background: #e4e6eb;
+    color: #1a2530;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+@media (max-width: 768px) {
+    .list-group-item.list-group-item-action {
+        font-size: 1rem;
+        padding: 16px 16px;
+    }
+}
+
+.anchor-fix {
+    scroll-margin-top: 60px;
+}
+
+.products-content-pl {
+    padding-left: 0;
+}
+@media (min-width: 768px) {
+    .products-content-pl {
+        padding-left: 24px;
+    }
+} 
