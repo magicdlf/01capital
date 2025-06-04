@@ -25,10 +25,10 @@
                         <a class="nav-link" href="#products-performance">产品介绍</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#future-plans">未来规划</a>
+                        <a class="nav-link" href="#investment-summary" style="display: none;" id="investmentSummaryLink">个人投资摘要</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#contact">联系我们</a>
+                        <a class="nav-link" href="#future-plans">未来规划</a>
                     </li>
                 </ul>
             </div>
@@ -73,7 +73,7 @@
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="card h-100 text-center" style="background:#181818; border:none; color:#fff;">
                         <div class="card-body">
-                            <h3 class="display-6 fw-bold">8%+</h3>
+                            <h3 class="display-6 fw-bold">10%+</h3>
                             <hr style="border-color:#333;">
                             <p class="mb-0">核心产品过去12个月累计收益</p>
                         </div>
@@ -100,43 +100,30 @@
                 <!-- 产品列表 -->
                 <div class="col-md-4 mb-4 mb-md-0">
                     <div class="list-group" id="product-list">
-                        <button class="list-group-item list-group-item-action active" data-product="stable">稳健系列</button>
                         <button class="list-group-item list-group-item-action" data-product="balanced">平衡系列</button>
+                        <div class="list-group-item p-0">
+                            <button class="list-group-item list-group-item-action" data-product="stable">稳健系列</button>
+                            <div class="list-group-item p-0 ps-4 stable-sub-options" style="display: none;">
+                                <button class="list-group-item list-group-item-action" data-product="stable-usd">稳健系列-U本位</button>
+                                <button class="list-group-item list-group-item-action" data-product="stable-coin">稳健系列-币本位</button>
+                            </div>
+                        </div>
                         <button class="list-group-item list-group-item-action" data-product="aggressive">进取系列</button>
                     </div>
                 </div>
                 <!-- 业绩展示 -->
                 <div class="col-md-8 products-content-pl">
                     <div id="product-performance-content">
-                        <!-- 默认展示稳健型FOF -->
-                        <h3>稳健型FOF</h3>
-                        <p>适合追求稳健收益的投资者，通过多元化的资产配置，降低投资风险。主要投资于固定收益类资产，辅以少量权益类资产。</p>
-                        <div id="stable-chart-controls" style="margin-bottom:16px;">
-                            <button class="btn btn-outline-dark btn-sm me-2" data-range="7">近7天</button>
-                            <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
-                            <button class="btn btn-outline-dark btn-sm" data-range="365">近1年</button>
-                        </div>
-                        <div class="performance-chart mb-3" id="stable-chart-container">
-                            <canvas id="stableChart" height="320"></canvas>
-                        </div>
-                        <ul class="list-unstyled">
-                            <li>近一年收益率：8.2%</li>
-                            <li>近三年年化收益率：7.5%</li>
-                            <li>成立以来年化收益率：7.1%</li>
-                        </ul>
-                        <!-- 平衡型FOF区间切换和图表容器（初始隐藏，js控制显示） -->
-                        <div id="balanced-chart-controls" style="display:none; margin-bottom:16px;">
-                            <button class="btn btn-outline-dark btn-sm me-2" data-range="7">近7天</button>
-                            <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
-                            <button class="btn btn-outline-dark btn-sm" data-range="365">近1年</button>
-                        </div>
-                        <div class="performance-chart mb-3" id="balanced-chart-container" style="display:none;">
-                            <canvas id="balancedChart"></canvas>
-                        </div>
+                        <!-- 内容将由JavaScript动态生成 -->
                     </div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <!-- 个人投资摘要 -->
+    <section id="investment-summary" class="py-5 bg-light">
+        <!-- 内容将由JavaScript动态生成 -->
     </section>
 
     <!-- 未来规划 -->
@@ -147,16 +134,16 @@
                 <div class="col-md-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h3 class="card-title h5">新产品计划</h3>
-                            <p class="card-text">发布创新型产品；量化团队持续筛选（重点如 L/S、CTA等偏高频小团队）</p>
+                            <h3 class="card-title h5">创新产品</h3>
+                            <p class="card-text">计划推出周期性高收益产品，采用轻量配置与高频策略，运行周期控制在三个月以内，以快速响应市场机会。</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h3 class="card-title h5">技术方向</h3>
-                            <p class="card-text">系统性改进（监控、自动化调仓、风控系统演进）、赛马监控和动态调仓、自动化申赎和结算</p>
+                            <h3 class="card-title h5">技术升级</h3>
+                            <p class="card-text">持续推进系统自动化，包括交易监控、策略调仓、风控预警、投资人资金申赎与结算等关键模块，实现全流程自动化、精细化管理。</p>
                         </div>
                     </div>
                 </div>
@@ -164,40 +151,9 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <h3 class="card-title h5">合规升级</h3>
-                            <p class="card-text">BVI Investment Manager牌照申请</p>
+                            <p class="card-text">目前已启动BVI Investment Manager牌照申请，将持续完善合规框架。</p>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 联系方式 -->
-    <section id="contact" class="py-5 bg-light">
-        <div class="container">
-            <h2 class="text-center mb-5">联系我们</h2>
-            <div class="row">
-                <div class="col-md-6">
-                    <h3>联系方式</h3>
-                    <ul class="list-unstyled">
-                        <li>地址：北京市朝阳区建国门外大街1号</li>
-                        <li>电话：010-8888-8888</li>
-                        <li>邮箱：contact@fof-fund.com</li>
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <form>
-                        <div class="mb-3">
-                            <input type="text" class="form-control" placeholder="您的姓名" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="email" class="form-control" placeholder="您的邮箱" required>
-                        </div>
-                        <div class="mb-3">
-                            <textarea class="form-control" rows="4" placeholder="您的咨询内容" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">提交咨询</button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -206,7 +162,7 @@
     <!-- 页脚 -->
     <footer class="py-4 bg-dark text-white">
         <div class="container text-center">
-            <p class="mb-0">© 2024 FOF基金. All rights reserved.</p>
+            <p class="mb-0">©01 Capital. All rights reserved.</p>
         </div>
     </footer>
 

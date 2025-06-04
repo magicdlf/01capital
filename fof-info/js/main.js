@@ -36,22 +36,26 @@ document.querySelectorAll('section').forEach(section => {
     observer.observe(section);
 });
 
-// 表单提交处理
-const contactForm = document.querySelector('#contact form');
-if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        // 这里可以添加表单提交逻辑
-        alert('感谢您的留言，我们会尽快回复！');
-        this.reset();
-    });
-}
-
 // 产品与业绩切换
 const productData = {
     stable: {
-        title: '稳健收益投资组合',
-        desc: '仅配置低风险套利与稳定现金流策略，追求8%-10%的稳定APY，严格控制回撤在1%以内。',
+        title: '稳健系列',
+        desc: '包含U本位和币本位两个子系列，专注于低风险套利策略，追求稳定收益。',
+        facts: [
+            { label: '成立时间', value: '' },
+            { label: '策略成分', value: '套利' },
+            { label: '最大回撤', value: '' },
+            { label: '实际杠杆', value: '1.5X' },
+            { label: 'Sharpe比率', value: '' },
+            { label: '杠杆限额', value: '5X' },
+            { label: '区间收益率', value: '' },
+            { label: '预计年化收益率', value: '' }
+        ],
+        alt: '稳健系列'
+    },
+    'stable-usd': {
+        title: 'Stable-Harbor-USDT',
+        desc: '以U本位计价，专注于低风险套利策略，追求稳定收益，严格控制回撤。',
         facts: [
             { label: '成立时间', value: '2025/2/19' },
             { label: '策略成分', value: '套利' },
@@ -62,27 +66,40 @@ const productData = {
             { label: '区间收益率', value: '' },
             { label: '预计年化收益率', value: '' }
         ],
-        img: 'images/performance-stable.png',
-        alt: '稳健型FOF业绩'
+        alt: '稳健系列-U本位业绩'
+    },
+    'stable-coin': {
+        title: 'Stable-Harbor-Coin',
+        desc: '以币本位计价，专注于低风险套利策略，追求稳定收益，严格控制回撤。',
+        facts: [
+            { label: '成立时间', value: '2024/8/16' },
+            { label: '策略成分', value: '套利' },
+            { label: '最大回撤', value: '' },
+            { label: '实际杠杆', value: '1.5X' },
+            { label: 'Sharpe比率', value: '' },
+            { label: '杠杆限额', value: '5X' },
+            { label: '区间收益率', value: '' },
+            { label: '预计年化收益率', value: '' }
+        ],
+        alt: '稳健系列-币本位业绩'
     },
     balanced: {
-        title: '平衡增益投资组合',
-        desc: '以套利稳基础（90%），动态多因子模型提收益（10%），力求年化18%+的APY。',
+        title: 'Alpha-Bridge',
+        desc: '精选多元策略组合 (套利90% + 风险策略10%），平衡风险收益，力求在稳健风控下实现资产长期稳定增值。',
         facts: [
             { label: '成立时间', value: '2024/8/1' },
             { label: '策略成分', value: '套利 + 多因子 （90% + 10%）' },
-            { label: '最大回撤', value: '2.44%' },
+            { label: '最大回撤', value: '' },
             { label: '实际杠杆', value: '套利：1X  ；多因子：0.8X' },
             { label: 'Sharpe比率', value: '3.55' },
             { label: '杠杆限额', value: '套利：5X ； 多因子：4X' },
             { label: '区间收益率', value: '' },
             { label: '预计年化收益率', value: '' }
         ],
-        img: 'images/performance-balanced.png',
         alt: '平衡型FOF业绩'
     },
     aggressive: {
-        title: '灵活增长投资组合',
+        title: 'Deep-Growth',
         desc: '聚焦趋势机会与波动捕捉，配置更高比例的风险策略，目标30%+的APY，容忍适度波动。',
         facts: [
             { label: '成立时间', value: '' },
@@ -94,7 +111,6 @@ const productData = {
             { label: '区间收益率', value: '' },
             { label: '预计年化收益率', value: '' }
         ],
-        img: 'images/performance-aggressive.png',
         alt: '进取型FOF业绩'
     }
 };
@@ -104,21 +120,55 @@ const perfContent = document.getElementById('product-performance-content');
 if (productList && perfContent) {
     productList.addEventListener('click', function(e) {
         if (e.target.matches('button[data-product]')) {
-            // 切换active
-            productList.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            // 获取数据
             const key = e.target.getAttribute('data-product');
-            const data = productData[key];
-            // 更新内容
-            perfContent.innerHTML = `
-                <h3>${data.title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
-                <p>${data.desc}</p>
-                ${renderFactsTable(data.facts)}
-                <div class="performance-chart mb-3">
-                    <img src="${data.img}" alt="${data.alt}" class="img-fluid">
-                </div>
-            `;
+            
+            // 处理稳健系列的特殊情况
+            if (key === 'stable') {
+                // 切换子选项的显示状态
+                const subOptions = document.querySelector('.stable-sub-options');
+                if (subOptions) {
+                    subOptions.style.display = subOptions.style.display === 'none' ? 'block' : 'none';
+                }
+                // 移除所有按钮的active类
+                productList.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                // 为稳健系列按钮添加active类
+                e.target.classList.add('active');
+                return; // 不改变右侧内容
+            }
+            
+            // 处理其他产品选项
+            if (key === 'balanced') {
+                setTimeout(() => {
+                    showBalancedProductSection('all'); // 默认显示成立以来
+                }, 100);
+            } else if (key === 'stable-usd') {
+                setTimeout(() => {
+                    showStableUsdProductSection('all'); // 默认显示成立以来
+                }, 100);
+            } else if (key === 'stable-coin') {
+                setTimeout(() => {
+                    showStableCoinProductSection('all'); // 默认显示成立以来
+                }, 100);
+            } else if (key === 'aggressive') {
+                setTimeout(() => {
+                    if (perfContent && productData['aggressive']) {
+                        perfContent.innerHTML = `
+                            <h3>${productData['aggressive'].title} <span style=\"font-size:1.1rem;color:#666;\">（即将上线）</span></h3>
+                            <p>${productData['aggressive'].desc}</p>
+                            ${renderFactsTable(productData['aggressive'].facts)}
+                        `;
+                    }
+                    hideBalancedChartUI();
+                    hideStableChartUI();
+                    hideStableCoinChartUI();
+                    hideStableUsdChartUI();
+                }, 100);
+            }
+            
+            // 移除所有按钮的active类
+            productList.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+            // 为当前点击的按钮添加active类
+            e.target.classList.add('active');
         }
     });
 }
@@ -247,75 +297,11 @@ function renderBalancedChart(rangeDays = 30) {
     facts[6].value = returnRate ? returnRate + '%' : '';  // 区间收益率
     facts[7].value = annualized ? annualized + '%' : '';  // 预计年化收益率
 
-    // 重新渲染表格
-    const perfContent = document.getElementById('product-performance-content');
-    if (perfContent) {
-        const title = productData['balanced'].title;
-        const desc = productData['balanced'].desc;
-        const factsHtml = renderFactsTable(facts);
-        
-        perfContent.innerHTML = `
-            <h3>${title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
-            <p>${desc}</p>
-            ${factsHtml}
-            <div id="balanced-chart-controls" style="margin-bottom:16px;">
-                <button class="btn btn-outline-dark btn-sm me-2" data-range="7">近7天</button>
-                <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
-                <button class="btn btn-outline-dark btn-sm me-2" data-range="180">近6个月</button>
-                <button class="btn btn-outline-dark btn-sm" data-range="all">成立以来</button>
-            </div>
-            <div class="performance-chart mb-3" id="balanced-chart-container">
-                <canvas id="balancedChart" height="320"></canvas>
-            </div>
-        `;
-
-        // 重新绑定事件监听器
-        bindBalancedChartControls();
-        
-        // 重新初始化图表
-        const newCtx = document.getElementById('balancedChart').getContext('2d');
-        balancedChart = new Chart(newCtx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: '单位净值',
-                    data: values,
-                    borderColor: '#1a2530',
-                    backgroundColor: 'rgba(26,37,48,0.08)',
-                    pointRadius: 2,
-                    tension: 0.2,
-                    fill: true
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return '单位净值: ' + context.parsed.y.toFixed(4);
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: { display: true, title: { display: false } },
-                    y: {
-                        display: true,
-                        title: { display: false },
-                        ticks: {
-                            callback: function(value) {
-                                return value.toFixed(4);
-                            }
-                        }
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false,
-                elements: { line: { borderWidth: 2 } }
-            }
-        });
+    // 更新表格内容
+    const factsHtml = renderFactsTable(facts);
+    const factsContainer = document.querySelector('#product-performance-content .container');
+    if (factsContainer) {
+        factsContainer.outerHTML = factsHtml;
     }
 }
 
@@ -356,12 +342,15 @@ function bindBalancedChartControls() {
     const chartControls = document.getElementById('balanced-chart-controls');
     if (chartControls) {
         chartControls.querySelectorAll('button').forEach(btn => {
-            btn.onclick = function() {
-                const days = parseInt(this.getAttribute('data-range'));
-                renderBalancedChart(days);
+            btn.addEventListener('click', function() {
+                const days = this.getAttribute('data-range');
+                // 移除所有按钮的active类
                 chartControls.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                // 为当前点击的按钮添加active类
                 this.classList.add('active');
-            };
+                // 渲染图表
+                renderBalancedChart(days);
+            });
         });
     }
 }
@@ -377,7 +366,7 @@ function showBalancedProductSection(rangeDays = 30) {
                 <button class="btn btn-outline-dark btn-sm me-2" data-range="7">近7天</button>
                 <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
                 <button class="btn btn-outline-dark btn-sm me-2" data-range="180">近6个月</button>
-                <button class="btn btn-outline-dark btn-sm" data-range="all">成立以来</button>
+                <button class="btn btn-outline-dark btn-sm active" data-range="all">成立以来</button>
             </div>
             <div class="performance-chart mb-3" id="balanced-chart-container">
                 <canvas id="balancedChart" height="320"></canvas>
@@ -388,11 +377,12 @@ function showBalancedProductSection(rangeDays = 30) {
     showBalancedChartUI();
     // 3. 渲染图表
     loadBalancedCSVAndDraw(rangeDays, bindBalancedChartControls);
-    // 4. 高亮当前按钮
+    // 4. 设置对应按钮的高亮状态
     const chartControls = document.getElementById('balanced-chart-controls');
     if (chartControls) {
         chartControls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-        chartControls.querySelector(`button[data-range="${rangeDays}"]`).classList.add('active');
+        const activeBtn = chartControls.querySelector(`button[data-range="${rangeDays}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
     }
 }
 
@@ -469,75 +459,11 @@ function renderStableChart(rangeDays = 30) {
     facts[6].value = returnRate ? returnRate + '%' : '';  // 区间收益率
     facts[7].value = annualized ? annualized + '%' : '';  // 预计年化收益率
 
-    // 重新渲染表格
-    const perfContent = document.getElementById('product-performance-content');
-    if (perfContent) {
-        const title = productData['stable'].title;
-        const desc = productData['stable'].desc;
-        const factsHtml = renderFactsTable(facts);
-        
-        perfContent.innerHTML = `
-            <h3>${title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
-            <p>${desc}</p>
-            ${factsHtml}
-            <div id="stable-chart-controls" style="margin-bottom:16px;">
-                <button class="btn btn-outline-dark btn-sm me-2" data-range="7">近7天</button>
-                <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
-                <button class="btn btn-outline-dark btn-sm me-2" data-range="180">近6个月</button>
-                <button class="btn btn-outline-dark btn-sm" data-range="all">成立以来</button>
-            </div>
-            <div class="performance-chart mb-3" id="stable-chart-container">
-                <canvas id="stableChart" height="320"></canvas>
-            </div>
-        `;
-
-        // 重新绑定事件监听器
-        bindStableChartControls();
-        
-        // 重新初始化图表
-        const newCtx = document.getElementById('stableChart').getContext('2d');
-        stableChart = new Chart(newCtx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: '单位净值',
-                    data: values,
-                    borderColor: '#1a2530',
-                    backgroundColor: 'rgba(26,37,48,0.08)',
-                    pointRadius: 2,
-                    tension: 0.2,
-                    fill: true
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return '单位净值: ' + context.parsed.y.toFixed(4);
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: { display: true, title: { display: false } },
-                    y: {
-                        display: true,
-                        title: { display: false },
-                        ticks: {
-                            callback: function(value) {
-                                return value.toFixed(4);
-                            }
-                        }
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false,
-                elements: { line: { borderWidth: 2 } }
-            }
-        });
+    // 更新表格内容
+    const factsHtml = renderFactsTable(facts);
+    const factsContainer = document.querySelector('#product-performance-content .container');
+    if (factsContainer) {
+        factsContainer.outerHTML = factsHtml;
     }
 }
 
@@ -579,12 +505,15 @@ function bindStableChartControls() {
     const chartControls = document.getElementById('stable-chart-controls');
     if (chartControls) {
         chartControls.querySelectorAll('button').forEach(btn => {
-            btn.onclick = function() {
-                const days = parseInt(this.getAttribute('data-range'));
-                renderStableChart(days);
+            btn.addEventListener('click', function() {
+                const days = this.getAttribute('data-range');
+                // 移除所有按钮的active类
                 chartControls.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                // 为当前点击的按钮添加active类
                 this.classList.add('active');
-            };
+                // 渲染图表
+                renderStableChart(days);
+            });
         });
     }
 }
@@ -611,58 +540,355 @@ function showStableProductSection(rangeDays = 30) {
     showStableChartUI();
     // 3. 渲染图表
     loadStableCSVAndDraw(rangeDays, bindStableChartControls);
-    // 4. 高亮当前按钮
+    // 4. 设置对应按钮的高亮状态
     const chartControls = document.getElementById('stable-chart-controls');
     if (chartControls) {
         chartControls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-        chartControls.querySelector(`button[data-range="${rangeDays}"]`).classList.add('active');
+        const activeBtn = chartControls.querySelector(`button[data-range="${rangeDays}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
     }
 }
 
-// 修改产品切换事件
-if (productList && perfContent) {
-    productList.addEventListener('click', function(e) {
-        if (e.target.matches('button[data-product]')) {
-            const key = e.target.getAttribute('data-product');
-            if (key === 'balanced') {
-                setTimeout(() => {
-                    showBalancedProductSection('all'); // 默认显示成立以来
-                }, 100);
-            } else if (key === 'stable') {
-                setTimeout(() => {
-                    showStableProductSection('all'); // 默认显示成立以来
-                }, 100);
-            } else if (key === 'aggressive') {
-                setTimeout(() => {
-                    if (perfContent && productData['aggressive']) {
-                        perfContent.innerHTML = `
-                            <h3>${productData['aggressive'].title} <span style=\"font-size:1.1rem;color:#666;\">（即将上线）</span></h3>
-                            <p>${productData['aggressive'].desc}</p>
-                            ${renderFactsTable(productData['aggressive'].facts)}
-                            <div class=\"performance-chart mb-3\">
-                                <img src=\"${productData['aggressive'].img}\" alt=\"${productData['aggressive'].alt}\" class=\"img-fluid\">
-                            </div>
-                        `;
-                    }
-                    hideBalancedChartUI();
-                    hideStableChartUI();
-                }, 100);
-            } else {
-                hideBalancedChartUI();
-                hideStableChartUI();
-            }
+// 稳健系列-币本位业绩图表逻辑
+let stableCoinChart = null;
+let stableCoinData = [];
+let stableCoinDataLoaded = false;
+
+function loadStableCoinCSVAndDraw(rangeDays = 30, callback) {
+    if (stableCoinDataLoaded) {
+        renderStableCoinChart(rangeDays);
+        if (callback) callback();
+        return;
+    }
+
+    Papa.parse('data/arbitrage_coin.csv', {
+        download: true,
+        header: true,
+        complete: function(results) {
+            stableCoinData = results.data
+                .filter(row => row.Date && row['NAV per unit'])
+                .map(row => ({
+                    date: row.Date,
+                    nav: parseFloat(row['NAV per unit'])
+                }));
+            stableCoinDataLoaded = true;
+            renderStableCoinChart(rangeDays);
+            if (callback) callback();
         }
     });
 }
 
-// 页面初始自动选中稳健型FOF并显示图表
+function renderStableCoinChart(rangeDays = 30) {
+    if (!stableCoinData.length) return;
+    let dataSlice;
+    
+    // 计算实际需要的数据点数量
+    let pointsToShow;
+    if (rangeDays === 'all') {
+        dataSlice = stableCoinData;
+    } else {
+        // 由于是周频数据，每周一个点，所以需要的数据点数量是 rangeDays/7 向上取整
+        pointsToShow = Math.ceil(rangeDays / 7);
+        dataSlice = stableCoinData.slice(-pointsToShow);
+    }
+
+    const labels = dataSlice.map(d => d.date);
+    const values = dataSlice.map(d => d.nav);
+    const ctx = document.getElementById('stableCoinChart').getContext('2d');
+    if (stableCoinChart) stableCoinChart.destroy();
+    stableCoinChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '单位净值',
+                data: values,
+                borderColor: '#1a2530',
+                backgroundColor: 'rgba(26,37,48,0.08)',
+                pointRadius: 2,
+                tension: 0.2,
+                fill: true
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '单位净值: ' + context.parsed.y.toFixed(4);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { 
+                    display: true, 
+                    title: { display: false },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                },
+                y: {
+                    display: true,
+                    title: { display: false },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toFixed(4);
+                        }
+                    }
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            elements: { line: { borderWidth: 2 } }
+        }
+    });
+
+    // 计算收益率指标
+    const returnRate = calculateReturnRate(dataSlice);
+    const annualized = calculateAnnualizedReturn(dataSlice);
+    const sharpe = calculateAnnualizedSharpe(dataSlice);
+    const maxDrawdown = calculateMaxDrawdown(dataSlice);
+
+    // 更新表格中的值
+    const facts = productData['stable-coin'].facts;
+    facts[2].value = maxDrawdown ? maxDrawdown + '%' : '';  // 最大回撤
+    facts[4].value = sharpe ? sharpe : '';  // Sharpe比率
+    facts[6].value = returnRate ? returnRate + '%' : '';  // 区间收益率
+    facts[7].value = annualized ? annualized + '%' : '';  // 预计年化收益率
+
+    // 更新表格内容
+    const factsHtml = renderFactsTable(facts);
+    const factsContainer = document.querySelector('#product-performance-content .container');
+    if (factsContainer) {
+        factsContainer.outerHTML = factsHtml;
+    }
+}
+
+function showStableCoinProductSection(rangeDays = 30) {
+    // 1. 生成内容
+    if (perfContent && productData['stable-coin']) {
+        perfContent.innerHTML = `
+            <h3>${productData['stable-coin'].title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
+            <p>${productData['stable-coin'].desc}</p>
+            ${renderFactsTable(productData['stable-coin'].facts)}
+            <div id="stable-coin-chart-controls" style="margin-bottom:16px;">
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="180">近6个月</button>
+                <button class="btn btn-outline-dark btn-sm" data-range="all">成立以来</button>
+            </div>
+            <div class="performance-chart mb-3" id="stable-coin-chart-container">
+                <canvas id="stableCoinChart" height="320"></canvas>
+            </div>
+        `;
+    }
+    // 2. 显示图表UI
+    showStableCoinChartUI();
+    // 3. 渲染图表
+    loadStableCoinCSVAndDraw(rangeDays, bindStableCoinChartControls);
+    // 4. 设置对应按钮的高亮状态
+    const chartControls = document.getElementById('stable-coin-chart-controls');
+    if (chartControls) {
+        chartControls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = chartControls.querySelector(`button[data-range="${rangeDays}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+    }
+}
+
+function showStableCoinChartUI() {
+    const container = document.getElementById('stable-coin-chart-container');
+    if (container) container.style.display = 'block';
+}
+
+function hideStableCoinChartUI() {
+    const container = document.getElementById('stable-coin-chart-container');
+    if (container) container.style.display = 'none';
+}
+
+function bindStableCoinChartControls() {
+    const controls = document.getElementById('stable-coin-chart-controls');
+    if (controls) {
+        controls.addEventListener('click', function(e) {
+            if (e.target.matches('button[data-range]')) {
+                const range = e.target.getAttribute('data-range');
+                renderStableCoinChart(range);
+                controls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+            }
+        });
+    }
+}
+
+// 添加稳健系列-U本位业绩图表逻辑
+let stableUsdChart = null;
+let stableUsdData = [];
+let stableUsdDataLoaded = false;
+
+function loadStableUsdCSVAndDraw(rangeDays = 30, callback) {
+    if (stableUsdDataLoaded) {
+        renderStableUsdChart(rangeDays);
+        if (callback) callback();
+        return;
+    }
+
+    Papa.parse('data/arbitrage.csv', {
+        download: true,
+        header: true,
+        complete: function(results) {
+            stableUsdData = results.data
+                .filter(row => row.Date && row['NAV per unit'])
+                .map(row => ({
+                    date: row.Date,
+                    nav: parseFloat(row['NAV per unit'])
+                }));
+            stableUsdDataLoaded = true;
+            renderStableUsdChart(rangeDays);
+            if (callback) callback();
+        }
+    });
+}
+
+function renderStableUsdChart(rangeDays = 30) {
+    if (!stableUsdData.length) return;
+    let dataSlice;
+    if (rangeDays === 'all') {
+        dataSlice = stableUsdData;
+    } else {
+        dataSlice = stableUsdData.slice(-rangeDays);
+    }
+    const labels = dataSlice.map(d => d.date);
+    const values = dataSlice.map(d => d.nav);
+    const ctx = document.getElementById('stableUsdChart').getContext('2d');
+    if (stableUsdChart) stableUsdChart.destroy();
+    stableUsdChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '单位净值',
+                data: values,
+                borderColor: '#1a2530',
+                backgroundColor: 'rgba(26,37,48,0.08)',
+                pointRadius: 2,
+                tension: 0.2,
+                fill: true
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '单位净值: ' + context.parsed.y.toFixed(4);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { display: true, title: { display: false } },
+                y: {
+                    display: true,
+                    title: { display: false },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toFixed(4);
+                        }
+                    }
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            elements: { line: { borderWidth: 2 } }
+        }
+    });
+
+    // 计算收益率指标
+    const returnRate = calculateReturnRate(dataSlice);
+    const annualized = calculateAnnualizedReturn(dataSlice);
+    const sharpe = calculateAnnualizedSharpe(dataSlice);
+    const maxDrawdown = calculateMaxDrawdown(dataSlice);
+
+    // 更新表格中的值
+    const facts = productData['stable-usd'].facts;
+    facts[2].value = maxDrawdown ? maxDrawdown + '%' : '';  // 最大回撤
+    facts[4].value = sharpe ? sharpe : '';  // Sharpe比率
+    facts[6].value = returnRate ? returnRate + '%' : '';  // 区间收益率
+    facts[7].value = annualized ? annualized + '%' : '';  // 预计年化收益率
+
+    // 更新表格内容
+    const factsHtml = renderFactsTable(facts);
+    const factsContainer = document.querySelector('#product-performance-content .container');
+    if (factsContainer) {
+        factsContainer.outerHTML = factsHtml;
+    }
+}
+
+function showStableUsdProductSection(rangeDays = 30) {
+    // 1. 生成内容
+    if (perfContent && productData['stable-usd']) {
+        perfContent.innerHTML = `
+            <h3>${productData['stable-usd'].title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
+            <p>${productData['stable-usd'].desc}</p>
+            ${renderFactsTable(productData['stable-usd'].facts)}
+            <div id="stable-usd-chart-controls" style="margin-bottom:16px;">
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="7">近7天</button>
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="180">近6个月</button>
+                <button class="btn btn-outline-dark btn-sm" data-range="all">成立以来</button>
+            </div>
+            <div class="performance-chart mb-3" id="stable-usd-chart-container">
+                <canvas id="stableUsdChart" height="320"></canvas>
+            </div>
+        `;
+    }
+    // 2. 显示图表UI
+    showStableUsdChartUI();
+    // 3. 渲染图表
+    loadStableUsdCSVAndDraw(rangeDays, bindStableUsdChartControls);
+    // 4. 设置对应按钮的高亮状态
+    const chartControls = document.getElementById('stable-usd-chart-controls');
+    if (chartControls) {
+        chartControls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = chartControls.querySelector(`button[data-range="${rangeDays}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+    }
+}
+
+function showStableUsdChartUI() {
+    const container = document.getElementById('stable-usd-chart-container');
+    if (container) container.style.display = 'block';
+}
+
+function hideStableUsdChartUI() {
+    const container = document.getElementById('stable-usd-chart-container');
+    if (container) container.style.display = 'none';
+}
+
+function bindStableUsdChartControls() {
+    const controls = document.getElementById('stable-usd-chart-controls');
+    if (controls) {
+        controls.addEventListener('click', function(e) {
+            if (e.target.matches('button[data-range]')) {
+                const range = e.target.getAttribute('data-range');
+                renderStableUsdChart(range);
+                controls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+            }
+        });
+    }
+}
+
+// 页面初始自动选中平衡型FOF并显示图表
 window.addEventListener('DOMContentLoaded', function() {
     if (productList) {
         productList.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-        const stableBtn = productList.querySelector('button[data-product="stable"]');
-        if (stableBtn) stableBtn.classList.add('active');
+        const balancedBtn = productList.querySelector('button[data-product="balanced"]');
+        if (balancedBtn) balancedBtn.classList.add('active');
     }
-    showStableProductSection('all'); // 默认显示成立以来
+    showBalancedProductSection('all'); // 默认显示成立以来
 });
 
 function renderFactsTable(facts) {
@@ -761,14 +987,18 @@ function handleLogin() {
     console.log('Password:', password);
     
     // 验证用户名和密码
-    Papa.parse('data/password.csv', {
+    Papa.parse('data/password.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
             console.log('CSV parsing complete:', results);
-            const user = results.data.find(row => row.name === username && row.password === password);
+            console.log('All users:', results.data);
+            const user = results.data.find(row => {
+                console.log('Comparing:', row.name, username, row.password, password);
+                return row.name.toLowerCase() === username.toLowerCase() && row.password === password;
+            });
             if (user) {
-                console.log('Login successful');
+                console.log('Login successful for user:', user);
                 currentUser = username;
                 // 关闭登录模态框
                 const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
@@ -779,8 +1009,13 @@ function handleLogin() {
                 showInvestmentSummary();
                 // 更新UI状态
                 updateUIAfterLogin();
+                // 显示导航栏中的个人投资摘要链接
+                const investmentSummaryLink = document.getElementById('investmentSummaryLink');
+                if (investmentSummaryLink) {
+                    investmentSummaryLink.style.display = 'block';
+                }
             } else {
-                console.log('Login failed');
+                console.log('Login failed - no matching user found');
                 errorElement.textContent = '用户名或密码错误';
                 errorElement.classList.remove('d-none');
             }
@@ -793,12 +1028,94 @@ function handleLogin() {
     });
 }
 
+function calculateAnnualizedReturnFromDays(returnRate, days) {
+    if (!days || days <= 0) return 0;
+    // 年化收益率 = (1 + 收益率)^(365/持仓天数) - 1
+    return ((Math.pow(1 + returnRate/100, 365/days) - 1) * 100).toFixed(2);
+}
+
+let balancedInvestorData = [];
+let balancedInvestorDataLoaded = false;
+
+function loadBalancedInvestorData() {
+    if (balancedInvestorDataLoaded) return Promise.resolve(balancedInvestorData);
+    
+    return new Promise((resolve, reject) => {
+        Papa.parse('data/balanced_investor.csv', {
+            download: true,
+            header: true,
+            complete: function(results) {
+                balancedInvestorData = results.data
+                    .filter(row => row.Date && row.investor && row['NAV per unit'])
+                    .map(row => ({
+                        date: row.Date,
+                        investor: row.investor,
+                        nav: parseFloat(row['NAV per unit']),
+                        principal: parseFloat(row.principal || 0),
+                        net_nav: parseFloat(row.net_nav || 0),
+                        net_pnl: parseFloat(row.net_pnl || 0),
+                        total_return: parseFloat(row.total_return || 0)
+                    }));
+                balancedInvestorDataLoaded = true;
+                resolve(balancedInvestorData);
+            },
+            error: function(error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+function getLatestBalancedInvestorData(investor) {
+    if (!balancedInvestorData.length) return null;
+    
+    // 过滤出该投资者的所有记录，不区分大小写
+    const investorRecords = balancedInvestorData.filter(record => 
+        record.investor.toLowerCase() === investor.toLowerCase()
+    );
+    if (!investorRecords.length) return null;
+    
+    // 按日期排序并获取最新记录
+    return investorRecords.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+}
+
 function showInvestmentSummary() {
     console.log('Showing investment summary...');
-    const summaryHtml = `
-        <section class="investment-summary py-5 bg-light">
+    
+    // 首先加载投资者数据
+    loadBalancedInvestorData().then(() => {
+        // 获取当前投资者的最新数据
+        const latestData = getLatestBalancedInvestorData(currentUser);
+        console.log('Latest data for', currentUser, ':', latestData); // 添加调试日志
+        
+        // 计算持仓天数和收益率
+        let holdingDays = 0;
+        let returnRate = 0;
+        let annualizedReturn = 0;
+        
+        if (latestData) {
+            // 计算持仓天数（从第一条记录到最新记录）
+            const firstRecord = balancedInvestorData
+                .filter(record => record.investor === currentUser)
+                .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+            
+            if (firstRecord) {
+                holdingDays = Math.ceil((new Date(latestData.date) - new Date(firstRecord.date)) / (1000 * 60 * 60 * 24));
+            }
+            
+            // 使用 total_return 作为收益率，注意 total_return 是小数，需乘以100
+            returnRate = latestData.total_return !== undefined ? (latestData.total_return * 100).toFixed(2) : '0.00';
+            
+            // 计算年化收益率
+            annualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(returnRate), holdingDays);
+        }
+
+        // 计算持仓数量
+        const holdingCount = latestData && latestData.principal > 0 ? 1 : 0;
+
+        const summaryHtml = `
             <div class="container">
-                <h2 class="mb-4">个人投资摘要</h2>
+                <h2 class="text-center mb-5">个人投资摘要</h2>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="card mb-4">
@@ -809,15 +1126,23 @@ function showInvestmentSummary() {
                                         <tbody>
                                             <tr>
                                                 <td class="fw-bold">总资产</td>
-                                                <td>¥1,000,000.00</td>
+                                                <td>¥${latestData ? latestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
                                             </tr>
                                             <tr>
                                                 <td class="fw-bold">累计收益</td>
-                                                <td class="text-success">+¥50,000.00 (+5.00%)</td>
+                                                <td class="text-success">+¥${latestData ? latestData.net_pnl.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'} (${returnRate}%)</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">已实现收益</td>
+                                                <td>¥0.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">未实现收益</td>
+                                                <td>¥${latestData ? latestData.net_pnl.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
                                             </tr>
                                             <tr>
                                                 <td class="fw-bold">当前持仓</td>
-                                                <td>3个组合</td>
+                                                <td>${holdingCount}个组合</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -829,7 +1154,7 @@ function showInvestmentSummary() {
                         <div class="card mb-4">
                             <div class="card-body">
                                 <h5 class="card-title">资产配置</h5>
-                                <canvas id="assetAllocationChart" height="200"></canvas>
+                                <canvas id="assetAllocationChart" height="120"></canvas>
                             </div>
                         </div>
                     </div>
@@ -838,39 +1163,56 @@ function showInvestmentSummary() {
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">投资组合明细</h5>
+                                <h3 class="card-title h5">投资组合明细</h3>
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>组合名称</th>
-                                                <th>投资金额</th>
+                                                <th>产品名称</th>
+                                                <th>币种</th>
+                                                <th>持仓金额</th>
                                                 <th>当前价值</th>
                                                 <th>收益率</th>
-                                                <th>操作</th>
+                                                <th>持仓天数</th>
+                                                <th>年化收益率</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>稳健收益投资组合</td>
-                                                <td>¥500,000.00</td>
-                                                <td>¥510,000.00</td>
-                                                <td class="text-success">+2.00%</td>
-                                                <td><button class="btn btn-sm btn-outline-primary">查看详情</button></td>
+                                                <td>${productData['balanced'].title}</td>
+                                                <td>USDT</td>
+                                                <td>${latestData ? latestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
+                                                <td>${latestData ? latestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
+                                                <td>${returnRate}%</td>
+                                                <td>${holdingDays}</td>
+                                                <td>${annualizedReturn}%</td>
                                             </tr>
                                             <tr>
-                                                <td>平衡增益投资组合</td>
-                                                <td>¥300,000.00</td>
-                                                <td>¥315,000.00</td>
-                                                <td class="text-success">+5.00%</td>
-                                                <td><button class="btn btn-sm btn-outline-primary">查看详情</button></td>
+                                                <td>${productData['stable-usd'].title}</td>
+                                                <td>USDT</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00%</td>
+                                                <td>0</td>
+                                                <td>0.00%</td>
                                             </tr>
                                             <tr>
-                                                <td>灵活增长投资组合</td>
-                                                <td>¥200,000.00</td>
-                                                <td>¥210,000.00</td>
-                                                <td class="text-success">+5.00%</td>
-                                                <td><button class="btn btn-sm btn-outline-primary">查看详情</button></td>
+                                                <td>${productData['stable-coin'].title}</td>
+                                                <td>USDT</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00%</td>
+                                                <td>0</td>
+                                                <td>0.00%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>${productData['aggressive'].title}</td>
+                                                <td>USDT</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00%</td>
+                                                <td>0</td>
+                                                <td>0.00%</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -880,56 +1222,51 @@ function showInvestmentSummary() {
                     </div>
                 </div>
             </div>
-        </section>
-    `;
-    
-    // 移除已存在的投资摘要
-    const existingSummary = document.querySelector('.investment-summary');
-    if (existingSummary) {
-        existingSummary.remove();
-    }
-    
-    // 查找产品介绍部分
-    const productSection = document.querySelector('#product-performance');
-    if (productSection) {
-        console.log('Found product section, inserting summary after it');
-        productSection.insertAdjacentHTML('afterend', summaryHtml);
+        `;
         
-        // 初始化资产配置图表
-        const ctx = document.getElementById('assetAllocationChart');
-        if (ctx) {
-            console.log('Initializing asset allocation chart');
-            new Chart(ctx.getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['稳健收益', '平衡增益', '灵活增长'],
-                    datasets: [{
-                        data: [50, 30, 20],
-                        backgroundColor: [
-                            'rgba(40, 167, 69, 0.8)',
-                            'rgba(0, 123, 255, 0.8)',
-                            'rgba(255, 193, 7, 0.8)'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
+        // 更新个人投资摘要部分的内容
+        const investmentSummary = document.getElementById('investment-summary');
+        if (investmentSummary) {
+            investmentSummary.innerHTML = summaryHtml;
+
+            // 让资产配置卡片高度与投资组合概览一致
+            setTimeout(() => {
+                const leftCard = investmentSummary.querySelector('.col-md-6 .card.mb-4');
+                const rightCard = investmentSummary.querySelectorAll('.col-md-6 .card.mb-4')[1];
+                if (leftCard && rightCard) {
+                    rightCard.style.height = leftCard.offsetHeight + 'px';
+                }
+            }, 100);
+
+            // 初始化资产配置图表
+            const ctx = document.getElementById('assetAllocationChart');
+            if (ctx) {
+                console.log('Initializing asset allocation chart');
+                new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            data: [],
+                            backgroundColor: []
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        aspectRatio: 2,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
                         }
                     }
-                }
-            });
-        } else {
-            console.error('Could not find canvas element for chart');
+                });
+            }
         }
-    } else {
-        console.error('Could not find product section');
-        // 如果找不到产品部分，添加到页面底部
-        document.body.insertAdjacentHTML('beforeend', summaryHtml);
-    }
+    }).catch(error => {
+        console.error('Error loading balanced investor data:', error);
+    });
 }
 
 function updateUIAfterLogin() {
@@ -952,17 +1289,50 @@ function updateUIAfterLogin() {
             </ul>
         `;
         navbar.appendChild(userMenu);
+
+        // 添加个人投资摘要链接
+        const investmentSummaryLink = document.createElement('li');
+        investmentSummaryLink.className = 'nav-item';
+        investmentSummaryLink.innerHTML = `
+            <a class="nav-link" href="#investment-summary" id="investmentSummaryLink" style="display: none;">个人投资摘要</a>
+        `;
+        navbar.appendChild(investmentSummaryLink);
         
         // 绑定退出登录事件
         document.getElementById('logoutButton').addEventListener('click', handleLogout);
+
+        // 绑定个人投资摘要链接点击事件
+        document.getElementById('investmentSummaryLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            const summarySection = document.getElementById('investment-summary');
+            if (summarySection) {
+                // 计算导航栏高度
+                const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                // 获取目标位置
+                const targetPosition = summarySection.offsetTop - navbarHeight;
+                // 平滑滚动到目标位置
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
     }
 }
 
 function handleLogout() {
     currentUser = null;
-    const investmentSummary = document.getElementById('investmentSummary');
+    
+    // 隐藏导航栏中的个人投资摘要链接
+    const investmentSummaryLink = document.getElementById('investmentSummaryLink');
+    if (investmentSummaryLink) {
+        investmentSummaryLink.style.display = 'none';
+    }
+    
+    // 清空个人投资摘要内容
+    const investmentSummary = document.getElementById('investment-summary');
     if (investmentSummary) {
-        investmentSummary.remove();
+        investmentSummary.innerHTML = '';
     }
     
     // 恢复登录按钮

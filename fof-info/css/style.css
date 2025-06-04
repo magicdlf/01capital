@@ -312,6 +312,37 @@ footer {
     color: #1a2530;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
+
+/* 时间范围按钮样式 */
+#stable-chart-controls .btn,
+#balanced-chart-controls .btn {
+    background: #f5f6fa;
+    color: #1a2530;
+    border: none;
+    border-radius: 8px !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    padding: 8px 16px;
+}
+
+#stable-chart-controls .btn:hover,
+#balanced-chart-controls .btn:hover {
+    background: #e4e6eb;
+    color: #1a2530;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+#stable-chart-controls .btn.active,
+#balanced-chart-controls .btn.active {
+    background: #000;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(26,37,48,0.12);
+    border: none;
+}
+
 @media (max-width: 768px) {
     .list-group-item.list-group-item-action {
         font-size: 1rem;
