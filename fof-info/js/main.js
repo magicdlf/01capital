@@ -69,7 +69,7 @@ const productData = {
         alt: '稳健系列-U本位业绩'
     },
     'stable-coin': {
-        title: 'Stable-Harbor-Coin',
+        title: 'Stable-Harbor-BTC',
         desc: '以币本位计价，专注于低风险套利策略，追求稳定收益，严格控制回撤。',
         facts: [
             { label: '成立时间', value: '2024/8/16' },
@@ -102,14 +102,14 @@ const productData = {
         title: 'Deep-Growth',
         desc: '聚焦趋势机会与波动捕捉，配置更高比例的风险策略，目标30%+的APY，容忍适度波动。',
         facts: [
-            { label: '成立时间', value: '' },
-            { label: '策略成分', value: '' },
+            { label: '实盘测试时间', value: '2025/4/24' },
+            { label: '策略成分', value: '多因子' },
             { label: '最大回撤', value: '' },
-            { label: '实际杠杆', value: '' },
+            { label: '实际杠杆', value: '1X' },
             { label: 'Sharpe比率', value: '' },
-            { label: '杠杆限额', value: '' },
+            { label: '杠杆限额', value: '4X' },
             { label: '区间收益率', value: '' },
-            { label: '预计年化收益率', value: '' }
+            { label: '预计年化收益率', value: '30%+' }
         ],
         alt: '进取型FOF业绩'
     }
@@ -151,17 +151,7 @@ if (productList && perfContent) {
                 }, 100);
             } else if (key === 'aggressive') {
                 setTimeout(() => {
-                    if (perfContent && productData['aggressive']) {
-                        perfContent.innerHTML = `
-                            <h3>${productData['aggressive'].title} <span style=\"font-size:1.1rem;color:#666;\">（即将上线）</span></h3>
-                            <p>${productData['aggressive'].desc}</p>
-                            ${renderFactsTable(productData['aggressive'].facts)}
-                        `;
-                    }
-                    hideBalancedChartUI();
-                    hideStableChartUI();
-                    hideStableCoinChartUI();
-                    hideStableUsdChartUI();
+                    showAggressiveProductSection('all'); // 默认显示成立以来
                 }, 100);
             }
             
@@ -1380,4 +1370,164 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.log('Navbar not found');
     }
-}); 
+});
+
+// 进取型FOF业绩图表逻辑
+let aggressiveChart = null;
+let aggressiveData = [];
+let aggressiveDataLoaded = false;
+
+function renderAggressiveChart(rangeDays = 30) {
+    if (!aggressiveData.length) return;
+    let dataSlice;
+    if (rangeDays === 'all') {
+        dataSlice = aggressiveData;
+    } else {
+        const days = parseInt(rangeDays);
+        dataSlice = aggressiveData.slice(-days);
+    }
+    const labels = dataSlice.map(d => d.date);
+    const values = dataSlice.map(d => d.nav);
+    const ctx = document.getElementById('aggressiveChart').getContext('2d');
+    if (aggressiveChart) aggressiveChart.destroy();
+    aggressiveChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '单位净值',
+                data: values,
+                borderColor: '#1a2530',
+                backgroundColor: 'rgba(26,37,48,0.08)',
+                pointRadius: 2,
+                tension: 0.2,
+                fill: true
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '单位净值: ' + context.parsed.y.toFixed(4);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { display: true, title: { display: false } },
+                y: {
+                    display: true,
+                    title: { display: false },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toFixed(4);
+                        }
+                    }
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            elements: { line: { borderWidth: 2 } }
+        }
+    });
+
+    // 计算收益率指标
+    const returnRate = calculateReturnRate(dataSlice);
+    const annualized = calculateAnnualizedReturn(dataSlice);
+    const sharpe = calculateAnnualizedSharpe(dataSlice);
+    const maxDrawdown = calculateMaxDrawdown(dataSlice);
+
+    // 更新表格中的值
+    const facts = productData['aggressive'].facts;
+    facts[2].value = maxDrawdown ? maxDrawdown + '%' : '';  // 最大回撤
+    facts[4].value = sharpe ? sharpe : '';  // Sharpe比率
+    facts[6].value = returnRate ? returnRate + '%' : '';  // 区间收益率
+    facts[7].value = annualized ? annualized + '%' : '';  // 预计年化收益率
+
+    // 更新表格内容
+    const factsHtml = renderFactsTable(facts);
+    const factsContainer = document.querySelector('#product-performance-content .container');
+    if (factsContainer) {
+        factsContainer.outerHTML = factsHtml;
+    }
+}
+
+function showAggressiveChartUI() {
+    document.getElementById('aggressive-chart-controls').style.display = '';
+    document.getElementById('aggressive-chart-container').style.display = '';
+    document.getElementById('aggressiveChart').height = 320;
+}
+
+function hideAggressiveChartUI() {
+    const controls = document.getElementById('aggressive-chart-controls');
+    const container = document.getElementById('aggressive-chart-container');
+    if (controls) controls.style.display = 'none';
+    if (container) container.style.display = 'none';
+}
+
+function bindAggressiveChartControls() {
+    const chartControls = document.getElementById('aggressive-chart-controls');
+    if (chartControls) {
+        chartControls.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const range = this.getAttribute('data-range');
+                // 移除所有按钮的active类
+                chartControls.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                // 为当前点击的按钮添加active类
+                this.classList.add('active');
+                // 渲染图表
+                renderAggressiveChart(range);
+            });
+        });
+    }
+}
+
+function loadAggressiveCSVAndDraw(rangeDays = 30, callback) {
+    if (aggressiveDataLoaded) {
+        renderAggressiveChart(rangeDays);
+        if (callback) callback();
+        return;
+    }
+
+    Papa.parse('data/growth.csv', {
+        download: true,
+        header: true,
+        complete: function(results) {
+            aggressiveData = results.data
+                .filter(row => row.Date && row['NAV per unit'])
+                .map(row => ({
+                    date: row.Date,
+                    nav: parseFloat(row['NAV per unit'])
+                }));
+            aggressiveDataLoaded = true;
+            renderAggressiveChart(rangeDays);
+            if (callback) callback();
+        }
+    });
+}
+
+function showAggressiveProductSection(rangeDays = 30) {
+    if (perfContent && productData['aggressive']) {
+        perfContent.innerHTML = `
+            <h3>${productData['aggressive'].title} <span style="font-size:1.1rem;color:#666;">（待上线）</span></h3>
+            <p>${productData['aggressive'].desc}</p>
+            ${renderFactsTable(productData['aggressive'].facts)}
+            <div id="aggressive-chart-controls" style="margin-bottom:16px;">
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="7">近7天</button>
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="180">近6个月</button>
+                <button class="btn btn-outline-dark btn-sm active" data-range="all">成立以来</button>
+            </div>
+            <div class="performance-chart mb-3" id="aggressive-chart-container">
+                <canvas id="aggressiveChart" height="320"></canvas>
+            </div>
+        `;
+        
+        showAggressiveChartUI();
+        loadAggressiveCSVAndDraw(rangeDays, () => {
+            bindAggressiveChartControls();
+        });
+    }
+} 
