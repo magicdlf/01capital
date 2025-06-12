@@ -247,7 +247,12 @@ function renderBalancedChart(rangeDays = 30) {
         },
         options: {
             plugins: {
-                legend: { display: false },
+                title: {
+                    display: false
+                },
+                legend: {
+                    display: false
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
@@ -409,7 +414,12 @@ function renderStableChart(rangeDays = 30) {
         },
         options: {
             plugins: {
-                legend: { display: false },
+                title: {
+                    display: false
+                },
+                legend: {
+                    display: false
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
@@ -602,7 +612,12 @@ function renderStableCoinChart(rangeDays = 30) {
         },
         options: {
             plugins: {
-                legend: { display: false },
+                title: {
+                    display: false
+                },
+                legend: {
+                    display: false
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
@@ -768,7 +783,12 @@ function renderStableUsdChart(rangeDays = 30) {
         },
         options: {
             plugins: {
-                legend: { display: false },
+                title: {
+                    display: false
+                },
+                legend: {
+                    display: false
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
@@ -965,6 +985,15 @@ function showLoginModal() {
         console.log('Login button clicked');
         handleLogin();
     });
+
+    // 添加回车键提交功能
+    document.getElementById('loginForm').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            console.log('Enter key pressed');
+            handleLogin();
+        }
+    });
 }
 
 function handleLogin() {
@@ -1044,7 +1073,9 @@ function loadBalancedInvestorData() {
                         principal: parseFloat(row.principal || 0),
                         net_nav: parseFloat(row.net_nav || 0),
                         net_pnl: parseFloat(row.net_pnl || 0),
-                        total_return: parseFloat(row.total_return || 0)
+                        realized_pnl: parseFloat(row.realized_pnl || 0),
+                        total_return: parseFloat(row.total_return || 0),
+                        coin: row.coin || 'USDT'
                     }));
                 balancedInvestorDataLoaded = true;
                 resolve(balancedInvestorData);
@@ -1069,81 +1100,292 @@ function getLatestBalancedInvestorData(investor) {
     return investorRecords.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
 }
 
+let arbitrageInvestorData = [];
+let arbitrageInvestorDataLoaded = false;
+
+function loadArbitrageInvestorData() {
+    if (arbitrageInvestorDataLoaded) return Promise.resolve(arbitrageInvestorData);
+    
+    return new Promise((resolve, reject) => {
+        Papa.parse('data/arbitrage_investor.csv?t=' + new Date().getTime(), {
+            download: true,
+            header: true,
+            complete: function(results) {
+                arbitrageInvestorData = results.data
+                    .filter(row => row.Date && row.investor && row['NAV per unit'])
+                    .map(row => ({
+                        date: row.Date,
+                        investor: row.investor,
+                        nav: parseFloat(row['NAV per unit']),
+                        principal: parseFloat(row.principal || 0),
+                        net_nav: parseFloat(row.net_nav || 0),
+                        net_pnl: parseFloat(row.net_pnl || 0),
+                        realized_pnl: parseFloat(row.realized_pnl || 0),
+                        total_return: parseFloat(row.total_return || 0),
+                        coin: row.coin || 'USDT'
+                    }));
+                arbitrageInvestorDataLoaded = true;
+                resolve(arbitrageInvestorData);
+            },
+            error: function(error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+function getLatestArbitrageInvestorData(investor) {
+    if (!arbitrageInvestorData.length) {
+        console.log('No arbitrage investor data available');
+        return null;
+    }
+    
+    console.log('Getting latest arbitrage data for investor:', investor);
+    console.log('Available arbitrage investors:', arbitrageInvestorData.map(r => r.investor));
+    
+    // 过滤出该投资者的所有记录，不区分大小写
+    const investorRecords = arbitrageInvestorData.filter(record => {
+        const match = record.investor.toLowerCase() === investor.toLowerCase();
+        console.log('Comparing:', record.investor, investor, 'Match:', match);
+        return match;
+    });
+    
+    console.log('Found records for investor:', investorRecords);
+    
+    if (!investorRecords.length) {
+        console.log('No records found for investor:', investor);
+        return null;
+    }
+    
+    // 按日期排序并获取最新记录
+    const latestRecord = investorRecords.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    console.log('Latest record for investor:', latestRecord);
+    return latestRecord;
+}
+
 function showInvestmentSummary() {
     console.log('Showing investment summary...');
     
     // 首先加载投资者数据
-    loadBalancedInvestorData().then(() => {
+    Promise.all([
+        loadBalancedInvestorData(),
+        loadArbitrageInvestorData()
+    ]).then(() => {
+        console.log('All investor data loaded');
+        console.log('Balanced investor data:', balancedInvestorData);
+        console.log('Arbitrage investor data:', arbitrageInvestorData);
+        
         // 获取当前投资者的最新数据
-        const latestData = getLatestBalancedInvestorData(currentUser);
-        console.log('Latest data for', currentUser, ':', latestData); // 添加调试日志
+        const balancedLatestData = getLatestBalancedInvestorData(currentUser);
+        const arbitrageLatestData = getLatestArbitrageInvestorData(currentUser);
+        console.log('Current user:', currentUser);
+        console.log('Latest balanced data for', currentUser, ':', balancedLatestData);
+        console.log('Latest arbitrage data for', currentUser, ':', arbitrageLatestData);
         
         // 计算持仓天数和收益率
-        let holdingDays = 0;
-        let returnRate = 0;
-        let annualizedReturn = 0;
+        let balancedHoldingDays = 0;
+        let balancedReturnRate = 0;
+        let balancedAnnualizedReturn = 0;
+        let arbitrageHoldingDays = 0;
+        let arbitrageReturnRate = 0;
+        let arbitrageAnnualizedReturn = 0;
         
-        if (latestData) {
-            // 计算持仓天数（从第一条记录到最新记录）
-            const firstRecord = balancedInvestorData
-                .filter(record => record.investor === currentUser)
-                .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
-            
-            if (firstRecord) {
-                holdingDays = Math.ceil((new Date(latestData.date) - new Date(firstRecord.date)) / (1000 * 60 * 60 * 24));
+        if (balancedLatestData) {
+            console.log('Processing balanced data for', currentUser);
+            // 获取当前投资者的所有Alpha-Bridge记录
+            const balancedRecords = balancedInvestorData.filter(
+                record => record.investor.toLowerCase() === currentUser.toLowerCase()
+            );
+            // 取最新一条
+            const balancedLatestData = balancedRecords.length
+                ? balancedRecords.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
+                : null;
+            // 取最早一条
+            const balancedFirstRecord = balancedRecords.length
+                ? balancedRecords.sort((a, b) => new Date(a.date) - new Date(b.date))[0]
+                : null;
+            // 持仓天数 = （最早和最新日期的天数差+1）
+            if (balancedFirstRecord && balancedLatestData) {
+                balancedHoldingDays = Math.ceil(
+                    (new Date(balancedLatestData.date) - new Date(balancedFirstRecord.date)) / (1000 * 60 * 60 * 24)
+                ) + 1;
             }
-            
             // 使用 total_return 作为收益率，注意 total_return 是小数，需乘以100
-            returnRate = latestData.total_return !== undefined ? (latestData.total_return * 100).toFixed(2) : '0.00';
-            
+            balancedReturnRate = balancedLatestData.total_return !== undefined ? (balancedLatestData.total_return * 100).toFixed(2) : '0.00';
             // 计算年化收益率
-            annualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(returnRate), holdingDays);
+            balancedAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(balancedReturnRate), balancedHoldingDays);
         }
 
-        // 计算持仓数量
-        const holdingCount = latestData && latestData.principal > 0 ? 1 : 0;
+        if (arbitrageLatestData) {
+            console.log('Processing arbitrage data for', currentUser);
+            // 获取当前投资者的所有Stable-Harbor-USDT记录
+            const arbitrageRecords = arbitrageInvestorData.filter(
+                record => record.investor.toLowerCase() === currentUser.toLowerCase()
+            );
+            // 取最新一条
+            const arbitrageLatestData = arbitrageRecords.length
+                ? arbitrageRecords.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
+                : null;
+            // 取最早一条
+            const arbitrageFirstRecord = arbitrageRecords.length
+                ? arbitrageRecords.sort((a, b) => new Date(a.date) - new Date(b.date))[0]
+                : null;
+            // 持仓天数 = （最早和最新日期的天数差+1）
+            if (arbitrageFirstRecord && arbitrageLatestData) {
+                arbitrageHoldingDays = Math.ceil(
+                    (new Date(arbitrageLatestData.date) - new Date(arbitrageFirstRecord.date)) / (1000 * 60 * 60 * 24)
+                ) + 1;
+            }
+            // 使用 total_return 作为收益率，注意 total_return 是小数，需乘以100
+            arbitrageReturnRate = arbitrageLatestData.total_return !== undefined ? (arbitrageLatestData.total_return * 100).toFixed(2) : '0.00';
+            // 计算年化收益率
+            arbitrageAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(arbitrageReturnRate), arbitrageHoldingDays);
+        }
+
+        // 按币种分组计算总资产和收益
+        const assetsByCoin = {};
+        
+        // 处理 Alpha-Bridge 数据
+        if (balancedLatestData && balancedLatestData.principal > 0) {
+            console.log('Adding balanced data to assetsByCoin');
+            const coin = balancedLatestData.coin;
+            if (!assetsByCoin[coin]) {
+                assetsByCoin[coin] = {
+                    totalNetNav: 0,
+                    totalNetPnl: 0,
+                    realizedPnl: 0,
+                    unrealizedPnl: 0,
+                    holdingCount: 0
+                };
+            }
+            assetsByCoin[coin].totalNetNav += balancedLatestData.net_nav;
+            assetsByCoin[coin].totalNetPnl += balancedLatestData.net_pnl;
+            assetsByCoin[coin].realizedPnl += balancedLatestData.realized_pnl;
+            assetsByCoin[coin].unrealizedPnl += balancedLatestData.net_pnl;
+            assetsByCoin[coin].holdingCount++;
+        }
+
+        // 处理 Stable-Harbor-USDT 数据
+        if (arbitrageLatestData && arbitrageLatestData.principal > 0) {
+            console.log('Adding arbitrage data to assetsByCoin');
+            const coin = arbitrageLatestData.coin;
+            if (!assetsByCoin[coin]) {
+                assetsByCoin[coin] = {
+                    totalNetNav: 0,
+                    totalNetPnl: 0,
+                    realizedPnl: 0,
+                    unrealizedPnl: 0,
+                    holdingCount: 0
+                };
+            }
+            assetsByCoin[coin].totalNetNav += arbitrageLatestData.net_nav;
+            assetsByCoin[coin].totalNetPnl += arbitrageLatestData.net_pnl;
+            assetsByCoin[coin].realizedPnl += arbitrageLatestData.realized_pnl;
+            assetsByCoin[coin].unrealizedPnl += arbitrageLatestData.net_pnl;
+            assetsByCoin[coin].holdingCount++;
+        }
+
+        console.log('Final assetsByCoin:', assetsByCoin);
+
+        // 生成投资组合概览HTML
+        let overviewHtml = '';
+        if (Object.keys(assetsByCoin).length > 0) {
+            // 计算总持仓数量
+            const totalHoldingCount = Object.values(assetsByCoin).reduce((sum, data) => sum + data.holdingCount, 0);
+            
+            overviewHtml = `
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">投资组合概览</h5>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold">总资产</td>
+                                        <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
+                                            `${coin} ${data.totalNetNav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                                        ).join('&emsp;｜&emsp;')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">累计收益</td>
+                                        <td class="text-success">${Object.entries(assetsByCoin).map(([coin, data]) => {
+                                            const total = data.realizedPnl + data.unrealizedPnl;
+                                            const totalReturnRate = data.totalNetNav > 0
+                                                ? ((total / (data.totalNetNav - total)) * 100).toFixed(2)
+                                                : '0.00';
+                                            return `+${coin} ${total.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (${totalReturnRate}%)`;
+                                        }).join('&emsp;｜&emsp;')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">已实现收益</td>
+                                        <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
+                                            `${coin} ${data.realizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                                        ).join('&emsp;｜&emsp;')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">未实现收益</td>
+                                        <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
+                                            `${coin} ${data.unrealizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                                        ).join('&emsp;｜&emsp;')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">当前持仓</td>
+                                        <td>${totalHoldingCount}个组合</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            // 如果没有持仓，显示空状态
+            overviewHtml = `
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">投资组合概览</h5>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-bold">总资产</td>
+                                        <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">累计收益</td>
+                                        <td>0.00 (0.00%)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">已实现收益</td>
+                                        <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">未实现收益</td>
+                                        <td>0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">当前持仓</td>
+                                        <td>0个组合</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
         const summaryHtml = `
             <div class="container">
                 <h2 class="text-center mb-5">个人投资摘要</h2>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">投资组合概览</h5>
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        <tbody>
-                                            <tr>
-                                                <td class="fw-bold">总资产</td>
-                                                <td>¥${latestData ? latestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">累计收益</td>
-                                                <td class="text-success">+¥${latestData ? latestData.net_pnl.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'} (${returnRate}%)</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">已实现收益</td>
-                                                <td>¥0.00</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">未实现收益</td>
-                                                <td>¥${latestData ? latestData.net_pnl.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">当前持仓</td>
-                                                <td>${holdingCount}个组合</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                        ${overviewHtml}
                     </div>
                     <div class="col-md-6">
                         <div class="card mb-4">
                             <div class="card-body">
-                                <h5 class="card-title">资产配置</h5>
+                                <h5 class="card-title">收益曲线</h5>
                                 <canvas id="assetAllocationChart" height="120"></canvas>
                             </div>
                         </div>
@@ -1160,31 +1402,34 @@ function showInvestmentSummary() {
                                             <tr>
                                                 <th>产品名称</th>
                                                 <th>币种</th>
-                                                <th>持仓金额</th>
+                                                <th>本金</th>
                                                 <th>当前价值</th>
                                                 <th>收益率</th>
                                                 <th>持仓天数</th>
                                                 <th>年化收益率</th>
+                                                <th>数据日期</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
                                                 <td>${productData['balanced'].title}</td>
-                                                <td>USDT</td>
-                                                <td>${latestData ? latestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
-                                                <td>${latestData ? latestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
-                                                <td>${returnRate}%</td>
-                                                <td>${holdingDays}</td>
-                                                <td>${annualizedReturn}%</td>
+                                                <td>${balancedLatestData ? balancedLatestData.coin : 'USDT'}</td>
+                                                <td>${balancedLatestData ? balancedLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
+                                                <td>${balancedLatestData ? balancedLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
+                                                <td>${balancedReturnRate ? balancedReturnRate + '%' : '0.00%'}</td>
+                                                <td>${balancedHoldingDays}</td>
+                                                <td>${balancedAnnualizedReturn ? balancedAnnualizedReturn + '%' : '0.00%'}</td>
+                                                <td>${balancedLatestData ? formatDateToYMD(balancedLatestData.date) : (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : '-')}</td>
                                             </tr>
                                             <tr>
                                                 <td>${productData['stable-usd'].title}</td>
-                                                <td>USDT</td>
-                                                <td>0.00</td>
-                                                <td>0.00</td>
-                                                <td>0.00%</td>
-                                                <td>0</td>
-                                                <td>0.00%</td>
+                                                <td>${arbitrageLatestData ? arbitrageLatestData.coin : 'USDT'}</td>
+                                                <td>${arbitrageLatestData ? arbitrageLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
+                                                <td>${arbitrageLatestData ? arbitrageLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
+                                                <td>${arbitrageReturnRate ? arbitrageReturnRate + '%' : '0.00%'}</td>
+                                                <td>${arbitrageHoldingDays}</td>
+                                                <td>${arbitrageAnnualizedReturn ? arbitrageAnnualizedReturn + '%' : '0.00%'}</td>
+                                                <td>${arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : (balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-')}</td>
                                             </tr>
                                             <tr>
                                                 <td>${productData['stable-coin'].title}</td>
@@ -1194,6 +1439,7 @@ function showInvestmentSummary() {
                                                 <td>0.00%</td>
                                                 <td>0</td>
                                                 <td>0.00%</td>
+                                                <td>${balancedLatestData ? formatDateToYMD(balancedLatestData.date) : (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : '-')}</td>
                                             </tr>
                                             <tr>
                                                 <td>${productData['aggressive'].title}</td>
@@ -1203,6 +1449,7 @@ function showInvestmentSummary() {
                                                 <td>0.00%</td>
                                                 <td>0</td>
                                                 <td>0.00%</td>
+                                                <td>${balancedLatestData ? formatDateToYMD(balancedLatestData.date) : (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : '-')}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -1231,23 +1478,100 @@ function showInvestmentSummary() {
             // 初始化资产配置图表
             const ctx = document.getElementById('assetAllocationChart');
             if (ctx) {
-                console.log('Initializing asset allocation chart');
+                console.log('Initializing return curves chart');
+                
+                // 获取每个产品的收益率数据，使用时间序列模式
+                const balancedReturns = balancedInvestorData
+                    .filter(record => record.investor.toLowerCase() === currentUser.toLowerCase())
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(record => ({
+                        x: formatDateToYMD(record.date),
+                        y: record.total_return * 100 // 转换为百分比
+                    }));
+
+                const arbitrageReturns = arbitrageInvestorData
+                    .filter(record => record.investor.toLowerCase() === currentUser.toLowerCase())
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(record => ({
+                        x: formatDateToYMD(record.date),
+                        y: record.total_return * 100 // 转换为百分比
+                    }));
+
+                // 准备图表数据
+                const datasets = [];
+                if (balancedReturns.length > 0) {
+                    datasets.push({
+                        label: productData['balanced'].title,
+                        data: balancedReturns,
+                        borderColor: '#1a2530',
+                        backgroundColor: 'rgba(26,37,48,0.1)',
+                        tension: 0.2,
+                        fill: false
+                    });
+                }
+                if (arbitrageReturns.length > 0) {
+                    datasets.push({
+                        label: productData['stable-usd'].title,
+                        data: arbitrageReturns,
+                        borderColor: '#4a90e2',
+                        backgroundColor: 'rgba(74,144,226,0.1)',
+                        tension: 0.2,
+                        fill: false
+                    });
+                }
+
                 new Chart(ctx.getContext('2d'), {
-                    type: 'doughnut',
+                    type: 'line',
                     data: {
-                        labels: [],
-                        datasets: [{
-                            data: [],
-                            backgroundColor: []
-                        }]
+                        datasets: datasets
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: true,
-                        aspectRatio: 2,
+                        maintainAspectRatio: false,
                         plugins: {
-                            legend: {
+                            title: {
                                 display: false
+                            },
+                            legend: {
+                                display: true,
+                                position: 'right',
+                                align: 'center',
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 15
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'day',
+                                    tooltipFormat: 'yyyy-MM-dd'
+                                },
+                                title: { display: false },
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toFixed(2) + '%';
+                                    }
+                                },
+                                title: {
+                                    display: false
+                                }
                             }
                         }
                     }
@@ -1255,7 +1579,7 @@ function showInvestmentSummary() {
             }
         }
     }).catch(error => {
-        console.error('Error loading balanced investor data:', error);
+        console.error('Error loading investor data:', error);
     });
 }
 
@@ -1406,7 +1730,12 @@ function renderAggressiveChart(rangeDays = 30) {
         },
         options: {
             plugins: {
-                legend: { display: false },
+                title: {
+                    display: false
+                },
+                legend: {
+                    display: false
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
@@ -1530,4 +1859,16 @@ function showAggressiveProductSection(rangeDays = 30) {
             bindAggressiveChartControls();
         });
     }
-} 
+}
+
+// 日期格式化函数
+function formatDateToYMD(dateStr) {
+    if (!dateStr) return '-';
+    // 支持2025/6/11或2025-06-11等格式
+    const d = new Date(dateStr.replace(/\//g, '-'));
+    if (isNaN(d.getTime())) return dateStr;
+    const y = d.getFullYear();
+    const m = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}

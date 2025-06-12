@@ -361,4 +361,9 @@ footer {
     .products-content-pl {
         padding-left: 24px;
     }
+}
+
+#assetAllocationChart {
+    max-height: 240px;
+    height: 120px;
 } 
