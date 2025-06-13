@@ -1053,14 +1053,13 @@ function calculateAnnualizedReturnFromDays(returnRate, days) {
     return ((Math.pow(1 + returnRate/100, 365/days) - 1) * 100).toFixed(2);
 }
 
+// 移除缓存标志，始终重新加载CSV数据
 let balancedInvestorData = [];
-let balancedInvestorDataLoaded = false;
 
 function loadBalancedInvestorData() {
-    if (balancedInvestorDataLoaded) return Promise.resolve(balancedInvestorData);
-    
+    // 始终重新加载CSV数据
     return new Promise((resolve, reject) => {
-        Papa.parse('data/balanced_investor.csv', {
+        Papa.parse('data/balanced_investor.csv?t=' + new Date().getTime(), {
             download: true,
             header: true,
             complete: function(results) {
@@ -1075,9 +1074,8 @@ function loadBalancedInvestorData() {
                         net_pnl: parseFloat(row.net_pnl || 0),
                         realized_pnl: parseFloat(row.realized_pnl || 0),
                         total_return: parseFloat(row.total_return || 0),
-                        coin: row.coin || 'USDT'
+                        coin: (row.product === 'Stable-Harbor-BTC' && (!row.coin || row.coin === '')) ? 'BTC' : (row.coin || 'USDT')
                     }));
-                balancedInvestorDataLoaded = true;
                 resolve(balancedInvestorData);
             },
             error: function(error) {
@@ -1101,11 +1099,9 @@ function getLatestBalancedInvestorData(investor) {
 }
 
 let arbitrageInvestorData = [];
-let arbitrageInvestorDataLoaded = false;
 
 function loadArbitrageInvestorData() {
-    if (arbitrageInvestorDataLoaded) return Promise.resolve(arbitrageInvestorData);
-    
+    // 始终重新加载CSV数据
     return new Promise((resolve, reject) => {
         Papa.parse('data/arbitrage_investor.csv?t=' + new Date().getTime(), {
             download: true,
@@ -1124,7 +1120,6 @@ function loadArbitrageInvestorData() {
                         total_return: parseFloat(row.total_return || 0),
                         coin: row.coin || 'USDT'
                     }));
-                arbitrageInvestorDataLoaded = true;
                 resolve(arbitrageInvestorData);
             },
             error: function(error) {
@@ -1310,17 +1305,16 @@ function showInvestmentSummary() {
                                         <td class="fw-bold">累计收益</td>
                                         <td class="text-success">${Object.entries(assetsByCoin).map(([coin, data]) => {
                                             const total = data.realizedPnl + data.unrealizedPnl;
-                                            const totalReturnRate = data.totalNetNav > 0
-                                                ? ((total / (data.totalNetNav - total)) * 100).toFixed(2)
-                                                : '0.00';
-                                            return `+${coin} ${total.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (${totalReturnRate}%)`;
+                                            return `+${coin} ${total.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                                         }).join('&emsp;｜&emsp;')}</td>
                                     </tr>
                                     <tr>
                                         <td class="fw-bold">已实现收益</td>
                                         <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
                                             `${coin} ${data.realizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
-                                        ).join('&emsp;｜&emsp;')}</td>
+                                        ).join('&emsp;｜&emsp;')}
+                                        <!-- 分红日期提示，仅特定投资人显示且只显示一次 -->
+                                        ${["octopus", "sam", "haipo", "jennifer", "alex"].includes(currentUser && currentUser.toLowerCase()) ? '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-01-06）</span>' : ''}</td>
                                     </tr>
                                     <tr>
                                         <td class="fw-bold">未实现收益</td>
@@ -1480,22 +1474,38 @@ function showInvestmentSummary() {
             if (ctx) {
                 console.log('Initializing return curves chart');
                 
-                // 获取每个产品的收益率数据，使用时间序列模式
-                const balancedReturns = balancedInvestorData
-                    .filter(record => record.investor.toLowerCase() === currentUser.toLowerCase())
-                    .sort((a, b) => new Date(a.date) - new Date(b.date))
-                    .map(record => ({
-                        x: formatDateToYMD(record.date),
-                        y: record.total_return * 100 // 转换为百分比
-                    }));
+                // 工具函数：只保留每月最后一天的数据点
+                function filterToMonthEnd(data) {
+                    const grouped = {};
+                    data.forEach(item => {
+                        const ym = item.x.slice(0, 7); // 'YYYY-MM'
+                        if (!grouped[ym] || item.x > grouped[ym].x) {
+                            grouped[ym] = item;
+                        }
+                    });
+                    return Object.values(grouped).sort((a, b) => new Date(a.x) - new Date(b.x));
+                }
 
-                const arbitrageReturns = arbitrageInvestorData
-                    .filter(record => record.investor.toLowerCase() === currentUser.toLowerCase())
-                    .sort((a, b) => new Date(a.date) - new Date(b.date))
-                    .map(record => ({
-                        x: formatDateToYMD(record.date),
-                        y: record.total_return * 100 // 转换为百分比
-                    }));
+                // 获取每个产品的收益率数据，使用时间序列模式，并做月末过滤
+                const balancedReturns = filterToMonthEnd(
+                    balancedInvestorData
+                        .filter(record => record.investor.toLowerCase() === currentUser.toLowerCase())
+                        .sort((a, b) => new Date(a.date) - new Date(b.date))
+                        .map(record => ({
+                            x: formatDateToYMD(record.date),
+                            y: record.total_return * 100 // 转换为百分比
+                        }))
+                );
+
+                const arbitrageReturns = filterToMonthEnd(
+                    arbitrageInvestorData
+                        .filter(record => record.investor.toLowerCase() === currentUser.toLowerCase())
+                        .sort((a, b) => new Date(a.date) - new Date(b.date))
+                        .map(record => ({
+                            x: formatDateToYMD(record.date),
+                            y: record.total_return * 100 // 转换为百分比
+                        }))
+                );
 
                 // 准备图表数据
                 const datasets = [];
@@ -1539,6 +1549,26 @@ function showInvestmentSummary() {
                                 labels: {
                                     boxWidth: 12,
                                     padding: 15
+                                },
+                                onClick: function(e, legendItem, legend) {
+                                    const chart = legend.chart;
+                                    const index = legendItem.datasetIndex;
+                                    const meta = chart.getDatasetMeta(index);
+                                    // 判断当前是否所有都显示
+                                    const allVisible = chart.data.datasets.every((ds, i) => chart.isDatasetVisible(i));
+                                    if (!meta.hidden && allVisible) {
+                                        // 隐藏其他所有
+                                        chart.data.datasets.forEach((ds, i) => {
+                                            if (i !== index) {
+                                                chart.hide(i);
+                                            }
+                                        });
+                                    } else {
+                                        // 全部显示
+                                        chart.data.datasets.forEach((ds, i) => {
+                                            chart.show(i);
+                                        });
+                                    }
                                 }
                             },
                             tooltip: {
