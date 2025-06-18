@@ -2,9 +2,16 @@
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+            const navbarHeight = document.querySelector('.navbar').offsetHeight;
+            const targetPosition = targetElement.offsetTop - navbarHeight;
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
+        }
     });
 });
 
@@ -313,12 +320,7 @@ function hideBalancedChartUI() {
 }
 
 function loadBalancedCSVAndDraw(rangeDays = 30, callback) {
-    if (balancedDataLoaded) {
-        renderBalancedChart(rangeDays);
-        if (callback) callback();
-        return;
-    }
-    Papa.parse('data/balanced.csv', {
+    Papa.parse('data/balanced.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
@@ -481,12 +483,7 @@ function hideStableChartUI() {
 }
 
 function loadStableCSVAndDraw(rangeDays = 30, callback) {
-    if (stableDataLoaded) {
-        renderStableChart(rangeDays);
-        if (callback) callback();
-        return;
-    }
-    Papa.parse('data/arbitrage.csv', {
+    Papa.parse('data/arbitrage.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
@@ -555,13 +552,7 @@ let stableCoinData = [];
 let stableCoinDataLoaded = false;
 
 function loadStableCoinCSVAndDraw(rangeDays = 30, callback) {
-    if (stableCoinDataLoaded) {
-        renderStableCoinChart(rangeDays);
-        if (callback) callback();
-        return;
-    }
-
-    Papa.parse('data/arbitrage_coin.csv', {
+    Papa.parse('data/arbitrage_coin.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
@@ -732,13 +723,7 @@ let stableUsdData = [];
 let stableUsdDataLoaded = false;
 
 function loadStableUsdCSVAndDraw(rangeDays = 30, callback) {
-    if (stableUsdDataLoaded) {
-        renderStableUsdChart(rangeDays);
-        if (callback) callback();
-        return;
-    }
-
-    Papa.parse('data/arbitrage.csv', {
+    Papa.parse('data/arbitrage.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
@@ -1033,6 +1018,15 @@ function handleLogin() {
                 if (investmentSummaryLink) {
                     investmentSummaryLink.style.display = 'block';
                 }
+                // 平滑滚动到投资摘要部分，考虑导航栏高度
+                setTimeout(() => {
+                    const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                    const targetPosition = document.getElementById('investment-summary').offsetTop - navbarHeight;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }, 100);
             } else {
                 console.log('Login failed - no matching user found');
                 errorElement.textContent = '用户名或密码错误';
@@ -1158,24 +1152,88 @@ function getLatestArbitrageInvestorData(investor) {
     return latestRecord;
 }
 
+let arbitrageCoinInvestorData = [];
+
+function loadArbitrageCoinInvestorData() {
+    // 始终重新加载CSV数据
+    return new Promise((resolve, reject) => {
+        Papa.parse('data/arbitrage_coin_investor.csv?t=' + new Date().getTime(), {
+            download: true,
+            header: true,
+            complete: function(results) {
+                arbitrageCoinInvestorData = results.data
+                    .filter(row => row.Date && row.investor && row['NAV per unit'])
+                    .map(row => ({
+                        date: row.Date,
+                        investor: row.investor,
+                        nav: parseFloat(row['NAV per unit']),
+                        principal: parseFloat(row.principal || 0),
+                        net_nav: parseFloat(row.net_nav || 0),
+                        net_pnl: parseFloat(row.net_pnl || 0),
+                        realized_pnl: parseFloat(row.realized_pnl || 0),
+                        total_return: parseFloat(row.total_return || 0),
+                        coin: (row.product === 'Stable-Harbor-BTC' && (!row.coin || row.coin === '')) ? 'BTC' : (row.coin || 'BTC')
+                    }));
+                resolve(arbitrageCoinInvestorData);
+            },
+            error: function(error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+function getLatestArbitrageCoinInvestorData(investor) {
+    if (!arbitrageCoinInvestorData.length) {
+        console.log('No arbitrage coin investor data available');
+        return null;
+    }
+    
+    console.log('Getting latest arbitrage coin data for investor:', investor);
+    console.log('Available arbitrage coin investors:', arbitrageCoinInvestorData.map(r => r.investor));
+    
+    // 过滤出该投资者的所有记录，不区分大小写
+    const investorRecords = arbitrageCoinInvestorData.filter(record => {
+        const match = record.investor.toLowerCase() === investor.toLowerCase();
+        console.log('Comparing:', record.investor, investor, 'Match:', match);
+        return match;
+    });
+    
+    console.log('Found records for investor:', investorRecords);
+    
+    if (!investorRecords.length) {
+        console.log('No records found for investor:', investor);
+        return null;
+    }
+    
+    // 按日期排序并获取最新记录
+    const latestRecord = investorRecords.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    console.log('Latest record for investor:', latestRecord);
+    return latestRecord;
+}
+
 function showInvestmentSummary() {
     console.log('Showing investment summary...');
     
     // 首先加载投资者数据
     Promise.all([
         loadBalancedInvestorData(),
-        loadArbitrageInvestorData()
+        loadArbitrageInvestorData(),
+        loadArbitrageCoinInvestorData()
     ]).then(() => {
         console.log('All investor data loaded');
         console.log('Balanced investor data:', balancedInvestorData);
         console.log('Arbitrage investor data:', arbitrageInvestorData);
+        console.log('Arbitrage coin investor data:', arbitrageCoinInvestorData);
         
         // 获取当前投资者的最新数据
         const balancedLatestData = getLatestBalancedInvestorData(currentUser);
         const arbitrageLatestData = getLatestArbitrageInvestorData(currentUser);
+        const arbitrageCoinLatestData = getLatestArbitrageCoinInvestorData(currentUser);
         console.log('Current user:', currentUser);
         console.log('Latest balanced data for', currentUser, ':', balancedLatestData);
         console.log('Latest arbitrage data for', currentUser, ':', arbitrageLatestData);
+        console.log('Latest arbitrage coin data for', currentUser, ':', arbitrageCoinLatestData);
         
         // 计算持仓天数和收益率
         let balancedHoldingDays = 0;
@@ -1184,6 +1242,9 @@ function showInvestmentSummary() {
         let arbitrageHoldingDays = 0;
         let arbitrageReturnRate = 0;
         let arbitrageAnnualizedReturn = 0;
+        let arbitrageCoinHoldingDays = 0;
+        let arbitrageCoinReturnRate = 0;
+        let arbitrageCoinAnnualizedReturn = 0;
         
         if (balancedLatestData) {
             console.log('Processing balanced data for', currentUser);
@@ -1237,6 +1298,32 @@ function showInvestmentSummary() {
             arbitrageAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(arbitrageReturnRate), arbitrageHoldingDays);
         }
 
+        if (arbitrageCoinLatestData) {
+            console.log('Processing arbitrage coin data for', currentUser);
+            // 获取当前投资者的所有Stable-Harbor-BTC记录
+            const arbitrageCoinRecords = arbitrageCoinInvestorData.filter(
+                record => record.investor.toLowerCase() === currentUser.toLowerCase()
+            );
+            // 取最新一条
+            const arbitrageCoinLatestData = arbitrageCoinRecords.length
+                ? arbitrageCoinRecords.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
+                : null;
+            // 取最早一条
+            const arbitrageCoinFirstRecord = arbitrageCoinRecords.length
+                ? arbitrageCoinRecords.sort((a, b) => new Date(a.date) - new Date(b.date))[0]
+                : null;
+            // 持仓天数 = （最早和最新日期的天数差+1）
+            if (arbitrageCoinFirstRecord && arbitrageCoinLatestData) {
+                arbitrageCoinHoldingDays = Math.ceil(
+                    (new Date(arbitrageCoinLatestData.date) - new Date(arbitrageCoinFirstRecord.date)) / (1000 * 60 * 60 * 24)
+                ) + 1;
+            }
+            // 使用 total_return 作为收益率，注意 total_return 是小数，需乘以100
+            arbitrageCoinReturnRate = arbitrageCoinLatestData.total_return !== undefined ? (arbitrageCoinLatestData.total_return * 100).toFixed(2) : '0.00';
+            // 计算年化收益率
+            arbitrageCoinAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(arbitrageCoinReturnRate), arbitrageCoinHoldingDays);
+        }
+
         // 按币种分组计算总资产和收益
         const assetsByCoin = {};
         
@@ -1277,6 +1364,26 @@ function showInvestmentSummary() {
             assetsByCoin[coin].totalNetPnl += arbitrageLatestData.net_pnl;
             assetsByCoin[coin].realizedPnl += arbitrageLatestData.realized_pnl;
             assetsByCoin[coin].unrealizedPnl += arbitrageLatestData.net_pnl;
+            assetsByCoin[coin].holdingCount++;
+        }
+
+        // 处理 Stable-Harbor-BTC 数据
+        if (arbitrageCoinLatestData && arbitrageCoinLatestData.principal > 0) {
+            console.log('Adding arbitrage coin data to assetsByCoin');
+            const coin = arbitrageCoinLatestData.coin;
+            if (!assetsByCoin[coin]) {
+                assetsByCoin[coin] = {
+                    totalNetNav: 0,
+                    totalNetPnl: 0,
+                    realizedPnl: 0,
+                    unrealizedPnl: 0,
+                    holdingCount: 0
+                };
+            }
+            assetsByCoin[coin].totalNetNav += arbitrageCoinLatestData.net_nav;
+            assetsByCoin[coin].totalNetPnl += arbitrageCoinLatestData.net_pnl;
+            assetsByCoin[coin].realizedPnl += arbitrageCoinLatestData.realized_pnl;
+            assetsByCoin[coin].unrealizedPnl += arbitrageCoinLatestData.net_pnl;
             assetsByCoin[coin].holdingCount++;
         }
 
@@ -1427,13 +1534,13 @@ function showInvestmentSummary() {
                                             </tr>
                                             <tr>
                                                 <td>${productData['stable-coin'].title}</td>
-                                                <td>USDT</td>
-                                                <td>0.00</td>
-                                                <td>0.00</td>
-                                                <td>0.00%</td>
-                                                <td>0</td>
-                                                <td>0.00%</td>
-                                                <td>${balancedLatestData ? formatDateToYMD(balancedLatestData.date) : (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : '-')}</td>
+                                                <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.coin : 'BTC'}</td>
+                                                <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
+                                                <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
+                                                <td>${arbitrageCoinReturnRate ? arbitrageCoinReturnRate + '%' : '0.00%'}</td>
+                                                <td>${arbitrageCoinHoldingDays}</td>
+                                                <td>${arbitrageCoinAnnualizedReturn ? arbitrageCoinAnnualizedReturn + '%' : '0.00%'}</td>
+                                                <td>${arbitrageCoinLatestData ? formatDateToYMD(arbitrageCoinLatestData.date) : (balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-')}</td>
                                             </tr>
                                             <tr>
                                                 <td>${productData['aggressive'].title}</td>
@@ -1474,16 +1581,22 @@ function showInvestmentSummary() {
             if (ctx) {
                 console.log('Initializing return curves chart');
                 
-                // 工具函数：只保留每月最后一天的数据点
+                // 工具函数：只保留每月最后一天的数据点，并转换为年月格式
                 function filterToMonthEnd(data) {
                     const grouped = {};
                     data.forEach(item => {
-                        const ym = item.x.slice(0, 7); // 'YYYY-MM'
-                        if (!grouped[ym] || item.x > grouped[ym].x) {
-                            grouped[ym] = item;
+                        const date = new Date(item.x);
+                        const ym = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                        // 如果是月末，或者是该月的最后一条记录，则保留
+                        const isLastDayOfMonth = date.getDate() === new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+                        if (!grouped[ym] || isLastDayOfMonth) {
+                            grouped[ym] = {
+                                x: ym,  // 直接使用年月格式
+                                y: item.y
+                            };
                         }
                     });
-                    return Object.values(grouped).sort((a, b) => new Date(a.x) - new Date(b.x));
+                    return Object.values(grouped).sort((a, b) => a.x.localeCompare(b.x));
                 }
 
                 // 获取每个产品的收益率数据，使用时间序列模式，并做月末过滤
@@ -1499,6 +1612,16 @@ function showInvestmentSummary() {
 
                 const arbitrageReturns = filterToMonthEnd(
                     arbitrageInvestorData
+                        .filter(record => record.investor.toLowerCase() === currentUser.toLowerCase())
+                        .sort((a, b) => new Date(a.date) - new Date(b.date))
+                        .map(record => ({
+                            x: formatDateToYMD(record.date),
+                            y: record.total_return * 100 // 转换为百分比
+                        }))
+                );
+
+                const arbitrageCoinReturns = filterToMonthEnd(
+                    arbitrageCoinInvestorData
                         .filter(record => record.investor.toLowerCase() === currentUser.toLowerCase())
                         .sort((a, b) => new Date(a.date) - new Date(b.date))
                         .map(record => ({
@@ -1525,6 +1648,16 @@ function showInvestmentSummary() {
                         data: arbitrageReturns,
                         borderColor: '#4a90e2',
                         backgroundColor: 'rgba(74,144,226,0.1)',
+                        tension: 0.2,
+                        fill: false
+                    });
+                }
+                if (arbitrageCoinReturns.length > 0) {
+                    datasets.push({
+                        label: productData['stable-coin'].title,
+                        data: arbitrageCoinReturns,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231,76,60,0.1)',
                         tension: 0.2,
                         fill: false
                     });
@@ -1581,11 +1714,7 @@ function showInvestmentSummary() {
                         },
                         scales: {
                             x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'day',
-                                    tooltipFormat: 'yyyy-MM-dd'
-                                },
+                                type: 'category',
                                 title: { display: false },
                                 ticks: {
                                     maxRotation: 45,
@@ -1844,13 +1973,7 @@ function bindAggressiveChartControls() {
 }
 
 function loadAggressiveCSVAndDraw(rangeDays = 30, callback) {
-    if (aggressiveDataLoaded) {
-        renderAggressiveChart(rangeDays);
-        if (callback) callback();
-        return;
-    }
-
-    Papa.parse('data/growth.csv', {
+    Papa.parse('data/growth.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
