@@ -407,13 +407,13 @@ footer {
 
 /* 为每个logo单独设置尺寸，方便调整 */
 .partner-logo .logo-1 {
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 110%;
+    max-height: 110%;
 }
 
 .partner-logo .logo-2 {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 120%;
+    max-height: 120%;
 }
 
 .partner-logo .logo-3 {
@@ -422,8 +422,8 @@ footer {
 }
 
 .partner-logo .logo-4 {
-    max-width: 75%;
-    max-height: 75%;
+    max-width: 80%;
+    max-height: 80%;
 }
 
 .partner-logo:hover img {
