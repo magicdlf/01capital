@@ -366,4 +366,75 @@ footer {
 #assetAllocationChart {
     max-height: 240px;
     height: 120px;
+}
+
+/* 合作伙伴logo样式 */
+.partners-grid {
+    margin-top: 1rem;
+}
+
+.partner-logo {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    height: 60px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+}
+
+.partner-logo:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.partner-logo img {
+    max-width: 90%;
+    max-height: 90%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+/* 为每个logo单独设置尺寸，方便调整 */
+.partner-logo .logo-1 {
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.partner-logo .logo-2 {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.partner-logo .logo-3 {
+    max-width: 75%;
+    max-height: 75%;
+}
+
+.partner-logo .logo-4 {
+    max-width: 75%;
+    max-height: 75%;
+}
+
+.partner-logo:hover img {
+    opacity: 1;
+    filter: brightness(0) invert(1);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .partner-logo {
+        height: 50px;
+        padding: 0.5rem;
+    }
 } 

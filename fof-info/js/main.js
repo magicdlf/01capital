@@ -1540,7 +1540,7 @@ function showInvestmentSummary() {
                                                 <td>${arbitrageCoinReturnRate ? arbitrageCoinReturnRate + '%' : '0.00%'}</td>
                                                 <td>${arbitrageCoinHoldingDays}</td>
                                                 <td>${arbitrageCoinAnnualizedReturn ? arbitrageCoinAnnualizedReturn + '%' : '0.00%'}</td>
-                                                <td>${arbitrageCoinLatestData ? formatDateToYMD(arbitrageCoinLatestData.date) : (balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-')}</td>
+                                                <td>${arbitrageCoinLatestData ? formatDateToYMD(arbitrageCoinLatestData.date) : (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : (balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-'))}</td>
                                             </tr>
                                             <tr>
                                                 <td>${productData['aggressive'].title}</td>
@@ -1592,7 +1592,8 @@ function showInvestmentSummary() {
                         if (!grouped[ym] || isLastDayOfMonth) {
                             grouped[ym] = {
                                 x: ym,  // 直接使用年月格式
-                                y: item.y
+                                y: item.y,
+                                isMonthEnd: isLastDayOfMonth // 添加月末标识
                             };
                         }
                     });
@@ -1633,33 +1634,66 @@ function showInvestmentSummary() {
                 // 准备图表数据
                 const datasets = [];
                 if (balancedReturns.length > 0) {
+                    // 检查最后一个点是否为月末
+                    const lastPointIsMonthEnd = balancedReturns[balancedReturns.length - 1].isMonthEnd;
                     datasets.push({
                         label: productData['balanced'].title,
                         data: balancedReturns,
                         borderColor: '#1a2530',
                         backgroundColor: 'rgba(26,37,48,0.1)',
                         tension: 0.2,
-                        fill: false
+                        fill: false,
+                        segment: {
+                            borderDash: ctx => {
+                                // 如果是最后一个点且不是月末，则最后一段用虚线
+                                if (ctx.p1DataIndex === balancedReturns.length - 1 && !lastPointIsMonthEnd) {
+                                    return [5, 5];
+                                }
+                                return [];
+                            }
+                        }
                     });
                 }
                 if (arbitrageReturns.length > 0) {
+                    // 检查最后一个点是否为月末
+                    const lastPointIsMonthEnd = arbitrageReturns[arbitrageReturns.length - 1].isMonthEnd;
                     datasets.push({
                         label: productData['stable-usd'].title,
                         data: arbitrageReturns,
                         borderColor: '#4a90e2',
                         backgroundColor: 'rgba(74,144,226,0.1)',
                         tension: 0.2,
-                        fill: false
+                        fill: false,
+                        segment: {
+                            borderDash: ctx => {
+                                // 如果是最后一个点且不是月末，则最后一段用虚线
+                                if (ctx.p1DataIndex === arbitrageReturns.length - 1 && !lastPointIsMonthEnd) {
+                                    return [5, 5];
+                                }
+                                return [];
+                            }
+                        }
                     });
                 }
                 if (arbitrageCoinReturns.length > 0) {
+                    // 检查最后一个点是否为月末
+                    const lastPointIsMonthEnd = arbitrageCoinReturns[arbitrageCoinReturns.length - 1].isMonthEnd;
                     datasets.push({
                         label: productData['stable-coin'].title,
                         data: arbitrageCoinReturns,
                         borderColor: '#e74c3c',
                         backgroundColor: 'rgba(231,76,60,0.1)',
                         tension: 0.2,
-                        fill: false
+                        fill: false,
+                        segment: {
+                            borderDash: ctx => {
+                                // 如果是最后一个点且不是月末，则最后一段用虚线
+                                if (ctx.p1DataIndex === arbitrageCoinReturns.length - 1 && !lastPointIsMonthEnd) {
+                                    return [5, 5];
+                                }
+                                return [];
+                            }
+                        }
                     });
                 }
 
