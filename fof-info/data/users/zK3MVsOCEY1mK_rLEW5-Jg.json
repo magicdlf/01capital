@@ -1,0 +1,21 @@
+{
+  "username": "turbo",
+  "created_at": "2025-07-02T20:55:24.953379",
+  "investments": {
+    "balanced": [
+      {
+        "date": "2025-07-02",
+        "investor": "turbo",
+        "nav": 1.0704671430923192,
+        "principal": 500000.0,
+        "net_nav": 500265.71278300113,
+        "net_pnl": 265.71278300115955,
+        "realized_pnl": 0.0,
+        "total_return": 0.0005314255660023,
+        "coin": "USDT"
+      }
+    ],
+    "arbitrage": [],
+    "arbitrage_coin": []
+  }
+}
