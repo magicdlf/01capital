@@ -5,13 +5,22 @@
     "balanced": [
       {
         "date": "2025-07-02",
-        "investor": "turbo",
         "nav": 1.0704671430923192,
         "principal": 500000.0,
         "net_nav": 500265.71278300113,
         "net_pnl": 265.71278300115955,
         "realized_pnl": 0.0,
-        "total_return": 0.0005314255660023,
+        "total_return": 0.0005314255660023191,
+        "coin": "USDT"
+      },
+      {
+        "date": "2025-07-03",
+        "nav": 1.072335384040632,
+        "principal": 500000.0,
+        "net_nav": 500920.64813122095,
+        "net_pnl": 920.6481312209362,
+        "realized_pnl": 0.0,
+        "total_return": 0.0018412962624418723,
         "coin": "USDT"
       }
     ],
