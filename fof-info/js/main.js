@@ -1409,7 +1409,15 @@ function showInvestmentSummary() {
                                         `${coin} ${data.realizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
                                     ).join('&emsp;｜&emsp;')}
                                     <!-- 分红日期提示，仅特定投资人显示且只显示一次 -->
-                                    ${["octopus", "sam", "jennifer", "alex"].includes(currentUser && currentUser.toLowerCase()) ? '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-01-06）</span>' : ''}</td>
+                                    ${(() => {
+                                        const user = currentUser && currentUser.toLowerCase();
+                                        if (["octopus", "sam", "jennifer", "alex"].includes(user)) {
+                                            return '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-01-06）</span>';
+                                        } else if (["bon", "yingzi", "tt"].includes(user)) {
+                                            return '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-07-04）</span>';
+                                        }
+                                        return '';
+                                    })()}</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">未实现收益</td>

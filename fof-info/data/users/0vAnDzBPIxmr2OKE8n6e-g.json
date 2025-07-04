@@ -4,6 +4,17 @@
   "investments": {
     "balanced": [],
     "arbitrage": [],
-    "arbitrage_coin": []
+    "arbitrage_coin": [
+      {
+        "date": "2025/07/04",
+        "nav": 1.0504329981,
+        "principal": 7.305,
+        "net_nav": 7.306752863461988,
+        "net_pnl": 0.0017528634619876637,
+        "realized_pnl": 0.0,
+        "total_return": 0.00023995393045690128,
+        "coin": "BTC"
+      }
+    ]
   }
 }
