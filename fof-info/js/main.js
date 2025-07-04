@@ -1511,8 +1511,8 @@ function showInvestmentSummary() {
                                         <tr>
                                             <td>${productData['balanced'].title}</td>
                                             <td>${balancedLatestData ? balancedLatestData.coin : 'USDT'}</td>
-                                            <td>${balancedLatestData ? balancedLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
-                                            <td>${balancedLatestData ? balancedLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
+                                            <td>${balancedLatestData ? balancedLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                            <td>${balancedLatestData ? balancedLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
                                             <td>${balancedReturnRate ? balancedReturnRate + '%' : '0.00%'}</td>
                                             <td>${balancedHoldingDays}</td>
                                             <td>${balancedAnnualizedReturn ? balancedAnnualizedReturn + '%' : '0.00%'}</td>
@@ -1521,8 +1521,8 @@ function showInvestmentSummary() {
                                         <tr>
                                             <td>${productData['stable-usd'].title}</td>
                                             <td>${arbitrageLatestData ? arbitrageLatestData.coin : 'USDT'}</td>
-                                            <td>${arbitrageLatestData ? arbitrageLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
-                                            <td>${arbitrageLatestData ? arbitrageLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
+                                            <td>${arbitrageLatestData ? arbitrageLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                            <td>${arbitrageLatestData ? arbitrageLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
                                             <td>${arbitrageReturnRate ? arbitrageReturnRate + '%' : '0.00%'}</td>
                                             <td>${arbitrageHoldingDays}</td>
                                             <td>${arbitrageAnnualizedReturn ? arbitrageAnnualizedReturn + '%' : '0.00%'}</td>
@@ -1531,8 +1531,8 @@ function showInvestmentSummary() {
                                         <tr>
                                             <td>${productData['stable-coin'].title}</td>
                                             <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.coin : 'BTC'}</td>
-                                            <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
-                                            <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00'}</td>
+                                            <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                            <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
                                             <td>${arbitrageCoinReturnRate ? arbitrageCoinReturnRate + '%' : '0.00%'}</td>
                                             <td>${arbitrageCoinHoldingDays}</td>
                                             <td>${arbitrageCoinAnnualizedReturn ? arbitrageCoinAnnualizedReturn + '%' : '0.00%'}</td>
