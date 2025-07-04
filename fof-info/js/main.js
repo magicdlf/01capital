@@ -1393,20 +1393,20 @@ function showInvestmentSummary() {
                                 <tr>
                                     <td class="fw-bold">总资产</td>
                                     <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
-                                        `${coin} ${data.totalNetNav.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                                        `${coin} ${data.totalNetNav.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`
                                     ).join('&emsp;｜&emsp;')}</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">累计收益</td>
                                     <td class="text-success">${Object.entries(assetsByCoin).map(([coin, data]) => {
                                         const total = data.realizedPnl + data.unrealizedPnl;
-                                        return `+${coin} ${total.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                        return `+${coin} ${total.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`;
                                     }).join('&emsp;｜&emsp;')}</td>
                                 </tr>
                                 <tr>
-                                    <td class="fw-bold">已实现收益</td>
+                                    <td class="fw-bold" style="white-space:nowrap;">已实现收益</td>
                                     <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
-                                        `${coin} ${data.realizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                                        `${coin} ${data.realizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`
                                     ).join('&emsp;｜&emsp;')}
                                     <!-- 分红日期提示，仅特定投资人显示且只显示一次 -->
                                     ${(() => {
@@ -1420,9 +1420,9 @@ function showInvestmentSummary() {
                                     })()}</td>
                                 </tr>
                                 <tr>
-                                    <td class="fw-bold">未实现收益</td>
+                                    <td class="fw-bold" style="white-space:nowrap;">未实现收益</td>
                                     <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
-                                        `${coin} ${data.unrealizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                                        `${coin} ${data.unrealizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`
                                     ).join('&emsp;｜&emsp;')}</td>
                                 </tr>
                                 <tr>
