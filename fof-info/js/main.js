@@ -1413,7 +1413,7 @@ function showInvestmentSummary() {
                                         const user = currentUser && currentUser.toLowerCase();
                                         if (["octopus", "sam", "jennifer", "alex"].includes(user)) {
                                             return '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-01-06）</span>';
-                                        } else if (["bon", "yingzi", "tt"].includes(user)) {
+                                        } else if (["bon", "ying", "tt"].includes(user)) {
                                             return '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-07-04）</span>';
                                         }
                                         return '';
