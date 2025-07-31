@@ -1,3 +1,16 @@
+// EmailJS配置
+const EMAILJS_CONFIG = {
+    serviceId: 'service_alzfhf8',
+    redemptionTemplateId: 'template_x0m1g0s',
+    conversionTemplateId: 'template_kem12pn',
+    userId: 'NudKPCV0CbLl3NrZT'
+};
+
+// 初始化EmailJS
+(function() {
+    emailjs.init(EMAILJS_CONFIG.userId);
+})();
+
 // 平滑滚动
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -1475,6 +1488,16 @@ function showInvestmentSummary() {
     const summaryHtml = `
         <div class="container">
             <h2 class="text-center mb-5">个人投资摘要</h2>
+            <div class="row mb-4">
+                <div class="col-12 text-end">
+                    <button type="button" class="btn btn-primary me-2" id="currencyConversionBtn">
+                        <i class="bi bi-arrow-left-right"></i> 币种转换投资
+                    </button>
+                    <button type="button" class="btn btn-primary" id="redemptionBtn">
+                        <i class="bi bi-cash-coin"></i> 赎回
+                    </button>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-6">
                     ${overviewHtml}
@@ -1595,6 +1618,18 @@ function showInvestmentSummary() {
                 });
                 return Object.values(grouped).sort((a, b) => a.x.localeCompare(b.x));
             }
+
+        // 绑定赎回按钮事件
+        const redemptionBtn = document.getElementById('redemptionBtn');
+        if (redemptionBtn) {
+            redemptionBtn.addEventListener('click', showRedemptionModal);
+        }
+
+        // 绑定币种转换投资按钮事件
+        const currencyConversionBtn = document.getElementById('currencyConversionBtn');
+        if (currencyConversionBtn) {
+            currencyConversionBtn.addEventListener('click', showCurrencyConversionModal);
+        }
 
             // 从当前用户数据获取收益率数据
             const balancedReturns = filterToMonthEnd(
@@ -2055,3 +2090,572 @@ function formatDateToYMD(dateStr) {
     const day = d.getDate().toString().padStart(2, '0');
     return `${y}-${m}-${day}`;
 }
+
+// 赎回功能相关函数
+function showRedemptionModal() {
+    // 重置表单
+    document.getElementById('redemptionForm').reset();
+    
+    // 清空最大可赎回金额显示
+    document.getElementById('maxRedemptionText').textContent = '';
+    
+    // 显示弹窗
+    const modal = new bootstrap.Modal(document.getElementById('redemptionModal'));
+    modal.show();
+}
+
+function updateMaxRedemptionAmount() {
+    const product = document.getElementById('productSelect').value;
+    const currency = document.getElementById('redemptionCurrency').value;
+    const maxRedemptionText = document.getElementById('maxRedemptionText');
+    
+    if (!product || !currency || !currentUserData || !currentUserData.investments) {
+        maxRedemptionText.textContent = '';
+        return;
+    }
+    
+    let maxAmount = 0;
+    const investments = currentUserData.investments;
+    
+    // 根据产品和币种获取当前价值
+    if (product === 'balanced') {
+        if (investments.balanced && investments.balanced.length > 0) {
+            const latestBalanced = investments.balanced.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestBalanced && latestBalanced.coin === currency) {
+                maxAmount = latestBalanced.net_nav || 0;
+            }
+        }
+    } else if (product === 'stable-usd') {
+        if (investments.arbitrage && investments.arbitrage.length > 0) {
+            const latestArbitrage = investments.arbitrage.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrage && latestArbitrage.coin === currency) {
+                maxAmount = latestArbitrage.net_nav || 0;
+            }
+        }
+    } else if (product === 'stable-coin') {
+        if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
+            const latestArbitrageCoin = investments.arbitrage_coin.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrageCoin && latestArbitrageCoin.coin === currency) {
+                maxAmount = latestArbitrageCoin.net_nav || 0;
+            }
+        }
+    } else if (product === 'aggressive') {
+        // 进取系列暂时没有数据，设为0
+        maxAmount = 0;
+    }
+    
+    // 显示最大可赎回金额
+    if (maxAmount > 0) {
+        const formattedAmount = maxAmount.toLocaleString('zh-CN', {
+            minimumFractionDigits: currency === 'BTC' ? 4 : 2,
+            maximumFractionDigits: currency === 'BTC' ? 4 : 2
+        });
+        maxRedemptionText.textContent = `（最大可赎回金额为：${formattedAmount} ${currency}）`;
+    } else {
+        maxRedemptionText.textContent = `（当前产品无${currency}持仓）`;
+    }
+}
+
+function setMaxRedemptionAmount() {
+    const product = document.getElementById('productSelect').value;
+    const currency = document.getElementById('redemptionCurrency').value;
+    
+    if (!product || !currency || !currentUserData || !currentUserData.investments) {
+        return;
+    }
+    
+    let maxAmount = 0;
+    const investments = currentUserData.investments;
+    
+    // 根据产品和币种获取当前价值
+    if (product === 'balanced') {
+        if (investments.balanced && investments.balanced.length > 0) {
+            const latestBalanced = investments.balanced.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestBalanced && latestBalanced.coin === currency) {
+                maxAmount = latestBalanced.net_nav || 0;
+            }
+        }
+    } else if (product === 'stable-usd') {
+        if (investments.arbitrage && investments.arbitrage.length > 0) {
+            const latestArbitrage = investments.arbitrage.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrage && latestArbitrage.coin === currency) {
+                maxAmount = latestArbitrage.net_nav || 0;
+            }
+        }
+    } else if (product === 'stable-coin') {
+        if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
+            const latestArbitrageCoin = investments.arbitrage_coin.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrageCoin && latestArbitrageCoin.coin === currency) {
+                maxAmount = latestArbitrageCoin.net_nav || 0;
+            }
+        }
+    } else if (product === 'aggressive') {
+        // 进取系列暂时没有数据，设为0
+        maxAmount = 0;
+    }
+    
+    // 设置赎回金额为最大值
+    if (maxAmount > 0) {
+        // 根据币种设置不同的小数位数
+        const formattedAmount = maxAmount.toFixed(currency === 'BTC' ? 4 : 2);
+        document.getElementById('redemptionAmount').value = formattedAmount;
+    }
+}
+
+function handleRedemptionSubmit() {
+    const form = document.getElementById('redemptionForm');
+    const formData = new FormData(form);
+    
+    // 获取表单数据
+    const product = document.getElementById('productSelect').value;
+    const currency = document.getElementById('redemptionCurrency').value;
+    const amount = parseFloat(document.getElementById('redemptionAmount').value) || 0;
+    
+    // 验证表单
+    if (!product || !currency || amount <= 0) {
+        alert('请填写所有必填字段，且赎回金额必须大于0');
+        return;
+    }
+    
+    // 验证赎回金额是否超过当前持仓
+    let maxAmount = 0;
+    if (currentUserData && currentUserData.investments) {
+        const investments = currentUserData.investments;
+        
+        // 根据产品和币种获取当前价值
+        if (product === 'balanced') {
+            if (investments.balanced && investments.balanced.length > 0) {
+                const latestBalanced = investments.balanced.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                if (latestBalanced && latestBalanced.coin === currency) {
+                    maxAmount = latestBalanced.net_nav || 0;
+                }
+            }
+        } else if (product === 'stable-usd') {
+            if (investments.arbitrage && investments.arbitrage.length > 0) {
+                const latestArbitrage = investments.arbitrage.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                if (latestArbitrage && latestArbitrage.coin === currency) {
+                    maxAmount = latestArbitrage.net_nav || 0;
+                }
+            }
+        } else if (product === 'stable-coin') {
+            if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
+                const latestArbitrageCoin = investments.arbitrage_coin.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                if (latestArbitrageCoin && latestArbitrageCoin.coin === currency) {
+                    maxAmount = latestArbitrageCoin.net_nav || 0;
+                }
+            }
+        } else if (product === 'aggressive') {
+            // 进取系列暂时没有数据，设为0
+            maxAmount = 0;
+        }
+    }
+    
+    // 检查赎回金额是否超过最大可赎回金额
+    if (amount > maxAmount) {
+        const formattedMaxAmount = maxAmount.toLocaleString('zh-CN', {
+            minimumFractionDigits: currency === 'BTC' ? 4 : 2,
+            maximumFractionDigits: currency === 'BTC' ? 4 : 2
+        });
+        alert(`超出最大可赎回金额，无法提交。\n当前持仓：${formattedMaxAmount} ${currency}\n赎回金额：${amount.toLocaleString('zh-CN', {
+            minimumFractionDigits: currency === 'BTC' ? 4 : 2,
+            maximumFractionDigits: currency === 'BTC' ? 4 : 2
+        })} ${currency}`);
+        return;
+    }
+    
+    // 获取产品名称
+    const productNames = {
+        'balanced': 'Alpha-Bridge',
+        'stable-usd': 'Stable-Harbor-USDT',
+        'stable-coin': 'Stable-Harbor-BTC',
+        'aggressive': 'Deep-Growth'
+    };
+    
+    // 发送邮件通知
+    const templateParams = {
+        user_id: currentUser || '未知用户',
+        product_name: productNames[product] || product,
+        currency: currency,
+        amount: amount.toLocaleString('zh-CN', {
+            minimumFractionDigits: currency === 'BTC' ? 4 : 2,
+            maximumFractionDigits: currency === 'BTC' ? 4 : 2
+        }),
+        timestamp: new Date().toLocaleString('zh-CN')
+    };
+    
+    emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.redemptionTemplateId, templateParams)
+        .then(function(response) {
+            console.log('赎回申请邮件发送成功:', response);
+            alert('赎回申请已提交，我们会尽快处理您的请求。');
+            
+            // 关闭弹窗
+            const modal = bootstrap.Modal.getInstance(document.getElementById('redemptionModal'));
+            modal.hide();
+        }, function(error) {
+            console.error('赎回申请邮件发送失败:', error);
+            alert('赎回申请已提交，但邮件通知发送失败。我们会尽快处理您的请求。');
+            
+            // 关闭弹窗
+            const modal = bootstrap.Modal.getInstance(document.getElementById('redemptionModal'));
+            modal.hide();
+        });
+}
+
+// 币种转换投资相关函数
+function showCurrencyConversionModal() {
+    // 重置表单
+    document.getElementById('currencyConversionForm').reset();
+    
+    // 更新当前持有金额
+    updateCurrentAmounts();
+    
+    // 初始化转换行
+    initializeConversionRows();
+    
+    // 显示弹窗
+    const modal = new bootstrap.Modal(document.getElementById('currencyConversionModal'));
+    modal.show();
+}
+
+function updateCurrentAmounts() {
+    if (!currentUserData || !currentUserData.investments) {
+        return;
+    }
+    
+    const investments = currentUserData.investments;
+    let usdtAmount = 0;
+    let btcAmount = 0;
+    let ethAmount = 0;
+    
+    // 计算USDT总持仓
+    if (investments.balanced && investments.balanced.length > 0) {
+        const latestBalanced = investments.balanced.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        if (latestBalanced && latestBalanced.coin === 'USDT') {
+            usdtAmount += latestBalanced.net_nav || 0;
+        }
+    }
+    if (investments.arbitrage && investments.arbitrage.length > 0) {
+        const latestArbitrage = investments.arbitrage.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        if (latestArbitrage && latestArbitrage.coin === 'USDT') {
+            usdtAmount += latestArbitrage.net_nav || 0;
+        }
+    }
+    
+    // 计算BTC总持仓
+    if (investments.balanced && investments.balanced.length > 0) {
+        const latestBalanced = investments.balanced.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        if (latestBalanced && latestBalanced.coin === 'BTC') {
+            btcAmount += latestBalanced.net_nav || 0;
+        }
+    }
+    if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
+        const latestArbitrageCoin = investments.arbitrage_coin.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        if (latestArbitrageCoin && latestArbitrageCoin.coin === 'BTC') {
+            btcAmount += latestArbitrageCoin.net_nav || 0;
+        }
+    }
+    
+    // ETH暂时设为0，因为没有ETH数据
+    ethAmount = 0;
+    
+    // 更新表格中的金额显示
+    document.getElementById('usdtAmount').textContent = usdtAmount.toLocaleString('zh-CN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    document.getElementById('btcAmount').textContent = btcAmount.toLocaleString('zh-CN', {
+        minimumFractionDigits: 4,
+        maximumFractionDigits: 4
+    });
+    document.getElementById('ethAmount').textContent = ethAmount.toLocaleString('zh-CN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function initializeConversionRows() {
+    const conversionRows = document.getElementById('conversionRows');
+    conversionRows.innerHTML = '';
+    
+    // 添加第一行转换记录
+    addConversionRow();
+    
+    // 启用添加按钮
+    document.getElementById('addConversionRow').disabled = false;
+}
+
+function addConversionRow() {
+    const conversionRows = document.getElementById('conversionRows');
+    const rowCount = conversionRows.children.length;
+    
+    if (rowCount >= 2) {
+        alert('最多只能添加两行转换记录');
+        return;
+    }
+    
+    const rowId = `conversion-row-${rowCount + 1}`;
+    const rowHtml = `
+        <div class="row mb-3" id="${rowId}">
+            <div class="col-md-3">
+                <label class="form-label">出售币种 <span class="text-danger">*</span></label>
+                <select class="form-select" id="sellCurrency-${rowCount + 1}" style="height: 38px;">
+                    <option value="">请选择</option>
+                    <option value="USDT">USDT</option>
+                    <option value="BTC">BTC</option>
+                    <option value="ETH">ETH</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">出售数量 <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="sellAmount-${rowCount + 1}" placeholder="0.00" step="0.0001" min="0" style="height: 38px;">
+                    <button type="button" class="btn btn-outline-secondary" onclick="setMaxSellAmount('${rowCount + 1}')" style="height: 38px;">全部</button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">买入币种 <span class="text-danger">*</span></label>
+                <select class="form-select" id="buyCurrency-${rowCount + 1}" style="height: 38px;">
+                    <option value="">请选择</option>
+                    <option value="USDT">USDT</option>
+                    <option value="BTC">BTC</option>
+                    <option value="ETH">ETH</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">限价</label>
+                <input type="number" class="form-control" id="priceLimit-${rowCount + 1}" placeholder="0.00" step="0.0001" min="0" style="height: 38px;">
+            </div>
+            <div class="col-md-1 d-flex align-items-center">
+                ${rowCount > 0 ? `<button type="button" class="btn btn-outline-danger btn-sm" onclick="removeConversionRow('${rowId}')" style="height: 30px; width: 30px; padding: 0; border-radius: 50%; margin-top: 24px;">
+                    <span style="font-size: 16px; font-weight: bold;">−</span>
+                </button>` : ''}
+            </div>
+        </div>
+    `;
+    
+    conversionRows.insertAdjacentHTML('beforeend', rowHtml);
+    
+    // 更新添加按钮状态
+    if (rowCount + 1 >= 2) {
+        document.getElementById('addConversionRow').disabled = true;
+    }
+}
+
+function removeConversionRow(rowId) {
+    const row = document.getElementById(rowId);
+    if (row) {
+        row.remove();
+        
+        // 重新启用添加按钮
+        document.getElementById('addConversionRow').disabled = false;
+    }
+}
+
+function setMaxSellAmount(rowIndex) {
+    const sellCurrencySelect = document.getElementById(`sellCurrency-${rowIndex}`);
+    const sellAmountInput = document.getElementById(`sellAmount-${rowIndex}`);
+    
+    if (!sellCurrencySelect.value) {
+        alert('请先选择出售币种');
+        return;
+    }
+    
+    const currency = sellCurrencySelect.value;
+    const currentAmount = getCurrentCurrencyAmount(currency);
+    
+    if (currentAmount <= 0) {
+        alert(`${currency}当前持仓为0，无法出售`);
+        return;
+    }
+    
+    // 格式化金额并填入输入框
+    const formattedAmount = currentAmount.toFixed(currency === 'BTC' ? 4 : 2);
+    sellAmountInput.value = formattedAmount;
+}
+
+
+
+function handleCurrencyConversionSubmit() {
+    const conversionRows = document.getElementById('conversionRows');
+    const rows = conversionRows.children;
+    
+    if (rows.length === 0) {
+        alert('请至少添加一行转换记录');
+        return;
+    }
+    
+    const conversions = [];
+    let hasValidConversion = false;
+    
+    // 收集所有转换记录
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const rowIndex = i + 1;
+        
+        const sellCurrency = document.getElementById(`sellCurrency-${rowIndex}`).value;
+        const sellAmount = parseFloat(document.getElementById(`sellAmount-${rowIndex}`).value) || 0;
+        const buyCurrency = document.getElementById(`buyCurrency-${rowIndex}`).value;
+        const priceLimit = parseFloat(document.getElementById(`priceLimit-${rowIndex}`).value) || 0;
+        
+        // 检查是否有有效数据
+        if (sellCurrency && sellAmount > 0 && buyCurrency) {
+            hasValidConversion = true;
+            conversions.push({
+                sellCurrency: sellCurrency,
+                sellAmount: sellAmount,
+                buyCurrency: buyCurrency,
+                priceLimit: priceLimit
+            });
+        }
+    }
+    
+    if (!hasValidConversion) {
+        alert('请至少填写一行完整的转换记录（出售币种、出售数量、买入币种）');
+        return;
+    }
+    
+    // 验证出售币种不能与买入币种相同
+    for (const conversion of conversions) {
+        if (conversion.sellCurrency === conversion.buyCurrency) {
+            alert('出售币种不能与买入币种相同');
+            return;
+        }
+    }
+    
+    // 验证出售数量不超过当前持仓（同一币种需要加总验证）
+    const sellCurrencyTotals = {};
+    
+    // 计算每个币种的总出售数量
+    for (const conversion of conversions) {
+        if (!sellCurrencyTotals[conversion.sellCurrency]) {
+            sellCurrencyTotals[conversion.sellCurrency] = 0;
+        }
+        sellCurrencyTotals[conversion.sellCurrency] += conversion.sellAmount;
+    }
+    
+    // 验证每个币种的总出售数量是否超过当前持仓
+    for (const [currency, totalSellAmount] of Object.entries(sellCurrencyTotals)) {
+        const currentAmount = getCurrentCurrencyAmount(currency);
+        if (totalSellAmount > currentAmount) {
+            alert(`${currency}总出售数量超过当前持仓。\n当前持仓：${currentAmount.toLocaleString('zh-CN', {
+                minimumFractionDigits: currency === 'BTC' ? 4 : 2,
+                maximumFractionDigits: currency === 'BTC' ? 4 : 2
+            })} ${currency}\n总出售数量：${totalSellAmount.toLocaleString('zh-CN', {
+                minimumFractionDigits: currency === 'BTC' ? 4 : 2,
+                maximumFractionDigits: currency === 'BTC' ? 4 : 2
+            })} ${currency}`);
+            return;
+        }
+    }
+    
+    // 格式化转换详情
+    const conversionDetails = conversions.map((conv, index) => {
+        return `${index + 1}. 出售 ${conv.sellAmount.toLocaleString('zh-CN', {
+            minimumFractionDigits: conv.sellCurrency === 'BTC' ? 4 : 2,
+            maximumFractionDigits: conv.sellCurrency === 'BTC' ? 4 : 2
+        })} ${conv.sellCurrency}，买入 ${conv.buyCurrency}${conv.priceLimit > 0 ? `，价格限额：${conv.priceLimit}` : ''}`;
+    }).join('\n');
+    
+    // 发送邮件通知
+    const templateParams = {
+        user_id: currentUser || '未知用户',
+        conversion_details: conversionDetails,
+        timestamp: new Date().toLocaleString('zh-CN')
+    };
+    
+    emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.conversionTemplateId, templateParams)
+        .then(function(response) {
+            console.log('币种转换申请邮件发送成功:', response);
+            alert('币种转换投资申请已提交，我们会尽快处理您的请求。');
+            
+            // 关闭弹窗
+            const modal = bootstrap.Modal.getInstance(document.getElementById('currencyConversionModal'));
+            modal.hide();
+        }, function(error) {
+            console.error('币种转换申请邮件发送失败:', error);
+            alert('币种转换投资申请已提交，但邮件通知发送失败。我们会尽快处理您的请求。');
+            
+            // 关闭弹窗
+            const modal = bootstrap.Modal.getInstance(document.getElementById('currencyConversionModal'));
+            modal.hide();
+        });
+}
+
+function getCurrentCurrencyAmount(currency) {
+    if (!currentUserData || !currentUserData.investments) {
+        return 0;
+    }
+    
+    const investments = currentUserData.investments;
+    let amount = 0;
+    
+    if (currency === 'USDT') {
+        if (investments.balanced && investments.balanced.length > 0) {
+            const latestBalanced = investments.balanced.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestBalanced && latestBalanced.coin === 'USDT') {
+                amount += latestBalanced.net_nav || 0;
+            }
+        }
+        if (investments.arbitrage && investments.arbitrage.length > 0) {
+            const latestArbitrage = investments.arbitrage.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrage && latestArbitrage.coin === 'USDT') {
+                amount += latestArbitrage.net_nav || 0;
+            }
+        }
+    } else if (currency === 'BTC') {
+        if (investments.balanced && investments.balanced.length > 0) {
+            const latestBalanced = investments.balanced.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestBalanced && latestBalanced.coin === 'BTC') {
+                amount += latestBalanced.net_nav || 0;
+            }
+        }
+        if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
+            const latestArbitrageCoin = investments.arbitrage_coin.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrageCoin && latestArbitrageCoin.coin === 'BTC') {
+                amount += latestArbitrageCoin.net_nav || 0;
+            }
+        }
+    } else if (currency === 'ETH') {
+        // ETH暂时设为0，因为没有ETH数据
+        amount = 0;
+    }
+    
+    return amount;
+}
+
+// 在页面加载完成后绑定赎回相关事件
+document.addEventListener('DOMContentLoaded', function() {
+    // 绑定提交按钮事件
+    const submitBtn = document.getElementById('submitRedemption');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', handleRedemptionSubmit);
+    }
+
+    // 绑定赎回相关事件
+    const productSelect = document.getElementById('productSelect');
+    const redemptionCurrency = document.getElementById('redemptionCurrency');
+    const maxRedemptionBtn = document.getElementById('maxRedemptionBtn');
+    
+    if (productSelect) {
+        productSelect.addEventListener('change', updateMaxRedemptionAmount);
+    }
+    if (redemptionCurrency) {
+        redemptionCurrency.addEventListener('change', updateMaxRedemptionAmount);
+    }
+    if (maxRedemptionBtn) {
+        maxRedemptionBtn.addEventListener('click', setMaxRedemptionAmount);
+    }
+
+    // 绑定币种转换投资相关事件
+    const submitConversionBtn = document.getElementById('submitConversion');
+    if (submitConversionBtn) {
+        submitConversionBtn.addEventListener('click', handleCurrencyConversionSubmit);
+    }
+
+    // 绑定币种转换投资表单事件
+    const addConversionRowBtn = document.getElementById('addConversionRow');
+    
+    if (addConversionRowBtn) {
+        addConversionRowBtn.addEventListener('click', addConversionRow);
+    }
+});

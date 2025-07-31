@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link rel="icon" href="images/icon.jpg" type="image/jpeg">
 </head>
 <body>
@@ -205,6 +206,117 @@
             </div>
         </div>
     </footer>
+
+    <!-- 赎回弹窗 -->
+    <div class="modal fade" id="redemptionModal" tabindex="-1" aria-labelledby="redemptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="redemptionModalLabel">赎回申请</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="redemptionForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="productSelect" class="form-label">产品名称 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="productSelect" required>
+                                    <option value="">请选择产品</option>
+                                    <option value="balanced">Alpha-Bridge</option>
+                                    <option value="stable-usd">Stable-Harbor-USDT</option>
+                                    <option value="stable-coin">Stable-Harbor-BTC</option>
+                                    <option value="aggressive">Deep-Growth</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="redemptionCurrency" class="form-label">赎回币种 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="redemptionCurrency" required>
+                                    <option value="">请选择币种</option>
+                                    <option value="BTC">BTC</option>
+                                    <option value="USDT">USDT</option>
+                                    <option value="ETH">ETH</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="redemptionAmount" class="form-label">
+                                赎回金额 <span class="text-danger">*</span>
+                                <span class="form-text text-muted ms-2" id="maxRedemptionText"></span>
+                            </label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="redemptionAmount" placeholder="请输入赎回金额" step="0.0001" min="0" required>
+                                <button type="button" class="btn btn-outline-secondary" id="maxRedemptionBtn">全部</button>
+                            </div>
+                            <div class="form-text">（单次快赎金额上限：1,000,000 USDT；剩余快赎次数：2）</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">返回</button>
+                    <button type="button" class="btn btn-primary" id="submitRedemption">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 币种转换投资弹窗 -->
+    <div class="modal fade" id="currencyConversionModal" tabindex="-1" aria-labelledby="currencyConversionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="currencyConversionModalLabel">币种转换投资</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="currencyConversionForm">
+                        <!-- 当前持仓概览 -->
+                        <div class="mb-4">
+                            <h6 class="mb-3">当前持仓概览</h6>
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center align-middle" style="table-layout: fixed; width: 100%;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-center align-middle" style="width: 25%;">项目</th>
+                                            <th class="text-center align-middle" style="width: 25%;">USDT</th>
+                                            <th class="text-center align-middle" style="width: 25%;">BTC</th>
+                                            <th class="text-center align-middle" style="width: 25%;">ETH</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-center align-middle"><strong>当前持有金额</strong></td>
+                                            <td class="text-center align-middle" id="usdtAmount">0.00</td>
+                                            <td class="text-center align-middle" id="btcAmount">0.0000</td>
+                                            <td class="text-center align-middle" id="ethAmount">0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 币种转换操作 -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-end mb-3">
+                                <h6 class="mb-0">币种转换操作</h6>
+                                <div style="margin-top: 24px; margin-right: 12px;">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" id="addConversionRow" disabled style="height: 30px; width: 30px; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 20px; font-weight: bold;">+</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="conversionRows">
+                                <!-- 转换行将通过JavaScript动态生成 -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">返回</button>
+                    <button type="button" class="btn btn-primary" id="submitConversion">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
