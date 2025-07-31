@@ -2355,8 +2355,25 @@ function updateCurrentAmounts() {
         }
     }
     
-    // ETH暂时设为0，因为没有ETH数据
-    ethAmount = 0;
+    // 计算ETH总持仓
+    if (investments.balanced && investments.balanced.length > 0) {
+        const latestBalanced = investments.balanced.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        if (latestBalanced && latestBalanced.coin === 'ETH') {
+            ethAmount += latestBalanced.net_nav || 0;
+        }
+    }
+    if (investments.arbitrage && investments.arbitrage.length > 0) {
+        const latestArbitrage = investments.arbitrage.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        if (latestArbitrage && latestArbitrage.coin === 'ETH') {
+            ethAmount += latestArbitrage.net_nav || 0;
+        }
+    }
+    if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
+        const latestArbitrageCoin = investments.arbitrage_coin.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        if (latestArbitrageCoin && latestArbitrageCoin.coin === 'ETH') {
+            ethAmount += latestArbitrageCoin.net_nav || 0;
+        }
+    }
     
     // 更新表格中的金额显示
     document.getElementById('usdtAmount').textContent = usdtAmount.toLocaleString('zh-CN', {
@@ -2616,8 +2633,25 @@ function getCurrentCurrencyAmount(currency) {
             }
         }
     } else if (currency === 'ETH') {
-        // ETH暂时设为0，因为没有ETH数据
-        amount = 0;
+        // 计算ETH总持仓
+        if (investments.balanced && investments.balanced.length > 0) {
+            const latestBalanced = investments.balanced.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestBalanced && latestBalanced.coin === 'ETH') {
+                amount += latestBalanced.net_nav || 0;
+            }
+        }
+        if (investments.arbitrage && investments.arbitrage.length > 0) {
+            const latestArbitrage = investments.arbitrage.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrage && latestArbitrage.coin === 'ETH') {
+                amount += latestArbitrage.net_nav || 0;
+            }
+        }
+        if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
+            const latestArbitrageCoin = investments.arbitrage_coin.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrageCoin && latestArbitrageCoin.coin === 'ETH') {
+                amount += latestArbitrageCoin.net_nav || 0;
+            }
+        }
     }
     
     return amount;
