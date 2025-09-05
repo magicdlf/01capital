@@ -846,7 +846,7 @@
             
             // 使用固定的域名
             const baseUrl = 'https://01capital.info';
-            const inviteLink = `${baseUrl}/reset_pas.html?user=${encodeURIComponent(username)}`;
+            const inviteLink = `${baseUrl}/reset_pas?user=${encodeURIComponent(username)}`;
             
             inviteLinkInput.value = inviteLink;
             showResult(`邀请链接生成成功：${inviteLink}`, 'success');

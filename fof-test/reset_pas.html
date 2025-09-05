@@ -180,7 +180,6 @@
             background: #f8f9fa;
             border: 1px solid #e9ecef;
             border-radius: 5px;
-            font-family: 'Courier New', monospace;
             font-size: 14px;
         }
         .action-buttons {
@@ -236,7 +235,7 @@
                             <li>输入新密码并确认密码</li>
                             <li>点击"生成Shared Secret"按钮</li>
                             <li>复制生成的Shared Secret</li>
-                            <li>将Shared Secret通过其他方式（如邮件等）告知管理员</li>
+                            <li>将Shared Secret通过邮件告知管理员</li>
                             <li>管理员处理完成后，您就可以使用新密码登录了</li>
                         </ol>
                     </div>
@@ -377,7 +376,7 @@
                 // 显示成功信息
                 successElement.innerHTML = `
                     <h6>Shared Secret生成成功！</h6>
-                    <p>请复制上面的Shared Secret，并通过其他方式（如微信、邮件等）告知管理员。</p>
+                    <p>请复制上面的Shared Secret，并通过邮件告知管理员。</p>
                     <p>管理员处理完成后，您就可以使用新密码登录了。</p>
                 `;
                 successElement.classList.remove('d-none');
