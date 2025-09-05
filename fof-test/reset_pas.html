@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>密码重置 - 01 Capital</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="icon" href="images/icon.jpg" type="image/jpeg">
+    <style>
+        body {
+            background: #212529;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .reset-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .reset-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            min-height: 600px;
+        }
+        .instructions-panel {
+            background: linear-gradient(135deg, #1a2530 0%, #2c3e50 100%);
+            color: white;
+            padding: 40px;
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+        .instructions-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        .instructions-content {
+            position: relative;
+            z-index: 1;
+        }
+        .instructions-panel h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: white;
+        }
+        .instructions-panel p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        .instructions-list {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .instructions-list h6 {
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        .instructions-list ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .instructions-list li {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 12px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        .reset-body {
+            padding: 40px;
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .user-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            border-left: 4px solid #1a2530;
+        }
+        .user-info h5 {
+            color: #1a2530;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .user-info p {
+            color: #6c757d;
+            margin: 0;
+        }
+        .steps-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .step-card {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            background: #fafbfc;
+            flex: 1;
+            position: relative;
+        }
+        .step-card:first-child {
+            border-left: 4px solid #1a2530;
+        }
+        .step-card:last-child {
+            border-left: 4px solid #28a745;
+        }
+        .step-number {
+            background: #1a2530;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .step-card:last-child .step-number {
+            background: #28a745;
+        }
+        .step-title {
+            font-weight: 600;
+            color: #1a2530;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .form-control:focus {
+            border-color: #1a2530;
+            box-shadow: 0 0 0 0.2rem rgba(26, 37, 48, 0.25);
+        }
+        .btn-primary {
+            background: #1a2530;
+            border-color: #1a2530;
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+        .btn-primary:hover {
+            background: #2c3e50;
+            border-color: #2c3e50;
+        }
+        .btn-outline-secondary:hover {
+            background: #1a2530;
+            border-color: #1a2530;
+            color: white;
+        }
+        .alert-info {
+            background: #e7f3ff;
+            border-color: #b8daff;
+            color: #004085;
+            border-radius: 8px;
+        }
+        .hash-display {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .btn-outline-primary {
+            border-color: #1a2530;
+            color: #1a2530;
+        }
+        .btn-outline-primary:hover {
+            background: #1a2530;
+            border-color: #1a2530;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .reset-card {
+                flex-direction: column;
+                max-width: 500px;
+            }
+            .instructions-panel {
+                width: 100%;
+                padding: 30px;
+            }
+            .reset-body {
+                width: 100%;
+                padding: 30px;
+            }
+            .steps-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .instructions-panel h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="reset-container">
+        <div class="reset-card">
+            <div class="instructions-panel">
+                <div class="instructions-content">
+                    <h2>01 Capital</h2>
+                    <p>网站登陆密码重置</p>
+                    
+                    <div class="instructions-list">
+                        <h6>使用说明：</h6>
+                        <ol>
+                            <li>输入新密码并确认密码</li>
+                            <li>点击"生成Shared Secret"按钮</li>
+                            <li>复制生成的Shared Secret</li>
+                            <li>将Shared Secret通过其他方式（如邮件等）告知管理员</li>
+                            <li>管理员处理完成后，您就可以使用新密码登录了</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reset-body">
+                <!-- 用户信息显示 -->
+                <div class="user-info">
+                    <h5 id="userDisplayName">用户：加载中...</h5>
+                    <p>请按照以下步骤重置您的密码</p>
+                </div>
+
+                <!-- 步骤容器 -->
+                <div class="steps-container">
+                    <!-- 步骤1：输入新密码 -->
+                    <div class="step-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="step-number">1</span>
+                            <h6 class="step-title mb-0">输入新密码</h6>
+                        </div>
+                        <form id="resetPasswordForm">
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label">新密码</label>
+                                <input type="password" class="form-control" id="newPassword" required minlength="6">
+                                <div class="form-text">密码长度至少6位</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">确认新密码</label>
+                                <input type="password" class="form-control" id="confirmPassword" required>
+                            </div>
+                            <button type="button" class="btn btn-primary w-100" id="generateHashButton">生成Shared Secret</button>
+                        </form>
+                    </div>
+
+                    <!-- 步骤2：复制Shared Secret -->
+                    <div class="step-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="step-number">2</span>
+                            <h6 class="step-title mb-0">复制Shared Secret</h6>
+                        </div>
+                        <div class="mb-3">
+                            <label for="generatedHash" class="form-label">新密码的Shared Secret</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control hash-display" id="generatedHash" readonly>
+                                <button class="btn btn-outline-secondary" type="button" id="copyHashButton">复制</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 消息显示区域 -->
+                <div class="alert alert-danger d-none" id="resetError"></div>
+                <div class="alert alert-success d-none" id="resetSuccess"></div>
+
+                <!-- 返回登录链接 -->
+                <div class="action-buttons">
+                    <a href="index.html" class="btn btn-outline-primary">返回登录页面</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 从URL参数获取用户名
+        function getUsernameFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('user');
+        }
+
+        // 显示用户名
+        function displayUsername() {
+            const username = getUsernameFromURL();
+            const userDisplayElement = document.getElementById('userDisplayName');
+            
+            if (username) {
+                userDisplayElement.textContent = `用户：${username}`;
+            } else {
+                userDisplayElement.textContent = '用户：未指定';
+                showError('请通过正确的邀请链接访问此页面');
+            }
+        }
+
+        // 生成Shared Secret
+        async function generatePasswordHash() {
+            const username = getUsernameFromURL();
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorElement = document.getElementById('resetError');
+            const successElement = document.getElementById('resetSuccess');
+            const hashInput = document.getElementById('generatedHash');
+            
+            // 隐藏之前的消息
+            errorElement.classList.add('d-none');
+            successElement.classList.add('d-none');
+            
+            // 验证输入
+            if (!username) {
+                showError('请通过正确的邀请链接访问此页面');
+                return;
+            }
+            
+            if (!newPassword || !confirmPassword) {
+                showError('请填写所有字段');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showError('新密码长度至少6位');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showError('新密码和确认密码不一致');
+                return;
+            }
+            
+            try {
+                // 生成新密码的hash值
+                const combined = username.toLowerCase() + ':' + newPassword;
+                const encoder = new TextEncoder();
+                const data = encoder.encode(combined);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                
+                // 使用前16字节生成Base64值
+                const shortHashArray = hashArray.slice(0, 16);
+                const base64 = btoa(String.fromCharCode.apply(null, shortHashArray))
+                    .replace(/\+/g, '-')
+                    .replace(/\//g, '_')
+                    .replace(/=/g, '');
+                
+                const hashValue = base64;
+                
+                // 显示生成的hash值
+                hashInput.value = hashValue;
+                
+                // 显示成功信息
+                successElement.innerHTML = `
+                    <h6>Shared Secret生成成功！</h6>
+                    <p>请复制上面的Shared Secret，并通过其他方式（如微信、邮件等）告知管理员。</p>
+                    <p>管理员处理完成后，您就可以使用新密码登录了。</p>
+                `;
+                successElement.classList.remove('d-none');
+                
+            } catch (error) {
+                console.error('Hash generation error:', error);
+                showError('生成Shared Secret时发生错误，请稍后重试');
+            }
+        }
+
+        // 复制Shared Secret
+        function copyHashToClipboard() {
+            const hashInput = document.getElementById('generatedHash');
+            const copyButton = document.getElementById('copyHashButton');
+            
+            if (!hashInput.value) {
+                alert('请先生成Shared Secret');
+                return;
+            }
+            
+            // 复制到剪贴板
+            hashInput.select();
+            hashInput.setSelectionRange(0, 99999);
+            
+            try {
+                document.execCommand('copy');
+                copyButton.textContent = '已复制';
+                copyButton.classList.remove('btn-outline-secondary');
+                copyButton.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('btn-success');
+                    copyButton.classList.add('btn-outline-secondary');
+                }, 2000);
+            } catch (err) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(hashInput.value).then(() => {
+                        copyButton.textContent = '已复制';
+                        copyButton.classList.remove('btn-outline-secondary');
+                        copyButton.classList.add('btn-success');
+                        
+                        setTimeout(() => {
+                            copyButton.textContent = '复制';
+                            copyButton.classList.remove('btn-success');
+                            copyButton.classList.add('btn-outline-secondary');
+                        }, 2000);
+                    }).catch(() => {
+                        alert('复制失败，请手动复制');
+                    });
+                } else {
+                    alert('复制失败，请手动复制');
+                }
+            }
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            const errorElement = document.getElementById('resetError');
+            errorElement.textContent = message;
+            errorElement.classList.remove('d-none');
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            displayUsername();
+            
+            // 绑定事件
+            document.getElementById('generateHashButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                generatePasswordHash();
+            });
+
+            document.getElementById('copyHashButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                copyHashToClipboard();
+            });
+
+            // 添加回车键提交功能
+            document.getElementById('resetPasswordForm').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    generatePasswordHash();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01 Capital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link rel="icon" href="images/icon.jpg" type="image/jpeg">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">01 Capital</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#products-performance">产品介绍</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#investment-summary" style="display: none;" id="investmentSummaryLink">个人投资摘要</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#future-plans">未来规划</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 首页横幅 -->
+    <header class="hero-section">
+        <div class="container">
+            <div class="row min-vh-100 align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4" style="font-size: 4rem;">01 Capital</h1>
+                    <p class="lead" style="font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 1.75rem;">Expertise in Selection,Excellence in Performance</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 公司介绍 -->
+    <section id="about" class="py-5" style="background:#111; color:#fff;">
+        <div class="container">
+            <h2 class="text-center mb-5" style="color:#fff;">核心数据</h2>
+            <div class="row justify-content-center g-4">
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 text-center" style="background:#181818; border:none; color:#fff;">
+                        <div class="card-body">
+                            <h3 class="display-6 fw-bold">1年</h3>
+                            <hr style="border-color:#333;">
+                            <p class="mb-0">成立时长</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 text-center" style="background:#181818; border:none; color:#fff;">
+                        <div class="card-body">
+                            <h3 class="display-6 fw-bold">30M+</h3>
+                            <hr style="border-color:#333;">
+                            <p class="mb-0">当前 AUM</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 text-center" style="background:#181818; border:none; color:#fff;">
+                        <div class="card-body">
+                            <h3 class="display-6 fw-bold">10%+</h3>
+                            <hr style="border-color:#333;">
+                            <p class="mb-0">核心产品过去12个月累计收益</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 text-center" style="background:#181818; border:none; color:#fff;">
+                        <div class="card-body">
+                            <h3 class="display-6 fw-bold">7</h3>
+                            <hr style="border-color:#333;">
+                            <p class="mb-0">当前稳定合作量化团队数量</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 产品介绍与业绩展示 -->
+    <section id="products-performance" class="py-5 anchor-fix">
+        <div class="container">
+            <h2 class="text-center mb-5">产品介绍</h2>
+            <div class="row">
+                <!-- 产品列表 -->
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="list-group" id="product-list">
+                        <button class="list-group-item list-group-item-action" data-product="balanced">平衡系列</button>
+                        <div class="list-group-item p-0">
+                            <button class="list-group-item list-group-item-action" data-product="stable">稳健系列</button>
+                            <div class="list-group-item p-0 ps-4 stable-sub-options" style="display: none;">
+                                <button class="list-group-item list-group-item-action" data-product="stable-usd">稳健系列-U本位</button>
+                                <button class="list-group-item list-group-item-action" data-product="stable-coin">稳健系列-币本位</button>
+                            </div>
+                        </div>
+                        <button class="list-group-item list-group-item-action" data-product="aggressive">进取系列</button>
+                    </div>
+                </div>
+                <!-- 业绩展示 -->
+                <div class="col-md-8 products-content-pl">
+                    <div id="product-performance-content">
+                        <!-- 内容将由JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 个人投资摘要 -->
+    <section id="investment-summary" class="py-5 bg-light">
+        <!-- 内容将由JavaScript动态生成 -->
+    </section>
+
+    <!-- 未来规划 -->
+    <section id="future-plans" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">未来规划</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="card-title h5">创新产品</h3>
+                            <p class="card-text">计划推出周期性高收益产品，采用轻量配置与高频策略，运行周期控制在三个月以内，以快速响应市场机会。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="card-title h5">技术升级</h3>
+                            <p class="card-text">持续推进系统自动化，包括交易监控、策略调仓、风控预警、投资人资金申赎与结算等关键模块，实现全流程自动化、精细化管理。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="card-title h5">合规升级</h3>
+                            <p class="card-text">目前已启动BVI Investment Manager牌照申请，将持续完善合规框架。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="py-5 bg-dark text-white">
+        <div class="container">
+            <div class="row">
+                <!-- 公司简介 -->
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h5 class="mb-3">关于我们</h5>
+                    <p style="max-width: 450px;">01 Capital 是一家专注于系统化策略的资产管理机构，依托强健的基础设施与实时监控系统，追求长期稳健的复利增长。</p>
+                    <p style="max-width: 450px;" class="mt-3">01 Capital is an asset manager specializing in systematic strategies, powered by robust infrastructure and real-time monitoring to deliver long-term, risk-adjusted growth.</p>
+                </div>
+                <!-- 合作伙伴 -->
+                <div class="col-md-6">
+                    <h5 class="mb-3">支持平台</h5>
+                    <div class="partners-grid">
+                        <div class="row g-4">
+                            <div class="col-6">
+                                <div class="partner-logo">
+                                    <img src="images/logo1.png" alt="支持平台1" class="img-fluid logo-1">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="partner-logo">
+                                    <img src="images/logo2.png" alt="支持平台2" class="img-fluid logo-2">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="partner-logo">
+                                    <img src="images/logo3.png" alt="支持平台3" class="img-fluid logo-3">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="partner-logo">
+                                    <img src="images/logo4.png" alt="支持平台4" class="img-fluid logo-4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+            <div class="text-center">
+                <p class="mb-0">©01 Capital. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 赎回弹窗 -->
+    <div class="modal fade" id="redemptionModal" tabindex="-1" aria-labelledby="redemptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="redemptionModalLabel">赎回申请</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="redemptionForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="productSelect" class="form-label">产品名称 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="productSelect" required>
+                                    <option value="">请选择产品</option>
+                                    <option value="balanced">Alpha-Bridge</option>
+                                    <option value="stable-usd">Stable-Harbor-USDT</option>
+                                    <option value="stable-coin">Stable-Harbor-BTC</option>
+                                    <option value="aggressive">Deep-Growth</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="redemptionCurrency" class="form-label">赎回币种 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="redemptionCurrency" required>
+                                    <option value="">请选择币种</option>
+                                    <option value="BTC">BTC</option>
+                                    <option value="USDT">USDT</option>
+                                    <option value="ETH">ETH</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="redemptionAmount" class="form-label">
+                                赎回金额 <span class="text-danger">*</span>
+                                <span class="form-text text-muted ms-2" id="maxRedemptionText"></span>
+                            </label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="redemptionAmount" placeholder="请输入赎回金额" step="0.0001" min="0" required>
+                                <button type="button" class="btn btn-outline-secondary" id="maxRedemptionBtn">全部</button>
+                            </div>
+                            <div class="form-text">（单次快赎金额上限：1,000,000 USDT；剩余快赎次数：2）</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">返回</button>
+                    <button type="button" class="btn btn-primary" id="submitRedemption">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 币种转换投资弹窗 -->
+    <div class="modal fade" id="currencyConversionModal" tabindex="-1" aria-labelledby="currencyConversionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="currencyConversionModalLabel">币种转换投资</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="currencyConversionForm">
+                        <!-- 当前持仓概览 -->
+                        <div class="mb-4">
+                            <h6 class="mb-3">当前持仓概览</h6>
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center align-middle" style="table-layout: fixed; width: 100%;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-center align-middle" style="width: 25%;">项目</th>
+                                            <th class="text-center align-middle" style="width: 25%;">USDT</th>
+                                            <th class="text-center align-middle" style="width: 25%;">BTC</th>
+                                            <th class="text-center align-middle" style="width: 25%;">ETH</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-center align-middle"><strong>当前持有金额</strong></td>
+                                            <td class="text-center align-middle" id="usdtAmount">0.00</td>
+                                            <td class="text-center align-middle" id="btcAmount">0.0000</td>
+                                            <td class="text-center align-middle" id="ethAmount">0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 币种转换操作 -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-end mb-3">
+                                <h6 class="mb-0">币种转换操作</h6>
+                                <div style="margin-top: 24px; margin-right: 12px;">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" id="addConversionRow" disabled style="height: 30px; width: 30px; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 20px; font-weight: bold;">+</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="conversionRows">
+                                <!-- 转换行将通过JavaScript动态生成 -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">返回</button>
+                    <button type="button" class="btn btn-primary" id="submitConversion">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 
