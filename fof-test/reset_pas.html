@@ -301,12 +301,6 @@
     </div>
 
     <script>
-        // 从URL参数获取用户名（兼容旧版本）
-        function getUsernameFromURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('user');
-        }
-
         // 从6位编码获取用户名
         async function getUsernameFromCode() {
             console.log('getUsernameFromCode 被调用');
@@ -376,43 +370,34 @@
             }
         }
 
-        // 显示用户名（支持新旧两种方式）
+        // 显示用户名（仅支持6位编码方式）
         async function displayUsername() {
             const userDisplayElement = document.getElementById('userDisplayName');
             
-            // 首先尝试6位编码方式
+            // 只支持6位编码方式
             const codeResult = await getUsernameFromCode();
             
             if (codeResult.isValid) {
                 // 使用6位编码
                 userDisplayElement.textContent = `用户：${codeResult.username}`;
-                
-                // 编码验证成功，不显示额外提示
-                
             } else {
-                // 回退到旧版本方式
-                const username = getUsernameFromURL();
-                if (username) {
-                    userDisplayElement.textContent = `用户：${username}`;
-                    
-                    const codeInfoHtml = `
-                        <div class="alert alert-warning mt-3">
-                            <strong>⚠️ 注意:</strong> 您使用的是旧版本链接，建议使用新的6位编码链接以提高安全性
-                        </div>
-                    `;
-                    userDisplayElement.insertAdjacentHTML('afterend', codeInfoHtml);
-                } else {
-                    userDisplayElement.textContent = '用户：未指定';
-                    showError(codeResult.error || '请通过正确的邀请链接访问此页面');
-                }
+                // 6位编码无效或不存在
+                userDisplayElement.textContent = '用户：未指定';
+                showError('请通过正确的6位编码邀请链接访问此页面');
             }
         }
 
         // 生成Shared Secret
         async function generatePasswordHash() {
-            // 优先使用6位编码方式获取用户名
+            // 只支持6位编码方式获取用户名
             const codeResult = await getUsernameFromCode();
-            const username = codeResult.isValid ? codeResult.username : getUsernameFromURL();
+            
+            if (!codeResult.isValid) {
+                showError('请通过正确的6位编码邀请链接访问此页面');
+                return;
+            }
+            
+            const username = codeResult.username;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const errorElement = document.getElementById('resetError');

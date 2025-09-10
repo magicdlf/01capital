@@ -23,21 +23,23 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .result {
-            margin-top: 20px;
+            margin-top: 15px;
             padding: 15px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            border: 2px solid;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .success {
             background: #d4edda;
-            border-color: #c3e6cb;
+            border-color: #28a745;
             color: #155724;
         }
         .error {
             background: #f8d7da;
-            border-color: #f5c6cb;
+            border-color: #dc3545;
             color: #721c24;
+            font-weight: 600;
         }
         .info {
             background: #d1ecf1;
@@ -142,7 +144,7 @@
             <div class="col-md-6">
                 <div class="card h-100">
                     <div class="card-header">
-                        <h5>密码重置邀请链接生成</h5>
+                        <h5>6位编码密码重置链接生成</h5>
                     </div>
                     <div class="card-body">
                         <form id="inviteLinkForm">
@@ -151,27 +153,12 @@
                                 <input type="text" class="form-control" id="inviteUsername" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">链接类型</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="linkType" id="linkTypeOld" value="old" checked>
-                                    <label class="form-check-label" for="linkTypeOld">
-                                        旧版本链接 (user=xxx)
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="linkType" id="linkTypeNew" value="new">
-                                    <label class="form-check-label" for="linkTypeNew">
-                                        新版本链接 (6位编码) - 推荐
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="mb-3">
                                 <label for="inviteLink" class="form-label">邀请链接</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="inviteLink" readonly>
                                     <button class="btn btn-outline-secondary" type="button" id="copyInviteButton">复制</button>
                                 </div>
-                                <div class="form-text">将此链接发送给用户，用户点击后可直接进入密码重置页面</div>
+                                <div class="form-text">将此6位编码链接发送给用户，用户点击后可直接进入密码重置页面（24小时内有效）</div>
                             </div>
                             <div class="mb-3" id="codeInfo" style="display: none;">
                                 <label for="generatedCode" class="form-label">6位编码</label>
@@ -181,8 +168,11 @@
                                 </div>
                                 <div class="form-text">此编码24小时内有效，用户可通过此编码访问重置页面</div>
                             </div>
-                            <button type="button" class="btn btn-primary" id="generateInviteButton">生成邀请链接</button>
+                            <button type="button" class="btn btn-primary" id="generateInviteButton">生成6位编码链接</button>
                         </form>
+                        
+                        <!-- 结果显示区域 -->
+                        <div id="result" class="result mt-3" style="display: none;"></div>
                     </div>
                 </div>
             </div>
@@ -242,8 +232,6 @@
                 <div id="portfolioDetails"></div>
             </div>
         </div>
-        
-        <div id="result" class="result" style="display: none;"></div>
     </div>
 
     <script>
@@ -852,24 +840,30 @@
         // 文件列表功能已移除
         
         function showResult(message, type) {
+            console.log('showResult 被调用:', message, type);
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = message;
-            resultDiv.className = `result ${type}`;
-            resultDiv.style.display = 'block';
+            console.log('resultDiv 元素:', resultDiv);
+            
+            if (resultDiv) {
+                resultDiv.innerHTML = message;
+                resultDiv.className = `result ${type}`;
+                resultDiv.style.display = 'block';
+                console.log('结果已显示');
+            } else {
+                console.error('找不到 result 元素');
+            }
         }
         
-        // 生成邀请链接
+        // 生成6位编码邀请链接
         async function generateInviteLink() {
             console.log('generateInviteLink 被调用');
             
             const username = document.getElementById('inviteUsername').value;
             const inviteLinkInput = document.getElementById('inviteLink');
-            const linkType = document.querySelector('input[name="linkType"]:checked').value;
             const codeInfo = document.getElementById('codeInfo');
             const generatedCodeInput = document.getElementById('generatedCode');
             
             console.log('用户名:', username);
-            console.log('链接类型:', linkType);
             console.log('编码器加载状态:', window.scheme6Encoder ? '已加载' : '未加载');
             
             if (!username) {
@@ -877,65 +871,48 @@
                 return;
             }
             
-            // 使用固定的域名
-            const baseUrl = 'https://01capital.info';
-            
-            if (linkType === 'new') {
-                // 生成6位编码链接
-                try {
-                    if (!window.scheme6Encoder) {
-                        showResult('编码器未加载，请刷新页面重试', 'error');
-                        return;
-                    }
-                    
-                    // 等待编码器加载完成
-                    let attempts = 0;
-                    while (!window.scheme6Encoder.isLoaded && attempts < 10) {
-                        console.log(`等待编码器加载... 尝试 ${attempts + 1}/10`);
-                        await new Promise(resolve => setTimeout(resolve, 500));
-                        attempts++;
-                    }
-                    
-                    if (!window.scheme6Encoder.isLoaded) {
-                        showResult('编码器加载超时，请刷新页面重试', 'error');
-                        return;
-                    }
-                    
-                    console.log('开始生成6位编码链接...');
-                    const resetLink = window.scheme6Encoder.generateResetLink(username);
-                    console.log('生成结果:', resetLink);
-                    
-                    inviteLinkInput.value = resetLink.link;
-                    generatedCodeInput.value = resetLink.code;
-                    codeInfo.style.display = 'block';
-                    
-                    showResult(`6位编码链接生成成功！编码：${resetLink.code}，24小时内有效`, 'success');
-                } catch (error) {
-                    console.error('生成6位编码失败:', error);
-                    
-                    // 检查是否是用户不存在的错误
-                    if (error.message.includes('不存在')) {
-                        showResult(`❌ 用户不存在：${error.message}。请检查用户名是否正确。`, 'error');
-                    } else {
-                        showResult(`生成6位编码失败：${error.message}`, 'error');
-                    }
-                }
-            } else {
-                // 生成旧版本链接
-                console.log('生成旧版本链接...');
-                
-                // 验证用户是否存在（旧版本也需要验证）
-                if (window.scheme6Encoder && window.scheme6Encoder.isLoaded) {
-                    if (!window.scheme6Encoder.userExists(username)) {
-                        showResult(`❌ 用户不存在：用户 "${username}" 不在系统中。请检查用户名是否正确。`, 'error');
-                        return;
-                    }
+            // 生成6位编码链接
+            try {
+                if (!window.scheme6Encoder) {
+                    showResult('编码器未加载，请刷新页面重试', 'error');
+                    return;
                 }
                 
-                const inviteLink = `${baseUrl}/reset_pas?user=${encodeURIComponent(username)}`;
-                inviteLinkInput.value = inviteLink;
-                codeInfo.style.display = 'none';
-                showResult(`旧版本邀请链接生成成功：${inviteLink}`, 'success');
+                // 等待编码器加载完成
+                let attempts = 0;
+                while (!window.scheme6Encoder.isLoaded && attempts < 10) {
+                    console.log(`等待编码器加载... 尝试 ${attempts + 1}/10`);
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    attempts++;
+                }
+                
+                if (!window.scheme6Encoder.isLoaded) {
+                    showResult('编码器加载超时，请刷新页面重试', 'error');
+                    return;
+                }
+                
+                console.log('开始生成6位编码链接...');
+                const resetLink = window.scheme6Encoder.generateResetLink(username);
+                console.log('生成结果:', resetLink);
+                
+                inviteLinkInput.value = resetLink.link;
+                generatedCodeInput.value = resetLink.code;
+                codeInfo.style.display = 'block';
+                
+                showResult(`6位编码链接生成成功！编码：${resetLink.code}，24小时内有效`, 'success');
+            } catch (error) {
+                console.error('生成6位编码失败:', error);
+                console.log('错误类型:', typeof error);
+                console.log('错误消息:', error.message);
+                
+                // 检查是否是用户不存在的错误
+                if (error.message && error.message.includes('不存在')) {
+                    console.log('检测到用户不存在错误');
+                    showResult(`❌ 用户不存在：${error.message}。请检查用户名是否正确。`, 'error');
+                } else {
+                    console.log('其他类型错误');
+                    showResult(`生成6位编码失败：${error.message || '未知错误'}`, 'error');
+                }
             }
         }
         
