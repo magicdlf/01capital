@@ -205,21 +205,6 @@ const productData = {
 
 const perfContent = document.getElementById('product-performance-content');
 
-if (perfContent) {
-    // 根据权限状态显示不同的内容
-    if (!isAuthorized) {
-        // 未授权状态：显示受限信息
-        perfContent.innerHTML = renderLimitedProductInfo('balanced');
-    } else {
-        // 已授权状态：显示完整信息
-        if (productData['balanced']) {
-            setTimeout(() => {
-                showBalancedProductSection();
-            }, 100);
-        }
-    }
-}
-
 // 平衡型FOF业绩图表逻辑
 let balancedChart = null;
 let balancedData = [];
@@ -591,13 +576,15 @@ window.addEventListener('DOMContentLoaded', function() {
     initPermissionSystem();
     
     // 根据权限状态显示不同的默认内容
-    if (isAuthorized) {
-        console.log('User is authorized, showing full product section');
-        showBalancedProductSection();
-    } else {
-        console.log('User is not authorized, showing limited info');
-        // 未授权状态显示受限信息
-        perfContent.innerHTML = renderLimitedProductInfo('balanced');
+    if (perfContent) {
+        if (isAuthorized) {
+            console.log('User is authorized, showing full product section');
+            showBalancedProductSection();
+        } else {
+            console.log('User is not authorized, showing limited info');
+            // 未授权状态显示受限信息
+            perfContent.innerHTML = renderLimitedProductInfo('balanced');
+        }
     }
 });
 
