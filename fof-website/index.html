@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>01 Capital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <link rel="icon" href="images/icon.jpg" type="image/jpeg">
 </head>
@@ -14,99 +17,120 @@
     <!-- 导航栏 -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#">01 Capital</a>
+            <a class="navbar-brand" href="#home">01 Capital</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#about">公司介绍</a>
+                        <a class="nav-link" href="#firm">The Firm</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#products-performance">产品介绍</a>
+                        <a class="nav-link" href="#products">Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#contact">联系我们</a>
+                        <a class="nav-link" href="#operations">Operations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#team">Team</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#contactModal">Contact</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
+
+
     <!-- 首页横幅 -->
-    <header class="hero-section">
+    <header id="home" class="hero-section">
         <div class="container">
             <div class="row min-vh-100 align-items-center">
                 <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold">专业的FOF基金管理</h1>
-                    <p class="lead">以专业视角，为您提供全方位的资产配置解决方案</p>
+                    <h1 class="display-4 fw-bold mb-4" style="font-size: 4rem;">01 Capital</h1>
+                    <p class="lead" style="font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 1.75rem;">Expertise in Selection,Excellence in Performance</p>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- 公司介绍 -->
-    <section id="about" class="py-5 bg-light anchor-fix">
-        <div class="container">
-            <h2 class="text-center mb-5">公司介绍</h2>
-            <div class="row">
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <p>
-                        01 Capital是一家于2024年在开曼群岛注册的顶级投资管理机构，专注于基金中的基金（FOF）投资管理。我们致力于为高净值客户量身定制FOF产品，通过低回撤、高夏普比率及跨周期可持续收益的特征，提供稳健的投资体验。
-                    </p>
-                    <p>
-                        我们搭建了完整的资产配置框架与绩效评估体系，贯穿投资分析、组合运营、风险监控及绩效归因全流程管理。基于不同策略类型的风险收益特征，构建具有清晰风险收益比的均衡投资组合。
-                    </p>
-                    <p>
-                        通过精选境内外顶尖资产管理人，打造多策略、多资产的FOF组合。通过资产配置与策略轮动，动态调整量化对冲、CTA等大类资产配置比例。在复杂市场环境中，严格管控单一资产的敞口方向，通过策略分散降低单一资产波动影响，追求长期稳健收益。
-                    </p>
-                    <p>
-                        我们以多维度方式与全市场顶尖策略管理人展开合作，尤其注重挖掘新兴策略管理人。紧密跟踪量化方法演进带来的新晋管理人与策略，通过动态适应市场环境变化，实现跨周期的持续业绩表现。
-                    </p>
-                </div>
-                <div class="col-lg-6">
-                    <!-- 右侧空白，方便后续放图片 -->
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- 产品介绍与业绩展示 -->
-    <section id="products-performance" class="py-5 anchor-fix">
+    <!-- Firm 公司介绍 -->
+    <section id="firm" class="py-5 anchor-fix">
         <div class="container">
-            <h2 class="text-center mb-5">产品介绍</h2>
-            <div class="row">
-                <!-- 产品列表 -->
-                <div class="col-md-4 mb-4 mb-md-0">
-                    <div class="list-group" id="product-list">
-                        <button class="list-group-item list-group-item-action active" data-product="stable">稳健型FOF</button>
-                        <button class="list-group-item list-group-item-action" data-product="balanced">平衡型FOF</button>
-                        <button class="list-group-item list-group-item-action" data-product="aggressive">进取型FOF</button>
-                    </div>
+            <h2 class="text-center mb-5">The Firm</h2>
+            <div class="row g-4">
+                <!-- 左侧图片 -->
+                <div class="col-lg-4">
+                    <img src="images/sh.jpg" alt="01 Capital" class="img-fluid rounded firm-image">
                 </div>
-                <!-- 业绩展示 -->
-                <div class="col-md-8 products-content-pl">
-                    <div id="product-performance-content">
-                        <!-- 默认展示稳健型FOF -->
-                        <h3>稳健型FOF</h3>
-                        <p>适合追求稳健收益的投资者，通过多元化的资产配置，降低投资风险。主要投资于固定收益类资产，辅以少量权益类资产。</p>
-                        <div class="performance-chart mb-3">
-                            <img src="images/performance-stable.png" alt="稳健型FOF业绩" class="img-fluid">
-                        </div>
-                        <ul class="list-unstyled">
-                            <li>近一年收益率：8.2%</li>
-                            <li>近三年年化收益率：7.5%</li>
-                            <li>成立以来年化收益率：7.1%</li>
+                
+                <!-- 中间 Who We Are 卡片 -->
+                <div class="col-lg-4">
+                    <div class="firm-card h-100">
+                        <h3 class="firm-card-title">What We Do</h3>
+                        <p class="firm-card-content">
+                            We build resilient, multi‑strategy portfolios adapt to markets and compound over cycles.
+                        </p>
+                        <ul class="firm-card-list">
+                            <li>Market‑adaptive rebalancing — Rules‑based, dynamic adjustments.</li>
+                            <li>Rigorous risk control — Explicit drawdown & liquidity guardrails.</li>
+                            <li>Partnership & transparency — Active engagement; daily reconciliations.</li>
                         </ul>
-                        <!-- 平衡型FOF区间切换和图表容器（初始隐藏，js控制显示） -->
-                        <div id="balanced-chart-controls" style="display:none; margin-bottom:16px;">
-                            <button class="btn btn-outline-dark btn-sm me-2" data-range="7">近7天</button>
-                            <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
-                            <button class="btn btn-outline-dark btn-sm" data-range="365">近1年</button>
-                        </div>
-                        <div class="performance-chart mb-3" id="balanced-chart-container" style="display:none;">
-                            <canvas id="balancedChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- 右侧 Mission 卡片 -->
+                <div class="col-lg-4">
+                    <div class="firm-card h-100">
+                        <h3 class="firm-card-title">Mission</h3>
+                        <p class="firm-card-content">
+                            To grow and safeguard our investors' wealth over the long term—compounding through diversified return drivers and remaining resilient across bull and bear markets. We commit to rigorous self‑due‑diligence and institutional discipline: excellence in detail, disciplined risk management, and uncompromising compliance.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Products 产品介绍 -->
+    <section id="products" class="py-5 anchor-fix">
+        <div class="container">
+            <h2 class="text-center mb-5">Products</h2>
+            <div class="row">
+                <!-- 左侧文字介绍 -->
+                <div class="col-lg-5 mb-4 mb-lg-0">
+                    <div class="products-intro">
+                        <h3 class="products-main-title">
+                            <span class="products-title-small">Precise Risk Allocation, ​</span><br>
+                            <span class="products-title-large">​Multi-Strategy</span><br>
+                            <span class="products-title-large">Solutions</span>
+                        </h3>
+                    </div>
+                </div>
+                
+                <!-- 右侧产品列表 -->
+                <div class="col-lg-7">
+                    <div class="products-container">
+                        <div class="products-main-card">
+                            <h3 class="products-card-title">Alpha-Bridge</h3>
+                            <p class="products-card-description">
+                                ​​Diversified Multi-Strategy (90% Arbitrage + 10% Risky Strategy):​​ Balances risk & return for stable long-term growth with robust risk control.
+                            </p>
+                            
+                            <h3 class="products-card-title">Stable-Harbor</h3>
+                            <p class="products-card-description">
+                                ​​Low-Risk Arbitrage:​​ Pursues consistent returns via low-risk arbitrage with strict drawdown control.
+                            </p>
+                            
+                            <h3 class="products-card-title">Deep-Growth</h3>
+                            <p class="products-card-description">
+                                Opportunity Fund (Higher Risk Allocation):​​ Targets 30%+ APY by capturing trends & volatility, tolerating moderate fluctuations.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -114,41 +138,164 @@
         </div>
     </section>
 
-    <!-- 联系方式 -->
-    <section id="contact" class="py-5 bg-light">
+    <!-- Operations 运营管理 -->
+    <section id="operations" class="py-5 anchor-fix">
         <div class="container">
-            <h2 class="text-center mb-5">联系我们</h2>
-            <div class="row">
-                <div class="col-md-6">
-                    <h3>联系方式</h3>
-                    <ul class="list-unstyled">
-                        <li>地址：北京市朝阳区建国门外大街1号</li>
-                        <li>电话：010-8888-8888</li>
-                        <li>邮箱：contact@fof-fund.com</li>
-                    </ul>
+            <h2 class="text-center mb-5">Operations</h2>
+            <div class="row g-4">
+                <!-- 左侧六个卡片 -->
+                <div class="col-lg-8">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="operations-card">
+                                <h4 class="operations-title">Data & Investor Reporting</h4>
+                                <p class="operations-desc">Hourly internal books roll into daily NAV & T+0 investor reports.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="operations-card">
+                                <h4 class="operations-title">Real‑time Risk & P&L Attribution</h4>
+                                <p class="operations-desc">Pre/post-trade leverage limits, exposure monitors & intraday P&L attribution (by strategy/instrument/venue) with breach alerts.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="operations-card">
+                                <h4 class="operations-title">Regulatory & Assurance</h4>
+                                <p class="operations-desc">BVI Approved Manager with full KYC/AML, monitoring & independent audits.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="operations-card">
+                                <h4 class="operations-title">Responsible Investing (Proprietary Incubation)</h4>
+                                <p class="operations-desc">Deploy proprietary capital first; allocate external funds only after 3+ months of proven live performance.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="operations-card">
+                                <h4 class="operations-title">Exchange Partnerships & Infrastructure</h4>
+                                <p class="operations-desc">Deep integrations with 7+ top exchanges & cutting-edge cross-venue execution/settlement/data infrastructure.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="operations-card">
+                                <h4 class="operations-title">Client Solutions & Customization</h4>
+                                <p class="operations-desc">Rapid bespoke mandates & wrappers with defined risk budgets, liquidity terms & reporting.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <form>
+                
+                <!-- 右侧图片 -->
+                <div class="col-lg-4">
+                    <div class="operations-image-container">
+                        <img src="images/IMG_9716.JPG" alt="Operations" class="img-fluid rounded operations-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team 团队介绍 -->
+    <section id="team" class="py-5 bg-light anchor-fix">
+        <div class="container">
+            <h2 class="text-center mb-5">Team</h2>
+            <div class="row g-4">
+                <!-- 左侧图片 -->
+                <div class="col-lg-6">
+                    <div class="team-image-container">
+                        <img src="images/team_2.jpg" alt="Team" class="img-fluid rounded team-image">
+                    </div>
+                </div>
+                
+                <!-- 右侧大卡片 -->
+                <div class="col-lg-6">
+                    <div class="team-main-card">
+                        <p class="team-card-content">
+                            01 Capital is a crypto‑native professional team with 8+ years of proprietary trading experience. We design and operate full‑stack, low‑latency infrastructure for research, execution, and risk, enabling rapid iteration with institutional reliability. Our professionals pair deep markets expertise—including 5+ years at leading exchanges; our risk leaders bring 4+ years of financial risk and assurance experience at EY (Ernst & Young). Together, we unify portfolio management, engineering, compliance, and independent risk oversight to safeguard capital and compound long‑term value.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactModalLabel">Contact Us</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <h6>Get in Touch</h6>
+                        <p class="text-muted mb-2">Email: <a href="mailto:01primelabs@gmail.com" class="text-decoration-none">01primelabs@gmail.com</a></p>
+                    </div>
+                    <form id="contactForm">
                         <div class="mb-3">
-                            <input type="text" class="form-control" placeholder="您的姓名" required>
+                            <label for="contactName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="contactName" placeholder="Your name" required>
                         </div>
                         <div class="mb-3">
-                            <input type="email" class="form-control" placeholder="您的邮箱" required>
+                            <label for="contactEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="contactEmail" placeholder="your.email@example.com" required>
                         </div>
                         <div class="mb-3">
-                            <textarea class="form-control" rows="4" placeholder="您的咨询内容" required></textarea>
+                            <label for="contactMessage" class="form-label">Inquiry Content</label>
+                            <textarea class="form-control" id="contactMessage" rows="4" placeholder="Please describe your inquiry..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">提交咨询</button>
                     </form>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitContactForm()">Send Inquiry</button>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- 页脚 -->
-    <footer class="py-4 bg-dark text-white">
-        <div class="container text-center">
-            <p class="mb-0">© 2024 FOF基金. All rights reserved.</p>
+    <footer class="py-5 bg-dark text-white">
+        <div class="container">
+            <div class="row">
+                <!-- 公司简介 -->
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <p style="max-width: 450px;" class="mt-3">This website is intended solely for professional / institutional investors. The information herein does not constitute an offer to sell or a solicitation of an offer to buy any interests. Past performance is not indicative of future results. Availability of products or services is subject to applicable laws and regulations in relevant jurisdictions.</p>
+                </div>
+                <!-- 合作伙伴 -->
+                <div class="col-md-6">
+                    <h5 class="mb-3 supported-platform-title">Supported Platform</h5>
+                    <div class="partners-grid">
+                        <div class="row g-4">
+                            <div class="col-6">
+                                <div class="partner-logo">
+                                    <img src="images/logo1.png" alt="支持平台1" class="img-fluid logo-1">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="partner-logo">
+                                    <img src="images/logo2.png" alt="支持平台2" class="img-fluid logo-2">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="partner-logo">
+                                    <img src="images/logo3.png" alt="支持平台3" class="img-fluid logo-3">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="partner-logo">
+                                    <img src="images/logo4.png" alt="支持平台4" class="img-fluid logo-4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+            <div class="text-center">
+                <p class="mb-0">©01 Capital. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
