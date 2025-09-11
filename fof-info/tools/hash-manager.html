@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Secret文件管理工具</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="../js/scheme6-encoder.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            border: 2px solid;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+            font-weight: 600;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        .user-data-preview {
+            max-height: 600px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .preview-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .preview-section h4 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .btn-preview {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        .btn-preview:hover {
+            background: #218838;
+            border-color: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Shared Secret文件管理工具</h1>
+        
+        <!-- 1. 密码修改处理流程 - 放在最上面 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>密码修改处理流程</h5>
+            </div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li>管理员生成密码重置邀请链接发送给用户</li>
+                    <li>用户点击链接进入密码重置页面</li>
+                    <li>用户输入新密码并生成Shared Secret</li>
+                    <li>用户将Shared Secret告知管理员</li>
+                    <li>管理员手动更新password.csv文件中的Shared Secret</li>
+                    <li>运行json_upload.py自动处理数据迁移</li>
+                </ol>
+            </div>
+        </div>
+        
+        <!-- 2. Shared Secret生成工具和密码重置邀请链接生成 - 并列排放 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5>Shared Secret生成工具</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="generateHashForm">
+                            <div class="mb-3">
+                                <label for="genUsername" class="form-label">用户名</label>
+                                <input type="text" class="form-control" id="genUsername" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="genPassword" class="form-label">密码</label>
+                                <input type="password" class="form-control" id="genPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="generatedHash" class="form-label">生成的Shared Secret</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="generatedHash" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" id="copyHashButton">复制</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-success" id="generateHashButton">生成Shared Secret</button>
+                        </form>
+
+                        <hr class="my-4">
+
+                        <!-- 逆序Shared Secret恢复工具 -->
+                        <div>
+                            <h6 class="mb-3">逆序Shared Secret恢复</h6>
+                            <form id="reverseHashForm">
+                                <div class="mb-3">
+                                    <label for="reversedSecretInput" class="form-label">从重置页面复制的Shared Secret（逆序）</label>
+                                    <input type="text" class="form-control" id="reversedSecretInput" placeholder="粘贴逆序的Shared Secret">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="recoveredHash" class="form-label">恢复后的原始Shared Secret</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="recoveredHash" readonly>
+                                        <button class="btn btn-outline-secondary" type="button" id="copyRecoveredButton">复制</button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="reverseHashButton">恢复原始顺序</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5>6位编码密码重置链接生成</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="inviteLinkForm">
+                            <div class="mb-3">
+                                <label for="inviteUsername" class="form-label">用户名</label>
+                                <input type="text" class="form-control" id="inviteUsername" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="inviteLink" class="form-label">邀请链接</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="inviteLink" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" id="copyInviteButton">复制</button>
+                                </div>
+                                <div class="form-text">将此6位编码链接发送给用户，用户点击后可直接进入密码重置页面（24小时内有效）</div>
+                            </div>
+                            <div class="mb-3" id="codeInfo" style="display: none;">
+                                <label for="generatedCode" class="form-label">6位编码</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="generatedCode" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" id="copyCodeButton">复制</button>
+                                </div>
+                                <div class="form-text">此编码24小时内有效，用户可通过此编码访问重置页面</div>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="generateInviteButton">生成6位编码链接</button>
+                        </form>
+                        
+                        <!-- 结果显示区域 -->
+                        <div id="result" class="result mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 3. 用户数据预览（包含用户数据和完整预览） -->
+        <div class="card">
+            <div class="card-header">
+                <h5>用户数据预览</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- 左侧：输入表单 -->
+                    <div class="col-md-4">
+                        <form id="previewForm">
+                            <div class="mb-3">
+                                <label for="previewUsername" class="form-label">用户名</label>
+                                <input type="text" class="form-control" id="previewUsername" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="previewHashFile" class="form-label">Shared Secret文件名</label>
+                                <input type="text" class="form-control" id="previewHashFile" required>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="button" class="btn btn-primary" id="previewUserData">预览用户数据</button>
+                                <button type="button" class="btn btn-success" id="previewFullView">完整预览（投资组合概览+收益曲线+明细）</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- 右侧：用户数据预览 -->
+                    <div class="col-md-8">
+                        <div id="userDataPreview" class="user-data-preview">
+                            <p class="text-muted">请输入用户名和Shared Secret文件名来预览用户数据</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 完整预览区域 -->
+        <div id="fullPreviewArea" style="display: none;" class="mt-4">
+            <div class="preview-section">
+                <h4>投资组合概览</h4>
+                <div id="portfolioOverview"></div>
+            </div>
+            
+            <div class="preview-section">
+                <h4>收益曲线</h4>
+                <div class="chart-container">
+                    <canvas id="returnChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="preview-section">
+                <h4>投资组合明细</h4>
+                <div id="portfolioDetails"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 生成Hash值
+        async function generateHash() {
+            const username = document.getElementById('genUsername').value;
+            const password = document.getElementById('genPassword').value;
+            const hashInput = document.getElementById('generatedHash');
+            
+            if (!username || !password) {
+                showResult('请输入用户名和密码', 'error');
+                return;
+            }
+            
+            try {
+                const combined = username.toLowerCase() + ':' + password;
+                const encoder = new TextEncoder();
+                const data = encoder.encode(combined);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                
+                const shortHashArray = hashArray.slice(0, 16);
+                const base64 = btoa(String.fromCharCode.apply(null, shortHashArray))
+                    .replace(/\+/g, '-')
+                    .replace(/\//g, '_')
+                    .replace(/=/g, '');
+                
+                const hashValue = base64;
+                hashInput.value = hashValue;
+                
+                showResult(`Shared Secret生成成功：${hashValue}`, 'success');
+            } catch (error) {
+                showResult('生成Shared Secret时发生错误：' + error.message, 'error');
+            }
+        }
+        
+        // 复制Shared Secret
+        function copyHashToClipboard() {
+            const hashInput = document.getElementById('generatedHash');
+            const copyButton = document.getElementById('copyHashButton');
+            
+            if (!hashInput.value) {
+                showResult('请先生成Shared Secret', 'error');
+                return;
+            }
+            
+            hashInput.select();
+            hashInput.setSelectionRange(0, 99999);
+            
+            try {
+                document.execCommand('copy');
+                copyButton.textContent = '已复制';
+                copyButton.classList.remove('btn-outline-secondary');
+                copyButton.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('btn-success');
+                    copyButton.classList.add('btn-outline-secondary');
+                }, 2000);
+            } catch (err) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(hashInput.value).then(() => {
+                        copyButton.textContent = '已复制';
+                        copyButton.classList.remove('btn-outline-secondary');
+                        copyButton.classList.add('btn-success');
+                        
+                        setTimeout(() => {
+                            copyButton.textContent = '复制';
+                            copyButton.classList.remove('btn-success');
+                            copyButton.classList.add('btn-outline-secondary');
+                        }, 2000);
+                    }).catch(() => {
+                        showResult('复制失败，请手动复制', 'error');
+                    });
+                } else {
+                    showResult('复制失败，请手动复制', 'error');
+                }
+            }
+        }
+        
+        // 逆序字符串（用于恢复Shared Secret）
+        function reverseString(input) {
+            if (typeof input !== 'string') return '';
+            return input.split('').reverse().join('');
+        }
+
+        // 从逆序的 Shared Secret 恢复原始值
+        function recoverOriginalSecret() {
+            const reversedInput = document.getElementById('reversedSecretInput');
+            const recoveredOutput = document.getElementById('recoveredHash');
+            const value = (reversedInput.value || '').trim();
+            if (!value) {
+                showResult('请粘贴逆序的Shared Secret', 'error');
+                return;
+            }
+            const recovered = reverseString(value);
+            recoveredOutput.value = recovered;
+            showResult('已恢复原始Shared Secret', 'success');
+        }
+
+        // 复制恢复后的 Shared Secret
+        function copyRecoveredSecret() {
+            const output = document.getElementById('recoveredHash');
+            const copyButton = document.getElementById('copyRecoveredButton');
+            if (!output.value) {
+                showResult('没有可复制的内容', 'error');
+                return;
+            }
+            output.select();
+            output.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                copyButton.textContent = '已复制';
+                copyButton.classList.remove('btn-outline-secondary');
+                copyButton.classList.add('btn-success');
+                setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('btn-success');
+                    copyButton.classList.add('btn-outline-secondary');
+                }, 2000);
+            } catch (err) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(output.value).then(() => {
+                        copyButton.textContent = '已复制';
+                        copyButton.classList.remove('btn-outline-secondary');
+                        copyButton.classList.add('btn-success');
+                        setTimeout(() => {
+                            copyButton.textContent = '复制';
+                            copyButton.classList.remove('btn-success');
+                            copyButton.classList.add('btn-outline-secondary');
+                        }, 2000);
+                    }).catch(() => {
+                        showResult('复制失败，请手动复制', 'error');
+                    });
+                } else {
+                    showResult('复制失败，请手动复制', 'error');
+                }
+            }
+        }
+        
+        // 预览用户数据
+        async function previewUserData() {
+            const username = document.getElementById('previewUsername').value;
+            let currentHashFile = document.getElementById('previewHashFile').value;
+            const previewDiv = document.getElementById('userDataPreview');
+            
+            if (!username || !currentHashFile) {
+                previewDiv.innerHTML = '<p class="text-danger">请输入用户名和Hash文件名</p>';
+                return;
+            }
+            
+            // 自动添加.json扩展名（如果没有的话）
+            if (!currentHashFile.endsWith('.json')) {
+                currentHashFile += '.json';
+            }
+            
+            try {
+                const response = await fetch(`../data/users/${currentHashFile}?t=${new Date().getTime()}`);
+                if (response.ok) {
+                    const userData = await response.json();
+                    previewDiv.innerHTML = `
+                        <h6>用户信息</h6>
+                        <p><strong>用户名：</strong>${userData.username}</p>
+                        <p><strong>创建时间：</strong>${userData.created_at}</p>
+                        ${userData.password_changed_at ? `<p><strong>密码修改时间：</strong>${userData.password_changed_at}</p>` : ''}
+                        <p><strong>投资数据：</strong></p>
+                        <ul>
+                            <li>Alpha-Bridge: ${userData.investments.balanced ? userData.investments.balanced.length : 0} 条记录</li>
+                            <li>Stable-Harbor-USDT: ${userData.investments.arbitrage ? userData.investments.arbitrage.length : 0} 条记录</li>
+                            <li>Stable-Harbor-BTC: ${userData.investments.arbitrage_coin ? userData.investments.arbitrage_coin.length : 0} 条记录</li>
+                        </ul>
+                        <h6>最新投资数据预览：</h6>
+                        <pre style="font-size: 12px; max-height: 200px; overflow-y: auto;">${JSON.stringify(userData, null, 2)}</pre>
+                    `;
+                } else {
+                    previewDiv.innerHTML = `<p class="text-danger">无法加载用户数据，请检查Hash文件名是否正确</p><p class="text-muted">尝试的文件名：${currentHashFile}</p>`;
+                }
+            } catch (error) {
+                previewDiv.innerHTML = '<p class="text-danger">加载用户数据时发生错误</p>';
+            }
+        }
+        
+        // 完整预览功能
+        async function previewFullView() {
+            const username = document.getElementById('previewUsername').value;
+            let currentHashFile = document.getElementById('previewHashFile').value;
+            
+            if (!username || !currentHashFile) {
+                showResult('请输入用户名和Hash文件名', 'error');
+                return;
+            }
+            
+            // 自动添加.json扩展名（如果没有的话）
+            if (!currentHashFile.endsWith('.json')) {
+                currentHashFile += '.json';
+            }
+            
+            try {
+                const response = await fetch(`../data/users/${currentHashFile}?t=${new Date().getTime()}`);
+                if (response.ok) {
+                    const userData = await response.json();
+                    
+                    // 显示完整预览区域
+                    document.getElementById('fullPreviewArea').style.display = 'block';
+                    
+                    // 生成投资组合概览
+                    generatePortfolioOverview(userData, username);
+                    
+                    // 生成收益曲线
+                    generateReturnChart(userData);
+                    
+                    // 生成投资组合明细
+                    generatePortfolioDetails(userData);
+                    
+                    showResult('完整预览已生成', 'success');
+                } else {
+                    showResult('无法加载用户数据，请检查Hash文件名是否正确', 'error');
+                }
+            } catch (error) {
+                showResult('加载用户数据时发生错误: ' + error.message, 'error');
+            }
+        }
+        
+        // 生成投资组合概览
+        function generatePortfolioOverview(userData, username) {
+            const overviewDiv = document.getElementById('portfolioOverview');
+            
+            // 获取最新数据
+            const balancedLatestData = getLatestData(userData.investments.balanced);
+            const arbitrageLatestData = getLatestData(userData.investments.arbitrage);
+            const arbitrageCoinLatestData = getLatestData(userData.investments.arbitrage_coin);
+            
+            // 计算持仓天数和收益率
+            const balancedStats = calculateStats(userData.investments.balanced);
+            const arbitrageStats = calculateStats(userData.investments.arbitrage);
+            const arbitrageCoinStats = calculateStats(userData.investments.arbitrage_coin);
+            
+            // 按币种分组计算总资产和收益
+            const assetsByCoin = {};
+            
+            if (balancedLatestData && balancedLatestData.principal > 0) {
+                const coin = balancedLatestData.coin;
+                if (!assetsByCoin[coin]) {
+                    assetsByCoin[coin] = {
+                        totalNetNav: 0,
+                        totalNetPnl: 0,
+                        realizedPnl: 0,
+                        unrealizedPnl: 0,
+                        holdingCount: 0
+                    };
+                }
+                assetsByCoin[coin].totalNetNav += balancedLatestData.net_nav;
+                assetsByCoin[coin].totalNetPnl += balancedLatestData.net_pnl;
+                assetsByCoin[coin].realizedPnl += balancedLatestData.realized_pnl;
+                assetsByCoin[coin].unrealizedPnl += balancedLatestData.net_pnl;
+                assetsByCoin[coin].holdingCount++;
+            }
+            
+            if (arbitrageLatestData && arbitrageLatestData.principal > 0) {
+                const coin = arbitrageLatestData.coin;
+                if (!assetsByCoin[coin]) {
+                    assetsByCoin[coin] = {
+                        totalNetNav: 0,
+                        totalNetPnl: 0,
+                        realizedPnl: 0,
+                        unrealizedPnl: 0,
+                        holdingCount: 0
+                    };
+                }
+                assetsByCoin[coin].totalNetNav += arbitrageLatestData.net_nav;
+                assetsByCoin[coin].totalNetPnl += arbitrageLatestData.net_pnl;
+                assetsByCoin[coin].realizedPnl += arbitrageLatestData.realized_pnl;
+                assetsByCoin[coin].unrealizedPnl += arbitrageLatestData.net_pnl;
+                assetsByCoin[coin].holdingCount++;
+            }
+            
+            if (arbitrageCoinLatestData && arbitrageCoinLatestData.principal > 0) {
+                const coin = arbitrageCoinLatestData.coin;
+                if (!assetsByCoin[coin]) {
+                    assetsByCoin[coin] = {
+                        totalNetNav: 0,
+                        totalNetPnl: 0,
+                        realizedPnl: 0,
+                        unrealizedPnl: 0,
+                        holdingCount: 0
+                    };
+                }
+                assetsByCoin[coin].totalNetNav += arbitrageCoinLatestData.net_nav;
+                assetsByCoin[coin].totalNetPnl += arbitrageCoinLatestData.net_pnl;
+                assetsByCoin[coin].realizedPnl += arbitrageCoinLatestData.realized_pnl;
+                assetsByCoin[coin].unrealizedPnl += arbitrageCoinLatestData.net_pnl;
+                assetsByCoin[coin].holdingCount++;
+            }
+            
+            // 生成概览HTML
+            let overviewHtml = '';
+            if (Object.keys(assetsByCoin).length > 0) {
+                const totalHoldingCount = Object.values(assetsByCoin).reduce((sum, data) => sum + data.holdingCount, 0);
+                
+                overviewHtml = `
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td class="fw-bold">总资产</td>
+                                    <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
+                                        `${coin} ${data.totalNetNav.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`
+                                    ).join('&emsp;｜&emsp;')}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">累计收益</td>
+                                    <td class="text-success">${Object.entries(assetsByCoin).map(([coin, data]) => {
+                                        const total = data.realizedPnl + data.unrealizedPnl;
+                                        return `+${coin} ${total.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`;
+                                    }).join('&emsp;｜&emsp;')}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold" style="white-space:nowrap;">已实现收益</td>
+                                    <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
+                                        `${coin} ${data.realizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`
+                                    ).join('&emsp;｜&emsp;')}
+                                    ${getDividendInfo(username)}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold" style="white-space:nowrap;">未实现收益</td>
+                                    <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
+                                        `${coin} ${data.unrealizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`
+                                    ).join('&emsp;｜&emsp;')}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">当前持仓</td>
+                                    <td>${totalHoldingCount}个组合</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                overviewHtml = `
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td class="fw-bold">总资产</td>
+                                    <td>0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">累计收益</td>
+                                    <td>0.00 (0.00%)</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">已实现收益</td>
+                                    <td>0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">未实现收益</td>
+                                    <td>0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">当前持仓</td>
+                                    <td>0个组合</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            overviewDiv.innerHTML = overviewHtml;
+        }
+        
+        // 生成收益曲线
+        function generateReturnChart(userData) {
+            const ctx = document.getElementById('returnChart');
+            if (!ctx) return;
+            
+            // 销毁现有图表
+            if (window.returnChartInstance) {
+                window.returnChartInstance.destroy();
+            }
+            
+            // 工具函数：只保留每月最后一天的数据点
+            function filterToMonthEnd(data) {
+                const grouped = {};
+                data.forEach(item => {
+                    const date = new Date(item.x);
+                    const ym = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    const isLastDayOfMonth = date.getDate() === new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+                    if (!grouped[ym] || isLastDayOfMonth) {
+                        grouped[ym] = {
+                            x: ym,
+                            y: item.y,
+                            isMonthEnd: isLastDayOfMonth
+                        };
+                    }
+                });
+                return Object.values(grouped).sort((a, b) => a.x.localeCompare(b.x));
+            }
+            
+            // 准备数据
+            const balancedReturns = filterToMonthEnd(
+                (userData?.investments?.balanced || [])
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(record => ({
+                        x: formatDateToYMD(record.date),
+                        y: record.total_return * 100
+                    }))
+            );
+            
+            const arbitrageReturns = filterToMonthEnd(
+                (userData?.investments?.arbitrage || [])
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(record => ({
+                        x: formatDateToYMD(record.date),
+                        y: record.total_return * 100
+                    }))
+            );
+            
+            const arbitrageCoinReturns = filterToMonthEnd(
+                (userData?.investments?.arbitrage_coin || [])
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(record => ({
+                        x: formatDateToYMD(record.date),
+                        y: record.total_return * 100
+                    }))
+            );
+            
+            // 准备图表数据
+            const datasets = [];
+            if (balancedReturns.length > 0) {
+                const lastPointIsMonthEnd = balancedReturns[balancedReturns.length - 1].isMonthEnd;
+                datasets.push({
+                    label: 'Alpha-Bridge',
+                    data: balancedReturns,
+                    borderColor: '#1a2530',
+                    backgroundColor: 'rgba(26,37,48,0.1)',
+                    tension: 0.2,
+                    fill: false,
+                    segment: {
+                        borderDash: ctx => {
+                            if (ctx.p1DataIndex === balancedReturns.length - 1 && !lastPointIsMonthEnd) {
+                                return [5, 5];
+                            }
+                            return [];
+                        }
+                    }
+                });
+            }
+            if (arbitrageReturns.length > 0) {
+                const lastPointIsMonthEnd = arbitrageReturns[arbitrageReturns.length - 1].isMonthEnd;
+                datasets.push({
+                    label: 'Stable-Harbor-USDT',
+                    data: arbitrageReturns,
+                    borderColor: '#4a90e2',
+                    backgroundColor: 'rgba(74,144,226,0.1)',
+                    tension: 0.2,
+                    fill: false,
+                    segment: {
+                        borderDash: ctx => {
+                            if (ctx.p1DataIndex === arbitrageReturns.length - 1 && !lastPointIsMonthEnd) {
+                                return [5, 5];
+                            }
+                            return [];
+                        }
+                    }
+                });
+            }
+            if (arbitrageCoinReturns.length > 0) {
+                const lastPointIsMonthEnd = arbitrageCoinReturns[arbitrageCoinReturns.length - 1].isMonthEnd;
+                datasets.push({
+                    label: 'Stable-Harbor-BTC',
+                    data: arbitrageCoinReturns,
+                    borderColor: '#f39c12',
+                    backgroundColor: 'rgba(243,156,18,0.1)',
+                    tension: 0.2,
+                    fill: false,
+                    segment: {
+                        borderDash: ctx => {
+                            if (ctx.p1DataIndex === arbitrageCoinReturns.length - 1 && !lastPointIsMonthEnd) {
+                                return [5, 5];
+                            }
+                            return [];
+                        }
+                    }
+                });
+            }
+            
+            // 创建图表
+            window.returnChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'category',
+                            title: {
+                                display: true,
+                                text: '时间'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '累计收益率 (%)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toFixed(2) + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 生成投资组合明细
+        function generatePortfolioDetails(userData) {
+            const detailsDiv = document.getElementById('portfolioDetails');
+            
+            // 获取最新数据和统计数据
+            const balancedLatestData = getLatestData(userData.investments.balanced);
+            const arbitrageLatestData = getLatestData(userData.investments.arbitrage);
+            const arbitrageCoinLatestData = getLatestData(userData.investments.arbitrage_coin);
+            
+            const balancedStats = calculateStats(userData.investments.balanced);
+            const arbitrageStats = calculateStats(userData.investments.arbitrage);
+            const arbitrageCoinStats = calculateStats(userData.investments.arbitrage_coin);
+            
+            const detailsHtml = `
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>产品名称</th>
+                                <th>币种</th>
+                                <th>本金</th>
+                                <th>当前价值</th>
+                                <th>收益率</th>
+                                <th>持仓天数</th>
+                                <th>年化收益率</th>
+                                <th>数据日期</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Alpha-Bridge</td>
+                                <td>${balancedLatestData ? balancedLatestData.coin : 'USDT'}</td>
+                                <td>${balancedLatestData ? balancedLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${balancedLatestData ? balancedLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${balancedStats.returnRate ? balancedStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${balancedStats.holdingDays}</td>
+                                <td>${balancedStats.annualizedReturn ? balancedStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-'}</td>
+                            </tr>
+                            <tr>
+                                <td>Stable-Harbor-USDT</td>
+                                <td>${arbitrageLatestData ? arbitrageLatestData.coin : 'USDT'}</td>
+                                <td>${arbitrageLatestData ? arbitrageLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${arbitrageLatestData ? arbitrageLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${arbitrageStats.returnRate ? arbitrageStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${arbitrageStats.holdingDays}</td>
+                                <td>${arbitrageStats.annualizedReturn ? arbitrageStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : '-'}</td>
+                            </tr>
+                            <tr>
+                                <td>Stable-Harbor-BTC</td>
+                                <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.coin : 'BTC'}</td>
+                                <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${arbitrageCoinStats.returnRate ? arbitrageCoinStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${arbitrageCoinStats.holdingDays}</td>
+                                <td>${arbitrageCoinStats.annualizedReturn ? arbitrageCoinStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${arbitrageCoinLatestData ? formatDateToYMD(arbitrageCoinLatestData.date) : '-'}</td>
+                            </tr>
+                            <tr>
+                                <td>Deep-Growth</td>
+                                <td>USDT</td>
+                                <td>0.00</td>
+                                <td>0.00</td>
+                                <td>0.00%</td>
+                                <td>0</td>
+                                <td>0.00%</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            detailsDiv.innerHTML = detailsHtml;
+        }
+        
+        // 辅助函数
+        function getLatestData(data) {
+            if (!data || data.length === 0) return null;
+            return data.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        }
+        
+        function calculateStats(data) {
+            if (!data || data.length === 0) {
+                return {
+                    returnRate: '0.00',
+                    holdingDays: 0,
+                    annualizedReturn: '0.00'
+                };
+            }
+            
+            const latestData = data.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            const firstData = data.sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+            
+            const holdingDays = Math.ceil(
+                (new Date(latestData.date) - new Date(firstData.date)) / (1000 * 60 * 60 * 24)
+            ) + 1;
+            
+            const returnRate = latestData.total_return !== undefined ? 
+                (latestData.total_return * 100).toFixed(2) : '0.00';
+            
+            const annualizedReturn = calculateAnnualizedReturn(parseFloat(returnRate), holdingDays);
+            
+            return {
+                returnRate,
+                holdingDays,
+                annualizedReturn
+            };
+        }
+        
+        function calculateAnnualizedReturn(returnRate, days) {
+            if (!days || days <= 0) return '0.00';
+            return ((Math.pow(1 + returnRate/100, 365/days) - 1) * 100).toFixed(2);
+        }
+        
+        function formatDateToYMD(dateString) {
+            const date = new Date(dateString);
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+        
+        function getDividendInfo(username) {
+            const user = username && username.toLowerCase();
+            if (["octopus", "sam", "jennifer", "alex"].includes(user)) {
+                return '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-01-06）</span>';
+            } else if (["bon", "ying", "tt"].includes(user)) {
+                return '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-07-04）</span>';
+            }
+            return '';
+        }
+        
+        // 密码修改处理功能已移除 - 现在通过手动更新password.csv文件实现
+        
+        // 文件列表功能已移除
+        
+        function showResult(message, type) {
+            console.log('showResult 被调用:', message, type);
+            const resultDiv = document.getElementById('result');
+            console.log('resultDiv 元素:', resultDiv);
+            
+            if (resultDiv) {
+                resultDiv.innerHTML = message;
+                resultDiv.className = `result ${type}`;
+                resultDiv.style.display = 'block';
+                console.log('结果已显示');
+            } else {
+                console.error('找不到 result 元素');
+            }
+        }
+        
+        // 生成6位编码邀请链接
+        async function generateInviteLink() {
+            console.log('generateInviteLink 被调用');
+            
+            const username = document.getElementById('inviteUsername').value;
+            const inviteLinkInput = document.getElementById('inviteLink');
+            const codeInfo = document.getElementById('codeInfo');
+            const generatedCodeInput = document.getElementById('generatedCode');
+            
+            console.log('用户名:', username);
+            console.log('编码器加载状态:', window.scheme6Encoder ? '已加载' : '未加载');
+            
+            if (!username) {
+                showResult('请输入用户名', 'error');
+                return;
+            }
+            
+            // 生成6位编码链接
+            try {
+                if (!window.scheme6Encoder) {
+                    showResult('编码器未加载，请刷新页面重试', 'error');
+                    return;
+                }
+                
+                // 等待编码器加载完成
+                let attempts = 0;
+                while (!window.scheme6Encoder.isLoaded && attempts < 10) {
+                    console.log(`等待编码器加载... 尝试 ${attempts + 1}/10`);
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    attempts++;
+                }
+                
+                if (!window.scheme6Encoder.isLoaded) {
+                    showResult('编码器加载超时，请刷新页面重试', 'error');
+                    return;
+                }
+                
+                console.log('开始生成6位编码链接...');
+                const resetLink = window.scheme6Encoder.generateResetLink(username);
+                console.log('生成结果:', resetLink);
+                
+                inviteLinkInput.value = resetLink.link;
+                generatedCodeInput.value = resetLink.code;
+                codeInfo.style.display = 'block';
+                
+                showResult(`6位编码链接生成成功！编码：${resetLink.code}，24小时内有效`, 'success');
+            } catch (error) {
+                console.error('生成6位编码失败:', error);
+                console.log('错误类型:', typeof error);
+                console.log('错误消息:', error.message);
+                
+                // 检查是否是用户不存在的错误
+                if (error.message && error.message.includes('不存在')) {
+                    console.log('检测到用户不存在错误');
+                    showResult(`❌ 用户不存在：${error.message}。请检查用户名是否正确。`, 'error');
+                } else {
+                    console.log('其他类型错误');
+                    showResult(`生成6位编码失败：${error.message || '未知错误'}`, 'error');
+                }
+            }
+        }
+        
+        // 复制邀请链接
+        function copyInviteLink() {
+            const inviteLinkInput = document.getElementById('inviteLink');
+            const copyButton = document.getElementById('copyInviteButton');
+            
+            if (!inviteLinkInput.value) {
+                showResult('请先生成邀请链接', 'error');
+                return;
+            }
+            
+            inviteLinkInput.select();
+            inviteLinkInput.setSelectionRange(0, 99999);
+            
+            try {
+                document.execCommand('copy');
+                copyButton.textContent = '已复制';
+                copyButton.classList.remove('btn-outline-secondary');
+                copyButton.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('btn-success');
+                    copyButton.classList.add('btn-outline-secondary');
+                }, 2000);
+            } catch (err) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(inviteLinkInput.value).then(() => {
+                        copyButton.textContent = '已复制';
+                        copyButton.classList.remove('btn-outline-secondary');
+                        copyButton.classList.add('btn-success');
+                        
+                        setTimeout(() => {
+                            copyButton.textContent = '复制';
+                            copyButton.classList.remove('btn-success');
+                            copyButton.classList.add('btn-outline-secondary');
+                        }, 2000);
+                    }).catch(() => {
+                        showResult('复制失败，请手动复制', 'error');
+                    });
+                } else {
+                    showResult('复制失败，请手动复制', 'error');
+                }
+            }
+        }
+        
+        // 复制6位编码
+        function copyCodeToClipboard() {
+            const codeInput = document.getElementById('generatedCode');
+            const copyButton = document.getElementById('copyCodeButton');
+            
+            if (!codeInput.value) {
+                showResult('请先生成6位编码', 'error');
+                return;
+            }
+            
+            codeInput.select();
+            codeInput.setSelectionRange(0, 99999);
+            
+            try {
+                document.execCommand('copy');
+                copyButton.textContent = '已复制';
+                copyButton.classList.remove('btn-outline-secondary');
+                copyButton.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('btn-success');
+                    copyButton.classList.add('btn-outline-secondary');
+                }, 2000);
+            } catch (err) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(codeInput.value).then(() => {
+                        copyButton.textContent = '已复制';
+                        copyButton.classList.remove('btn-outline-secondary');
+                        copyButton.classList.add('btn-success');
+                        
+                        setTimeout(() => {
+                            copyButton.textContent = '复制';
+                            copyButton.classList.remove('btn-success');
+                            copyButton.classList.add('btn-outline-secondary');
+                        }, 2000);
+                    }).catch(() => {
+                        showResult('复制失败，请手动复制', 'error');
+                    });
+                } else {
+                    showResult('复制失败，请手动复制', 'error');
+                }
+            }
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成');
+            console.log('编码器加载状态:', window.scheme6Encoder ? '已加载' : '未加载');
+            
+            // 测试按钮点击
+            const testButton = document.getElementById('generateInviteButton');
+            console.log('测试按钮元素:', testButton);
+            
+            // 等待编码器加载
+            setTimeout(() => {
+                console.log('延迟检查编码器状态:', window.scheme6Encoder ? '已加载' : '未加载');
+                if (window.scheme6Encoder) {
+                    console.log('编码器加载成功');
+                } else {
+                    console.error('编码器加载失败');
+                }
+            }, 1000);
+        });
+
+        // 绑定事件
+        document.getElementById('generateHashForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateHash();
+        });
+        
+        document.getElementById('generateHashButton').addEventListener('click', generateHash);
+        document.getElementById('copyHashButton').addEventListener('click', copyHashToClipboard);
+        // 密码修改表单事件监听器已移除
+        document.getElementById('previewUserData').addEventListener('click', previewUserData);
+        document.getElementById('previewFullView').addEventListener('click', previewFullView);
+        // 文件列表刷新事件监听器已移除
+        
+        // 绑定邀请链接生成按钮
+        const generateInviteButton = document.getElementById('generateInviteButton');
+        if (generateInviteButton) {
+            console.log('绑定generateInviteButton事件');
+            generateInviteButton.addEventListener('click', function(e) {
+                console.log('generateInviteButton 被点击');
+                e.preventDefault();
+                generateInviteLink();
+            });
+        } else {
+            console.error('找不到generateInviteButton元素');
+        }
+        
+        document.getElementById('copyInviteButton').addEventListener('click', copyInviteLink);
+        document.getElementById('copyCodeButton').addEventListener('click', copyCodeToClipboard);
+        document.getElementById('reverseHashButton').addEventListener('click', recoverOriginalSecret);
+        document.getElementById('copyRecoveredButton').addEventListener('click', copyRecoveredSecret);
+    </script>
+</body>
+</html>

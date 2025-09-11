@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>方案6：6位编码系统演示</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .demo-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .result {
+            background: #e8f4fd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        .code-display {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">方案6：6位编码系统演示</h1>
+        <p class="text-muted">简化版可逆编码系统，24小时有效时限</p>
+        
+        <!-- 1. 编码演示 -->
+        <div class="demo-box">
+            <h3>1. 生成6位编码</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="encodeUsername" class="form-label">用户名</label>
+                        <input type="text" class="form-control" id="encodeUsername" placeholder="输入用户名">
+                    </div>
+                    <button class="btn btn-primary" onclick="generateCode()">生成6位编码</button>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="generatedCode" class="form-label">生成的6位编码</label>
+                        <div class="code-display" id="generatedCode">点击生成</div>
+                    </div>
+                    <button class="btn btn-outline-secondary" onclick="copyCode()">复制编码</button>
+                </div>
+            </div>
+            <div id="encodeResult"></div>
+        </div>
+
+        <!-- 2. 解码演示 -->
+        <div class="demo-box">
+            <h3>2. 解码验证</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="decodeCode" class="form-label">6位编码</label>
+                        <input type="text" class="form-control" id="decodeCode" placeholder="输入6位编码" maxlength="6">
+                    </div>
+                    <button class="btn btn-success" onclick="decodeCode()">解码验证</button>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="decodedUser" class="form-label">解码结果</label>
+                        <div class="code-display" id="decodedUser">等待解码</div>
+                    </div>
+                </div>
+            </div>
+            <div id="decodeResult"></div>
+        </div>
+
+        <!-- 3. 批量测试 -->
+        <div class="demo-box">
+            <h3>3. 批量测试</h3>
+            <button class="btn btn-info" onclick="runBatchTest()">运行批量测试</button>
+            <div id="batchResult"></div>
+        </div>
+
+        <!-- 4. 时效测试 -->
+        <div class="demo-box">
+            <h3>4. 时效测试</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <button class="btn btn-warning" onclick="testExpiry()">测试过期编码</button>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-secondary" onclick="testValidCode()">测试有效编码</button>
+                </div>
+            </div>
+            <div id="expiryResult"></div>
+        </div>
+
+        <!-- 5. 系统信息 -->
+        <div class="demo-box">
+            <h3>5. 系统信息</h3>
+            <div id="systemInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        // 方案6核心实现
+        class Scheme6Encoder {
+            constructor() {
+                // 固定盐值
+                this.FIXED_SALT = "Reset2024!@#";
+                // 有效时限（24小时）
+                this.VALID_HOURS = 24;
+                // 模拟password.csv中的用户列表
+                this.USERS = [
+                    'miao', 'chao', 'bon', 'octopus', 'sam', 
+                    'jennifer', 'alex', 'ying', 'tt', 'john', 
+                    'alice', 'bob', 'test'
+                ];
+            }
+
+            // 简单哈希函数
+            simpleHash(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // 转换为32位整数
+                }
+                return Math.abs(hash);
+            }
+
+            // 生成6位编码
+            generateCode(username, timestamp = null) {
+                if (!timestamp) {
+                    timestamp = Math.floor(Date.now() / 1000);
+                }
+                
+                // 截断时间戳到小时级别（去掉分钟和秒）
+                const hourTimestamp = Math.floor(timestamp / 3600) * 3600;
+                
+                // 确保用户名小写
+                const lowerUsername = username.toLowerCase();
+                const combined = lowerUsername + this.FIXED_SALT + hourTimestamp;
+                const hash = this.simpleHash(combined);
+                const code = hash.toString(36).substring(0, 6).toUpperCase();
+                
+                console.log('生成编码 - 输入用户名:', username);
+                console.log('生成编码 - 小写用户名:', lowerUsername);
+                console.log('生成编码 - 原始时间戳:', timestamp);
+                console.log('生成编码 - 小时时间戳:', hourTimestamp);
+                console.log('生成编码 - 组合字符串:', combined);
+                console.log('生成编码 - 哈希值:', hash);
+                console.log('生成编码 - 最终编码:', code);
+                
+                return {
+                    code: code,
+                    timestamp: hourTimestamp,
+                    expiresAt: hourTimestamp + (this.VALID_HOURS * 3600),
+                    username: lowerUsername
+                };
+            }
+
+            // 解码验证
+            decodeCode(inputCode) {
+                const currentTime = Math.floor(Date.now() / 1000);
+                const upperCode = inputCode.toUpperCase();
+                
+                console.log('解码函数 - 输入编码:', upperCode);
+                console.log('解码函数 - 当前时间戳:', currentTime);
+                console.log('解码函数 - 用户列表:', this.USERS);
+                
+                // 遍历所有用户
+                for (const username of this.USERS) {
+                    console.log('检查用户:', username);
+                    
+                    // 检查最近24小时内的编码，按小时检查
+                    for (let hours = 0; hours <= this.VALID_HOURS; hours++) {
+                        const checkTime = currentTime - (hours * 3600);
+                        const expected = this.generateCode(username, checkTime);
+                        
+                        console.log(`  检查时间: ${checkTime} (${hours}小时前), 生成编码: ${expected.code}`);
+                        
+                        if (expected.code === upperCode) {
+                            const isValid = checkTime + (this.VALID_HOURS * 3600) >= currentTime;
+                            console.log('找到匹配! 是否有效:', isValid);
+                            return {
+                                success: true,
+                                username: username,
+                                isValid: isValid,
+                                generatedAt: new Date(checkTime * 1000),
+                                expiresAt: new Date(expected.expiresAt * 1000),
+                                hoursRemaining: Math.max(0, Math.floor((expected.expiresAt - currentTime) / 3600))
+                            };
+                        }
+                    }
+                }
+                
+                console.log('未找到匹配的编码');
+                return {
+                    success: false,
+                    message: "编码无效或已过期"
+                };
+            }
+
+            // 检查用户是否存在
+            userExists(username) {
+                return this.USERS.includes(username.toLowerCase());
+            }
+
+            // 获取系统信息
+            getSystemInfo() {
+                return {
+                    validHours: this.VALID_HOURS,
+                    totalUsers: this.USERS.length,
+                    users: this.USERS,
+                    salt: this.FIXED_SALT.substring(0, 8) + "...",
+                    currentTime: new Date().toLocaleString()
+                };
+            }
+        }
+
+        // 创建编码器实例
+        const encoder = new Scheme6Encoder();
+
+        // 生成编码
+        function generateCode() {
+            const username = document.getElementById('encodeUsername').value.trim();
+            const codeDisplay = document.getElementById('generatedCode');
+            const resultDiv = document.getElementById('encodeResult');
+            
+            if (!username) {
+                showResult('请输入用户名', 'error', 'encodeResult');
+                return;
+            }
+
+            if (!encoder.userExists(username)) {
+                showResult(`用户 "${username}" 不存在于系统中`, 'error', 'encodeResult');
+                return;
+            }
+
+            // 添加调试信息
+            console.log('生成编码 - 输入用户名:', username);
+            console.log('用户是否存在:', encoder.userExists(username));
+            
+            const result = encoder.generateCode(username);
+            console.log('生成结果:', result);
+            
+            codeDisplay.textContent = result.code;
+            
+            const message = `
+                <strong>编码生成成功！</strong><br>
+                用户名: ${result.username}<br>
+                6位编码: ${result.code}<br>
+                生成时间: ${new Date(result.timestamp * 1000).toLocaleString()}<br>
+                过期时间: ${new Date(result.expiresAt * 1000).toLocaleString()}<br>
+                有效时长: ${encoder.VALID_HOURS} 小时
+            `;
+            showResult(message, 'success', 'encodeResult');
+        }
+
+        // 解码验证
+        function decodeCode() {
+            const inputCode = document.getElementById('decodeCode').value.trim();
+            const userDisplay = document.getElementById('decodedUser');
+            const resultDiv = document.getElementById('decodeResult');
+            
+            if (!inputCode) {
+                showResult('请输入6位编码', 'error', 'decodeResult');
+                return;
+            }
+
+            if (inputCode.length !== 6) {
+                showResult('编码长度必须为6位', 'error', 'decodeResult');
+                return;
+            }
+
+            // 添加调试信息
+            console.log('尝试解码:', inputCode);
+            console.log('当前时间:', new Date().toLocaleString());
+            console.log('当前时间戳:', Math.floor(Date.now() / 1000));
+            
+            const result = encoder.decodeCode(inputCode);
+            console.log('解码结果:', result);
+            console.log('解码成功:', result.success);
+            console.log('是否有效:', result.isValid);
+            console.log('用户名:', result.username);
+            
+            if (result.success) {
+                userDisplay.textContent = result.username;
+                
+                if (result.isValid) {
+                    const message = `
+                        <strong>解码成功！</strong><br>
+                        用户名: ${result.username}<br>
+                        生成时间: ${result.generatedAt.toLocaleString()}<br>
+                        过期时间: ${result.expiresAt.toLocaleString()}<br>
+                        剩余时间: ${result.hoursRemaining} 小时
+                    `;
+                    showResult(message, 'success', 'decodeResult');
+                } else {
+                    const message = `
+                        <strong>编码已过期！</strong><br>
+                        用户名: ${result.username}<br>
+                        生成时间: ${result.generatedAt.toLocaleString()}<br>
+                        过期时间: ${result.expiresAt.toLocaleString()}<br>
+                        <span class="text-danger">此编码已超过24小时有效期</span>
+                    `;
+                    showResult(message, 'error', 'decodeResult');
+                }
+            } else {
+                userDisplay.textContent = '无效编码';
+                showResult(result.message, 'error', 'decodeResult');
+            }
+        }
+
+        // 批量测试
+        function runBatchTest() {
+            const resultDiv = document.getElementById('batchResult');
+            let results = '<h5>批量测试结果:</h5>';
+            
+            const testUsers = ['miao', 'chao', 'bon', 'nonexistent'];
+            
+            testUsers.forEach(username => {
+                if (encoder.userExists(username)) {
+                    const codeResult = encoder.generateCode(username);
+                    const decodeResult = encoder.decodeCode(codeResult.code);
+                    
+                    results += `
+                        <div class="result">
+                            <strong>用户:</strong> ${username}<br>
+                            <strong>编码:</strong> ${codeResult.code}<br>
+                            <strong>解码:</strong> ${decodeResult.success ? decodeResult.username : '失败'}<br>
+                            <strong>状态:</strong> ${decodeResult.success ? '✓ 成功' : '✗ 失败'}
+                        </div>
+                    `;
+                } else {
+                    results += `
+                        <div class="result error">
+                            <strong>用户:</strong> ${username}<br>
+                            <strong>状态:</strong> ✗ 用户不存在
+                        </div>
+                    `;
+                }
+            });
+            
+            resultDiv.innerHTML = results;
+        }
+
+        // 测试过期编码
+        function testExpiry() {
+            const resultDiv = document.getElementById('expiryResult');
+            
+            // 生成一个25小时前的编码（已过期）
+            const oldTimestamp = Math.floor(Date.now() / 1000) - (25 * 3600);
+            const expiredCode = encoder.generateCode('miao', oldTimestamp);
+            
+            const decodeResult = encoder.decodeCode(expiredCode.code);
+            
+            let message = `
+                <strong>过期编码测试:</strong><br>
+                原始编码: ${expiredCode.code}<br>
+                生成时间: ${new Date(expiredCode.timestamp * 1000).toLocaleString()}<br>
+                当前时间: ${new Date().toLocaleString()}<br>
+                时间差: ${Math.floor((Date.now() / 1000 - expiredCode.timestamp) / 3600)} 小时<br>
+                解码结果: ${decodeResult.success ? decodeResult.username : '失败'}<br>
+                是否有效: ${decodeResult.success && decodeResult.isValid ? '✓ 有效' : '✗ 已过期'}
+            `;
+            
+            showResult(message, decodeResult.success && decodeResult.isValid ? 'success' : 'error', 'expiryResult');
+        }
+
+        // 测试有效编码
+        function testValidCode() {
+            const resultDiv = document.getElementById('expiryResult');
+            
+            // 生成一个1小时前的编码（仍然有效）
+            const recentTimestamp = Math.floor(Date.now() / 1000) - (1 * 3600);
+            const validCode = encoder.generateCode('chao', recentTimestamp);
+            
+            const decodeResult = encoder.decodeCode(validCode.code);
+            
+            let message = `
+                <strong>有效编码测试:</strong><br>
+                原始编码: ${validCode.code}<br>
+                生成时间: ${new Date(validCode.timestamp * 1000).toLocaleString()}<br>
+                当前时间: ${new Date().toLocaleString()}<br>
+                时间差: ${Math.floor((Date.now() / 1000 - validCode.timestamp) / 3600)} 小时<br>
+                解码结果: ${decodeResult.success ? decodeResult.username : '失败'}<br>
+                是否有效: ${decodeResult.success && decodeResult.isValid ? '✓ 有效' : '✗ 已过期'}
+            `;
+            
+            showResult(message, decodeResult.success && decodeResult.isValid ? 'success' : 'error', 'expiryResult');
+        }
+
+        // 显示系统信息
+        function showSystemInfo() {
+            const info = encoder.getSystemInfo();
+            const infoDiv = document.getElementById('systemInfo');
+            
+            infoDiv.innerHTML = `
+                <div class="result">
+                    <strong>系统配置:</strong><br>
+                    有效时限: ${info.validHours} 小时<br>
+                    用户总数: ${info.totalUsers} 个<br>
+                    用户列表: ${info.users.join(', ')}<br>
+                    固定盐: ${info.salt}<br>
+                    当前时间: ${info.currentTime}
+                </div>
+            `;
+        }
+
+        // 复制编码
+        function copyCode() {
+            const codeDisplay = document.getElementById('generatedCode');
+            const code = codeDisplay.textContent;
+            
+            if (code === '点击生成') {
+                showResult('请先生成编码', 'error', 'encodeResult');
+                return;
+            }
+            
+            navigator.clipboard.writeText(code).then(() => {
+                showResult('编码已复制到剪贴板', 'success', 'encodeResult');
+            }).catch(() => {
+                showResult('复制失败，请手动复制', 'error', 'encodeResult');
+            });
+        }
+
+        // 显示结果
+        function showResult(message, type, elementId) {
+            const resultDiv = document.getElementById(elementId);
+            resultDiv.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        // 页面加载时显示系统信息
+        window.onload = function() {
+            showSystemInfo();
+        };
+    </script>
+</body>
+</html>

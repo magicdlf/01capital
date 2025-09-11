@@ -2693,3 +2693,5 @@ document.addEventListener('DOMContentLoaded', function() {
         addConversionRowBtn.addEventListener('click', addConversionRow);
     }
 });
+
+// 密码修改功能已移除 - 现在使用邀请链接方式
