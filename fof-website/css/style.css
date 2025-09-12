@@ -207,17 +207,17 @@ footer {
 
 .partner-logo {
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 0.75rem;
+    border-radius: 6px;
+    padding: 0.3rem;
     text-align: center;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    height: 60px;
+    border: 0.5px solid rgba(255, 255, 255, 0.15);
+    height: 40px;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 60px;
+    min-height: 40px;
 }
 
 .partner-logo:hover {
@@ -266,8 +266,8 @@ footer {
 /* 响应式调整 */
 @media (max-width: 768px) {
     .partner-logo {
-        height: 50px;
-        padding: 0.5rem;
+        height: 35px;
+        padding: 0.25rem;
     }
 }
 
