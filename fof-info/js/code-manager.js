@@ -9,13 +9,17 @@ class CodeManager {
         const currentPath = window.location.pathname;
         if (currentPath.includes('/tools/')) {
             this.codesDir = '../data/codes/';
+            this.configPath = '../data/codes-config.json';
         } else {
             this.codesDir = 'data/codes/';
+            this.configPath = 'data/codes-config.json';
         }
         this.codeLength = 8;
         this.validChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         // 缓存用户名到编码的映射
         this.usernameToCodeCache = null;
+        // 缓存的编码列表
+        this.cachedCodes = null;
     }
 
     /**
@@ -34,6 +38,22 @@ class CodeManager {
      */
     getCodeFilePath(code) {
         return `${this.codesDir}${code}.json`;
+    }
+
+    /**
+     * 加载编码配置文件
+     */
+    async loadCodesConfig() {
+        try {
+            const response = await fetch(`${this.configPath}?t=${new Date().getTime()}`);
+            if (!response.ok) {
+                throw new Error(`加载配置文件失败: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('加载编码配置文件失败:', error);
+            return null;
+        }
     }
 
     /**
@@ -129,7 +149,36 @@ class CodeManager {
     }
 
     /**
-     * 动态扫描所有编码文件，建立用户名到编码的映射
+     * 获取编码列表（从配置文件加载）
+     */
+    async getCodesList() {
+        try {
+            // 如果缓存存在且未过期（5分钟缓存），直接返回
+            if (this.cachedCodes && (Date.now() - this.cachedCodes.timestamp) < 300000) {
+                return this.cachedCodes.codes;
+            }
+
+            const config = await this.loadCodesConfig();
+            if (!config || !config.codes) {
+                console.error('配置文件格式错误或为空');
+                return [];
+            }
+
+            // 缓存结果
+            this.cachedCodes = {
+                codes: config.codes,
+                timestamp: Date.now()
+            };
+
+            return config.codes;
+        } catch (error) {
+            console.error('获取编码列表失败:', error);
+            return [];
+        }
+    }
+
+    /**
+     * 扫描所有编码文件，建立用户名到编码的映射
      */
     async scanUserCodes() {
         try {
@@ -138,18 +187,10 @@ class CodeManager {
                 return this.usernameToCodeCache.mapping;
             }
 
-            // 获取所有编码文件列表
-            const response = await fetch(`${this.codesDir}?t=${new Date().getTime()}`);
-            if (!response.ok) {
-                throw new Error('无法获取编码文件列表');
-            }
-
-            const html = await response.text();
-            // 解析HTML中的文件链接，提取.json文件名
-            const fileMatches = html.match(/href="([A-Z0-9]+\.json)"/g);
-            
-            if (!fileMatches) {
-                console.log('未找到任何编码文件');
+            // 获取编码列表
+            const codesList = await this.getCodesList();
+            if (codesList.length === 0) {
+                console.log('未找到任何编码');
                 return {};
             }
 
@@ -157,10 +198,7 @@ class CodeManager {
             const duplicateUsers = [];
             
             // 并行加载所有编码文件
-            const loadPromises = fileMatches.map(async (match) => {
-                const filename = match.match(/href="([A-Z0-9]+\.json)"/)[1];
-                const code = filename.replace('.json', '');
-                
+            const loadPromises = codesList.map(async (code) => {
                 try {
                     const codeData = await this.loadCodeFile(code);
                     if (codeData && codeData.username) {
@@ -177,7 +215,7 @@ class CodeManager {
                         mapping[username] = code;
                     }
                 } catch (error) {
-                    console.warn(`加载编码文件 ${filename} 失败:`, error);
+                    console.warn(`加载编码文件 ${code}.json 失败:`, error);
                 }
             });
 
@@ -190,6 +228,7 @@ class CodeManager {
                 timestamp: Date.now()
             };
 
+            console.log('扫描结果:', mapping);
             return mapping;
         } catch (error) {
             console.error('扫描用户编码失败:', error);
