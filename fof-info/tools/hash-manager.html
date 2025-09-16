@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-    <script src="../js/scheme6-encoder.js"></script>
+    <script src="../js/code-manager.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -101,12 +101,12 @@
             </div>
             <div class="card-body">
                 <ol class="mb-0">
-                    <li>管理员生成密码重置邀请链接发送给用户</li>
+                    <li>管理员在下方工具中输入用户名，系统自动匹配预设的8位编码</li>
+                    <li>管理员将生成的邀请链接发送给用户</li>
                     <li>用户点击链接进入密码重置页面</li>
                     <li>用户输入新密码并生成Shared Secret</li>
                     <li>用户将Shared Secret告知管理员</li>
-                    <li>管理员手动更新password.csv文件中的Shared Secret</li>
-                    <li>运行json_upload.py自动处理数据迁移</li>
+                    <li>管理员手动更新用户数据文件中的Shared Secret</li>
                 </ol>
             </div>
         </div>
@@ -165,31 +165,31 @@
             <div class="col-md-6">
                 <div class="card h-100">
                     <div class="card-header">
-                        <h5>6位编码密码重置链接生成</h5>
+                        <h5>密码重置邀请链接生成</h5>
                     </div>
                     <div class="card-body">
                         <form id="inviteLinkForm">
                             <div class="mb-3">
                                 <label for="inviteUsername" class="form-label">用户名</label>
                                 <input type="text" class="form-control" id="inviteUsername" required>
+                                <div class="form-text">输入用户名，系统将自动匹配预设的8位编码</div>
+                            </div>
+                            <div class="mb-3" id="codeInfo" style="display: none;">
+                                <label for="foundCode" class="form-label">编码信息</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="foundCode" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" id="copyCodeButton">复制编码</button>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="inviteLink" class="form-label">邀请链接</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="inviteLink" readonly>
-                                    <button class="btn btn-outline-secondary" type="button" id="copyInviteButton">复制</button>
+                                    <button class="btn btn-outline-secondary" type="button" id="copyInviteButton">复制链接</button>
                                 </div>
-                                <div class="form-text">将此6位编码链接发送给用户，用户点击后可直接进入密码重置页面（24小时内有效）</div>
+                                <div class="form-text">将此链接发送给用户，用户点击后可直接进入密码重置页面</div>
                             </div>
-                            <div class="mb-3" id="codeInfo" style="display: none;">
-                                <label for="generatedCode" class="form-label">6位编码</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="generatedCode" readonly>
-                                    <button class="btn btn-outline-secondary" type="button" id="copyCodeButton">复制</button>
-                                </div>
-                                <div class="form-text">此编码24小时内有效，用户可通过此编码访问重置页面</div>
-                            </div>
-                            <button type="button" class="btn btn-primary" id="generateInviteButton">生成6位编码链接</button>
+                            <button type="button" class="btn btn-primary" id="generateInviteButton">生成邀请链接</button>
                         </form>
                         
                         <!-- 结果显示区域 -->
@@ -916,7 +916,7 @@
             return '';
         }
         
-        // 密码修改处理功能已移除 - 现在通过手动更新password.csv文件实现
+        // 密码修改处理功能已移除 - 现在通过手动更新用户数据文件实现
         
         // 文件列表功能已移除
         
@@ -935,65 +935,85 @@
             }
         }
         
-        // 生成6位编码邀请链接
+        // 通过用户名匹配预设编码并生成邀请链接
         async function generateInviteLink() {
             console.log('generateInviteLink 被调用');
             
             const username = document.getElementById('inviteUsername').value;
             const inviteLinkInput = document.getElementById('inviteLink');
             const codeInfo = document.getElementById('codeInfo');
-            const generatedCodeInput = document.getElementById('generatedCode');
+            const foundCodeInput = document.getElementById('foundCode');
             
             console.log('用户名:', username);
-            console.log('编码器加载状态:', window.scheme6Encoder ? '已加载' : '未加载');
             
             if (!username) {
                 showResult('请输入用户名', 'error');
                 return;
             }
             
-            // 生成6位编码链接
             try {
-                if (!window.scheme6Encoder) {
-                    showResult('编码器未加载，请刷新页面重试', 'error');
+                // 动态查找用户对应的编码
+                const userCodeResult = await window.codeManager.findUserCode(username);
+                
+                if (!userCodeResult.success) {
+                    showResult(userCodeResult.error, 'error');
                     return;
                 }
                 
-                // 等待编码器加载完成
-                let attempts = 0;
-                while (!window.scheme6Encoder.isLoaded && attempts < 10) {
-                    console.log(`等待编码器加载... 尝试 ${attempts + 1}/10`);
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    attempts++;
+                const matchedCode = userCodeResult.code;
+                
+                // 检查是否有重复用户
+                if (userCodeResult.duplicateUsers && userCodeResult.duplicateUsers.length > 0) {
+                    const duplicateUser = userCodeResult.duplicateUsers.find(dup => 
+                        dup.username.toLowerCase() === username.toLowerCase()
+                    );
+                    if (duplicateUser) {
+                        showResult(`⚠️ 发现用户 "${username}" 有多个编码文件：${duplicateUser.codes.join(', ')}。将使用最新的编码。`, 'info');
+                    }
                 }
                 
-                if (!window.scheme6Encoder.isLoaded) {
-                    showResult('编码器加载超时，请刷新页面重试', 'error');
+                console.log('匹配到的编码:', matchedCode);
+                
+                // 查询编码的到期日
+                const expirationResult = await window.codeManager.getCodeExpiration(matchedCode);
+                
+                if (!expirationResult.success) {
+                    showResult(`获取编码到期日失败：${expirationResult.error}`, 'error');
                     return;
                 }
                 
-                console.log('开始生成6位编码链接...');
-                const resetLink = window.scheme6Encoder.generateResetLink(username);
-                console.log('生成结果:', resetLink);
+                // 生成邀请链接
+                const inviteLink = `https://01capital.info/reset_pas.html?code=${matchedCode}`;
                 
-                inviteLinkInput.value = resetLink.link;
-                generatedCodeInput.value = resetLink.code;
+                // 显示结果
+                inviteLinkInput.value = inviteLink;
                 codeInfo.style.display = 'block';
                 
-                showResult(`6位编码链接生成成功！编码：${resetLink.code}，24小时内有效`, 'success');
-            } catch (error) {
-                console.error('生成6位编码失败:', error);
-                console.log('错误类型:', typeof error);
-                console.log('错误消息:', error.message);
+                // 格式化到期日显示（包含完整的时分秒）
+                const expiresAt = new Date(expirationResult.expiresAt);
+                const formattedDateTime = expiresAt.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
                 
-                // 检查是否是用户不存在的错误
-                if (error.message && error.message.includes('不存在')) {
-                    console.log('检测到用户不存在错误');
-                    showResult(`❌ 用户不存在：${error.message}。请检查用户名是否正确。`, 'error');
+                if (expirationResult.isExpired) {
+                    foundCodeInput.value = `编码已过期 (${matchedCode})`;
+                    foundCodeInput.style.color = '#dc3545';
+                    showResult(`邀请链接生成成功！用户：${username}`, 'success');
                 } else {
-                    console.log('其他类型错误');
-                    showResult(`生成6位编码失败：${error.message || '未知错误'}`, 'error');
+                    foundCodeInput.value = `链接到期日：${formattedDateTime} (${matchedCode})`;
+                    foundCodeInput.style.color = '#28a745';
+                    showResult(`邀请链接生成成功！用户：${username}`, 'success');
                 }
+                
+            } catch (error) {
+                console.error('生成邀请链接失败:', error);
+                showResult(`生成邀请链接失败：${error.message || '未知错误'}`, 'error');
             }
         }
         
@@ -1042,39 +1062,29 @@
             }
         }
         
-        // 复制6位编码
+        // 复制8位编码
         function copyCodeToClipboard() {
-            const codeInput = document.getElementById('generatedCode');
+            const codeInput = document.getElementById('foundCode');
             const copyButton = document.getElementById('copyCodeButton');
             
             if (!codeInput.value) {
-                showResult('请先生成6位编码', 'error');
+                showResult('请先生成邀请链接', 'error');
                 return;
             }
             
-            codeInput.select();
-            codeInput.setSelectionRange(0, 99999);
+            // 从显示文本中提取编码部分（括号内的内容）
+            const codeMatch = codeInput.value.match(/\(([A-Z0-9]+)\)/);
+            const codeToCopy = codeMatch ? codeMatch[1] : codeInput.value;
             
             try {
-                document.execCommand('copy');
-                copyButton.textContent = '已复制';
-                copyButton.classList.remove('btn-outline-secondary');
-                copyButton.classList.add('btn-success');
-                
-                setTimeout(() => {
-                    copyButton.textContent = '复制';
-                    copyButton.classList.remove('btn-success');
-                    copyButton.classList.add('btn-outline-secondary');
-                }, 2000);
-            } catch (err) {
                 if (navigator.clipboard) {
-                    navigator.clipboard.writeText(codeInput.value).then(() => {
+                    navigator.clipboard.writeText(codeToCopy).then(() => {
                         copyButton.textContent = '已复制';
                         copyButton.classList.remove('btn-outline-secondary');
                         copyButton.classList.add('btn-success');
                         
                         setTimeout(() => {
-                            copyButton.textContent = '复制';
+                            copyButton.textContent = '复制编码';
                             copyButton.classList.remove('btn-success');
                             copyButton.classList.add('btn-outline-secondary');
                         }, 2000);
@@ -1082,27 +1092,45 @@
                         showResult('复制失败，请手动复制', 'error');
                     });
                 } else {
-                    showResult('复制失败，请手动复制', 'error');
+                    // 降级方案
+                    const textArea = document.createElement('textarea');
+                    textArea.value = codeToCopy;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    copyButton.textContent = '已复制';
+                    copyButton.classList.remove('btn-outline-secondary');
+                    copyButton.classList.add('btn-success');
+                    
+                    setTimeout(() => {
+                        copyButton.textContent = '复制编码';
+                        copyButton.classList.remove('btn-success');
+                        copyButton.classList.add('btn-outline-secondary');
+                    }, 2000);
                 }
+            } catch (err) {
+                showResult('复制失败，请手动复制', 'error');
             }
         }
 
         // 页面加载完成后的初始化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('页面加载完成');
-            console.log('编码器加载状态:', window.scheme6Encoder ? '已加载' : '未加载');
+            console.log('编码管理器状态:', window.codeManager ? '已加载' : '未加载');
             
             // 测试按钮点击
             const testButton = document.getElementById('generateInviteButton');
             console.log('测试按钮元素:', testButton);
             
-            // 等待编码器加载
+            // 等待编码管理器加载
             setTimeout(() => {
-                console.log('延迟检查编码器状态:', window.scheme6Encoder ? '已加载' : '未加载');
-                if (window.scheme6Encoder) {
-                    console.log('编码器加载成功');
+                console.log('延迟检查编码管理器状态:', window.codeManager ? '已加载' : '未加载');
+                if (window.codeManager) {
+                    console.log('编码管理器加载成功');
                 } else {
-                    console.error('编码器加载失败');
+                    console.error('编码管理器加载失败');
                 }
             }, 1000);
         });

@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <link rel="icon" href="images/icon.jpg" type="image/jpeg">
-    <script src="js/scheme6-encoder.js"></script>
+    <script src="js/code-manager.js"></script>
     <style>
         body {
             background: #212529;
@@ -301,49 +301,43 @@
     </div>
 
     <script>
-        // 从6位编码获取用户名
+        // 从8位编码获取用户名
         async function getUsernameFromCode() {
             console.log('getUsernameFromCode 被调用');
             console.log('当前URL:', window.location.href);
             console.log('URL参数:', new URLSearchParams(window.location.search).toString());
             
             try {
-                // 等待编码器加载完成
-                if (!window.scheme6Encoder) {
-                    console.log('编码器未加载，等待加载...');
+                // 等待编码管理器加载完成
+                if (!window.codeManager) {
+                    console.log('编码管理器未加载，等待加载...');
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 }
                 
-                if (!window.scheme6Encoder) {
-                    console.error('编码器仍未加载');
+                if (!window.codeManager) {
+                    console.error('编码管理器仍未加载');
                     return {
                         username: null,
                         isValid: false,
-                        error: '编码器未加载'
+                        error: '编码管理器未加载'
                     };
                 }
                 
-                // 等待用户数据加载完成
-                let attempts = 0;
-                while (!window.scheme6Encoder.isLoaded && attempts < 10) {
-                    console.log(`等待用户数据加载... 尝试 ${attempts + 1}/10`);
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    attempts++;
-                }
+                // 从URL获取编码参数
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get('code');
                 
-                if (!window.scheme6Encoder.isLoaded) {
-                    console.error('用户数据加载超时');
+                if (!code) {
                     return {
                         username: null,
                         isValid: false,
-                        error: '用户数据加载超时'
+                        error: '未找到编码参数'
                     };
                 }
                 
-                console.log('编码器是否已加载:', window.scheme6Encoder.isLoaded);
-                console.log('用户列表长度:', window.scheme6Encoder.USERS.length);
+                console.log('验证编码:', code);
                 
-                const validation = window.scheme6Encoder.validateCurrentPageCode();
+                const validation = await window.codeManager.validateCode(code);
                 console.log('验证结果:', validation);
                 
                 if (validation.success && validation.isValid) {
@@ -357,7 +351,7 @@
                     return {
                         username: null,
                         isValid: false,
-                        error: validation.message
+                        error: validation.error || '编码验证失败'
                     };
                 }
             } catch (error) {
@@ -370,30 +364,30 @@
             }
         }
 
-        // 显示用户名（仅支持6位编码方式）
+        // 显示用户名（仅支持8位编码方式）
         async function displayUsername() {
             const userDisplayElement = document.getElementById('userDisplayName');
             
-            // 只支持6位编码方式
+            // 只支持8位编码方式
             const codeResult = await getUsernameFromCode();
             
             if (codeResult.isValid) {
-                // 使用6位编码
+                // 使用8位编码
                 userDisplayElement.textContent = `用户：${codeResult.username}`;
             } else {
-                // 6位编码无效或不存在
+                // 8位编码无效或不存在
                 userDisplayElement.textContent = '用户：未指定';
-                showError('请通过正确的6位编码邀请链接访问此页面');
+                showError(`请通过正确的8位编码邀请链接访问此页面。${codeResult.error ? '错误：' + codeResult.error : ''}`);
             }
         }
 
         // 生成Shared Secret
         async function generatePasswordHash() {
-            // 只支持6位编码方式获取用户名
+            // 只支持8位编码方式获取用户名
             const codeResult = await getUsernameFromCode();
             
             if (!codeResult.isValid) {
-                showError('请通过正确的6位编码邀请链接访问此页面');
+                showError('请通过正确的8位编码邀请链接访问此页面');
                 return;
             }
             
