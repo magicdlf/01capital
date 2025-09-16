@@ -1,6 +1,6 @@
 {
   "username": "octopus",
-  "created_at": "2025-07-02T20:55:24.886720",
+  "created_at": "2025-09-16T17:06:21.064624",
   "investments": {
     "balanced": [
       {
@@ -4591,6 +4591,16 @@
         "net_pnl": 64085.893142105226,
         "realized_pnl": 112152.14,
         "total_return": 0.04953379443322081,
+        "coin": "USDT"
+      },
+      {
+        "date": "2025-09-16",
+        "nav": 1.0862010275461111,
+        "principal": 5355141.69,
+        "net_nav": 5419558.1087981565,
+        "net_pnl": 64416.41879815629,
+        "realized_pnl": 112152.14,
+        "total_return": 0.04959849198592203,
         "coin": "USDT"
       }
     ],
