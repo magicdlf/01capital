@@ -588,37 +588,4 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 联系表单提交处理
-function submitContactForm() {
-    const name = document.getElementById('contactName').value.trim();
-    const email = document.getElementById('contactEmail').value.trim();
-    const message = document.getElementById('contactMessage').value.trim();
-    
-    // 验证表单
-    if (!name || !email || !message) {
-        alert('Please fill in all fields.');
-        return;
-    }
-    
-    // 验证邮箱格式
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        alert('Please enter a valid email address.');
-        return;
-    }
-    
-    // 模拟表单提交（实际项目中这里应该发送到服务器）
-    console.log('Contact form submitted:', { name, email, message });
-    
-    // 显示成功消息
-    alert('Thank you for your inquiry! We will get back to you soon.');
-    
-    // 清空表单
-    document.getElementById('contactForm').reset();
-    
-    // 关闭弹窗
-    const modal = bootstrap.Modal.getInstance(document.getElementById('contactModal'));
-    if (modal) {
-        modal.hide();
-    }
-} 
+// 联系表单提交处理已移至 email.js 
