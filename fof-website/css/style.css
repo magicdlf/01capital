@@ -89,7 +89,7 @@ body {
     background-size: 100%;
     opacity: 1;
     z-index: 0;
-    background-position: right -50% bottom -5%;
+    background-position: right -50% bottom 50%;
 }
 .hero-section > .container, .hero-section .row {
     position: relative;
