@@ -263,6 +263,46 @@ footer {
     filter: brightness(0) invert(1);
 }
 
+/* 导航栏手机版优化 */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+    
+    .navbar-toggler {
+        border: none;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .navbar-toggler:focus {
+        box-shadow: none;
+    }
+    
+    .navbar-collapse {
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 8px;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .nav-link {
+        padding: 0.75rem 1rem !important;
+        border-bottom: 1px solid #f0f0f0;
+        margin-bottom: 0.25rem;
+    }
+    
+    .nav-link:last-child {
+        border-bottom: none;
+    }
+    
+    .nav-link:hover {
+        background-color: rgba(0,0,0,0.05);
+        border-radius: 6px;
+    }
+}
+
 /* 响应式调整 */
 @media (max-width: 768px) {
     .partner-logo {
@@ -274,17 +314,30 @@ footer {
 /* 响应式调整 */
 @media (max-width: 768px) {
     .hero-section {
-        min-height: 320px;
-        padding-top: 60px;
+        min-height: 100vh;
+        padding-top: 80px;
     }
     .hero-section::after {
-        background-position: left 0 top 0;
+        background-position: center top;
+        background-size: cover;
+        opacity: 0.8;
     }
     .hero-section > .container {
         margin-top: 0;
+        padding: 0 15px;
     }
     .hero-section .col-lg-6 {
-        margin-top: -280px;
+        margin-top: 0;
+        text-align: center;
+        padding: 2rem 0;
+    }
+    .hero-section h1 {
+        font-size: 2.5rem !important;
+        margin-bottom: 1rem;
+    }
+    .hero-section .lead {
+        font-size: 1.2rem !important;
+        line-height: 1.4;
     }
 }
 
@@ -505,6 +558,56 @@ footer {
     .operations-desc {
         font-size: 0.85rem;
     }
+}
+
+/* Operations部分手机版特殊优化 */
+@media (max-width: 768px) {
+    #operations .row {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* 图片容器 - 在手机版中放在最上面 */
+    #operations .col-lg-4 {
+        padding: 0 15px;
+        margin-bottom: 1.5rem; /* 减少图片下方间距 */
+        order: -1; /* 确保图片在最上面 */
+    }
+    
+    /* 卡片容器 - 在手机版中放在图片下面 */
+    #operations .col-lg-8 {
+        padding: 0 15px;
+        margin-bottom: 0;
+        order: 1; /* 确保卡片在图片下方 */
+    }
+    
+    /* 卡片网格容器优化 */
+    #operations .col-lg-8 .row {
+        margin: 0;
+        gap: 0.75rem; /* 减少卡片间距 */
+    }
+    
+    .operations-image-container {
+        min-height: 200px; /* 减少图片高度 */
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .operations-card {
+        margin-bottom: 0.75rem; /* 减少卡片底部间距 */
+        padding: 1.25rem 1rem; /* 减少卡片内边距 */
+    }
+    
+    .operations-title {
+        font-size: 1rem; /* 稍微减小标题字体 */
+        margin-bottom: 0.75rem; /* 减少标题下方间距 */
+    }
+    
+    .operations-desc {
+        font-size: 0.85rem; /* 稍微减小描述字体 */
+        line-height: 1.4; /* 稍微减小行高 */
+    }
 } 
 
 /* Firm 卡片样式 */
@@ -615,10 +718,12 @@ footer {
 @media (max-width: 768px) {
     .firm-card {
         padding: 1.25rem;
+        margin-bottom: 1.5rem;
     }
     
     .firm-image-container {
         min-height: 200px;
+        margin-bottom: 1.5rem;
     }
     
     .firm-card-title {
@@ -627,6 +732,21 @@ footer {
     
     .firm-card-content {
         font-size: 0.95rem;
+    }
+    
+    /* Firm部分手机版特殊优化 */
+    #firm .row {
+        margin: 0;
+    }
+    
+    #firm .col-lg-4 {
+        padding: 0 15px;
+        margin-bottom: 1rem;
+    }
+    
+    .firm-image {
+        min-height: 250px;
+        object-fit: cover;
     }
 } 
 
@@ -746,14 +866,37 @@ footer {
     
     .products-main-card {
         padding: 1.5rem;
+        margin-top: 1rem;
     }
     
     .products-card-title {
         font-size: 1.2rem;
+        margin-top: 1.5rem;
+    }
+    
+    .products-card-title:first-child {
+        margin-top: 0;
     }
     
     .products-card-description {
         font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Products部分手机版特殊优化 */
+    .products-intro {
+        text-align: left; /* 手机版改为左对齐 */
+        margin-bottom: 2rem;
+        padding-left: 1rem; /* 整体往右移动 */
+    }
+    
+    .products-container {
+        padding: 0;
+    }
+    
+    /* 手机版标题间距优化 */
+    .products-title-small {
+        margin-bottom: 1.5rem; /* 增加Precise Risk Allocation下方的间距 */
     }
 } 
 
@@ -885,6 +1028,26 @@ footer {
     
     .team-card-content {
         font-size: 0.9rem;
+    }
+}
+
+/* Team部分手机版特殊优化 */
+@media (max-width: 768px) {
+    #team .row {
+        margin: 0;
+    }
+    
+    #team .col-lg-6 {
+        padding: 0 15px;
+    }
+    
+    .team-image-container {
+        margin-bottom: 2rem;
+        min-height: 250px;
+    }
+    
+    .team-main-card {
+        margin-top: 0;
     }
 }
 
@@ -1064,6 +1227,43 @@ footer {
 
 .invite-code-btn:active {
     transform: translateY(0);
+}
+
+/* 页脚手机版优化 */
+@media (max-width: 768px) {
+    footer .row {
+        margin: 0;
+    }
+    
+    footer .col-md-7,
+    footer .col-md-5 {
+        padding: 0 15px;
+        margin-bottom: 2rem;
+    }
+    
+    .supported-platform-title {
+        font-size: 1.25rem !important;
+        margin-bottom: 1.5rem;
+    }
+    
+    .partners-grid .row {
+        margin: 0;
+    }
+    
+    .partners-grid .col-6 {
+        padding: 0 5px;
+        margin-bottom: 1rem;
+    }
+    
+    .partner-logo {
+        height: 40px;
+        padding: 0.3rem;
+    }
+    
+    footer p {
+        font-size: 0.8rem !important;
+        line-height: 1.5;
+    }
 }
 
 /* 响应式调整 */

@@ -100,16 +100,20 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const targetId = this.getAttribute('href');
-        const targetElement = document.querySelector(targetId);
         
-        if (targetElement) {
-            targetElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+        // 检查targetId是否有效（不是只有#）
+        if (targetId && targetId.length > 1) {
+            const targetElement = document.querySelector(targetId);
             
-            // 更新导航栏活跃状态
-            updateActiveNavLink(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // 更新导航栏活跃状态
+                updateActiveNavLink(targetId);
+            }
         }
     });
 });
