@@ -318,6 +318,7 @@ footer {
         padding-top: 80px;
     }
     .hero-section::after {
+        background-image: url('../images/top_mobile.jpg'); /* 手机版使用不同的背景图 */
         background-position: center top;
         background-size: cover;
         opacity: 0.8;
@@ -328,8 +329,12 @@ footer {
     }
     .hero-section .col-lg-6 {
         margin-top: 0;
-        text-align: center;
+        text-align: left; /* 手机版改为左对齐 */
         padding: 2rem 0;
+        position: absolute;
+        top: 10%; /* 往上移动更多 */
+        left: 25px; /* 稍微往右移动 */
+        right: 15px; /* 右边距 */
     }
     .hero-section h1 {
         font-size: 2.5rem !important;
