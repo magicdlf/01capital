@@ -2075,13 +2075,8 @@ function showAggressiveProductSection(rangeDays = 30) {
 // 日期格式化函数
 function formatDateToYMD(dateStr) {
     if (!dateStr) return '-';
-    // 支持2025/6/11或2025-06-11等格式
-    const d = new Date(dateStr.replace(/\//g, '-'));
-    if (isNaN(d.getTime())) return dateStr;
-    const y = d.getFullYear();
-    const m = (d.getMonth() + 1).toString().padStart(2, '0');
-    const day = d.getDate().toString().padStart(2, '0');
-    return `${y}-${m}-${day}`;
+    const date = new Date(dateStr);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
 // 赎回功能相关函数
