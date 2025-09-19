@@ -1257,10 +1257,6 @@ function showInvestmentSummary() {
         console.log('Processing balanced data for', currentUser);
         // 获取当前投资者的所有Alpha-Bridge记录
         const balancedRecords = currentUserData.investments.balanced || [];
-        // 取最新一条
-        const balancedLatestData = balancedRecords.length
-            ? balancedRecords.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
-            : null;
         // 取最早一条
         const balancedFirstRecord = balancedRecords.length
             ? balancedRecords.sort((a, b) => new Date(a.date) - new Date(b.date))[0]
@@ -1281,10 +1277,6 @@ function showInvestmentSummary() {
         console.log('Processing arbitrage data for', currentUser);
         // 获取当前投资者的所有Stable-Harbor-USDT记录
         const arbitrageRecords = currentUserData.investments.arbitrage || [];
-        // 取最新一条
-        const arbitrageLatestData = arbitrageRecords.length
-            ? arbitrageRecords.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
-            : null;
         // 取最早一条
         const arbitrageFirstRecord = arbitrageRecords.length
             ? arbitrageRecords.sort((a, b) => new Date(a.date) - new Date(b.date))[0]
@@ -1305,10 +1297,6 @@ function showInvestmentSummary() {
         console.log('Processing arbitrage coin data for', currentUser);
         // 获取当前投资者的所有Stable-Harbor-BTC记录
         const arbitrageCoinRecords = currentUserData.investments.arbitrage_coin || [];
-        // 取最新一条
-        const arbitrageCoinLatestData = arbitrageCoinRecords.length
-            ? arbitrageCoinRecords.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
-            : null;
         // 取最早一条
         const arbitrageCoinFirstRecord = arbitrageCoinRecords.length
             ? arbitrageCoinRecords.sort((a, b) => new Date(a.date) - new Date(b.date))[0]
@@ -1603,19 +1591,24 @@ function showInvestmentSummary() {
             // 工具函数：只保留每月最后一天的数据点，并转换为年月格式
             function filterToMonthEnd(data) {
                 const grouped = {};
+                
+                // 按月份分组，每个月份保留最新的数据点
                 data.forEach(item => {
                     const date = new Date(item.x);
                     const ym = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                    // 如果是月末，或者是该月的最后一条记录，则保留
                     const isLastDayOfMonth = date.getDate() === new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-                    if (!grouped[ym] || isLastDayOfMonth) {
+                    
+                    // 如果该月还没有数据，或者当前数据是月末，或者当前数据比已有数据更新，则保留
+                    if (!grouped[ym] || isLastDayOfMonth || date > new Date(grouped[ym].originalDate)) {
                         grouped[ym] = {
                             x: ym,  // 直接使用年月格式
                             y: item.y,
-                            isMonthEnd: isLastDayOfMonth // 添加月末标识
+                            isMonthEnd: isLastDayOfMonth, // 添加月末标识
+                            originalDate: item.x // 保存原始日期用于比较
                         };
                     }
                 });
+                
                 return Object.values(grouped).sort((a, b) => a.x.localeCompare(b.x));
             }
 

@@ -638,18 +638,24 @@
             // 工具函数：只保留每月最后一天的数据点
             function filterToMonthEnd(data) {
                 const grouped = {};
+                
+                // 按月份分组，每个月份保留最新的数据点
                 data.forEach(item => {
                     const date = new Date(item.x);
                     const ym = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
                     const isLastDayOfMonth = date.getDate() === new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-                    if (!grouped[ym] || isLastDayOfMonth) {
+                    
+                    // 如果该月还没有数据，或者当前数据是月末，或者当前数据比已有数据更新，则保留
+                    if (!grouped[ym] || isLastDayOfMonth || date > new Date(grouped[ym].originalDate)) {
                         grouped[ym] = {
                             x: ym,
                             y: item.y,
-                            isMonthEnd: isLastDayOfMonth
+                            isMonthEnd: isLastDayOfMonth,
+                            originalDate: item.x // 保存原始日期用于比较
                         };
                     }
                 });
+                
                 return Object.values(grouped).sort((a, b) => a.x.localeCompare(b.x));
             }
             
