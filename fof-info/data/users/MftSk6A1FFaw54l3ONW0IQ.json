@@ -1722,6 +1722,16 @@
         "realized_pnl": 5889.15,
         "total_return": 0.019837484488029182,
         "coin": "USDT"
+      },
+      {
+        "date": "2025-09-21",
+        "nav": 1.0853751439685362,
+        "principal": 500000.0,
+        "net_nav": 504366.35814901657,
+        "net_pnl": 4366.358149016583,
+        "realized_pnl": 5889.15,
+        "total_return": 0.020511016298033168,
+        "coin": "USDT"
       }
     ],
     "arbitrage": [],
