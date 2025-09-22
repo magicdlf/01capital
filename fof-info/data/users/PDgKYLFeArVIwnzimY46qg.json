@@ -1,6 +1,6 @@
 {
   "username": "alex",
-  "created_at": "2025-07-02T20:55:24.916000",
+  "created_at": "2025-09-22T17:20:50.049155",
   "investments": {
     "balanced": [
       {
@@ -4671,6 +4671,16 @@
         "net_pnl": 21780.954537672576,
         "realized_pnl": 54506.49,
         "total_return": 0.07628744453767258,
+        "coin": "USDT"
+      },
+      {
+        "date": "2025-09-22",
+        "nav": 1.0867942109523363,
+        "principal": 1000000.0,
+        "net_nav": 1023066.8179543664,
+        "net_pnl": 23066.817954366423,
+        "realized_pnl": 54506.49,
+        "total_return": 0.07757330795436643,
         "coin": "USDT"
       }
     ],

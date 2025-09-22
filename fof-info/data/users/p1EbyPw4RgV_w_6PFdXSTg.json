@@ -1,6 +1,6 @@
 {
   "username": "bon",
-  "created_at": "2025-07-03T17:03:57.272988",
+  "created_at": "2025-09-22T17:20:50.049970",
   "investments": {
     "balanced": [
       {
@@ -1861,6 +1861,16 @@
         "net_pnl": 5544.248930024682,
         "realized_pnl": 5928.04,
         "total_return": 0.022944577860049366,
+        "coin": "USDT"
+      },
+      {
+        "date": "2025-09-22",
+        "nav": 1.0867942109523363,
+        "principal": 500000.0,
+        "net_nav": 506074.4752368686,
+        "net_pnl": 6074.475236868579,
+        "realized_pnl": 5928.04,
+        "total_return": 0.024005030473737154,
         "coin": "USDT"
       }
     ],
