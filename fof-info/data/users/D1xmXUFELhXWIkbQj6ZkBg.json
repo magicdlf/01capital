@@ -1,0 +1,30 @@
+{
+  "username": "gang",
+  "created_at": "2025-11-03T16:38:32.305241",
+  "investments": {
+    "balanced": [
+      {
+        "date": "2025-11-02",
+        "nav": 1.1229946232774666,
+        "principal": 1000000.0,
+        "net_nav": 1000185.2909020378,
+        "net_pnl": 185.2909020377323,
+        "realized_pnl": 0.0,
+        "total_return": 0.0001852909020377323,
+        "coin": "USDT"
+      },
+      {
+        "date": "2025-11-03",
+        "nav": 1.122010497319121,
+        "principal": 1000000.0,
+        "net_nav": 999355.069898018,
+        "net_pnl": -644.9301019819686,
+        "realized_pnl": 0.0,
+        "total_return": -0.0006449301019819686,
+        "coin": "USDT"
+      }
+    ],
+    "arbitrage": [],
+    "arbitrage_coin": []
+  }
+}
