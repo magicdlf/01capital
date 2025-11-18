@@ -5062,6 +5062,16 @@
         "realized_pnl": 1.05,
         "total_return": 0.05566378942660739,
         "coin": "ETH"
+      },
+      {
+        "date": "2025-11-18",
+        "nav": 1.1161833390120883,
+        "principal": 300.0,
+        "net_nav": 315.33008401810883,
+        "net_pnl": 15.330084018108822,
+        "realized_pnl": 1.05,
+        "total_return": 0.05460028006036274,
+        "coin": "ETH"
       }
     ],
     "arbitrage": [],
