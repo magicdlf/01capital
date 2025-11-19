@@ -1402,29 +1402,19 @@
         "realized_pnl": 0.0,
         "total_return": 0.0325841998305179,
         "coin": "USDT"
+      },
+      {
+        "date": "2025-11-19",
+        "nav": 1.1176326762936897,
+        "principal": 500000.0,
+        "net_nav": 516800.18331749394,
+        "net_pnl": 16800.183317493924,
+        "realized_pnl": 0.0,
+        "total_return": 0.03360036663498785,
+        "coin": "USDT"
       }
     ],
     "arbitrage": [],
     "arbitrage_coin": []
-  },
-  "investment_details": [
-    {
-      "fund": "Alpha-Bridge",
-      "date": "2025/7/1",
-      "investor": "turbo",
-      "action": "Subscription",
-      "coin": "USDT",
-      "amount": 500000.0,
-      "unit": 467416.76,
-      "principal": 500000.0,
-      "unit_total": 467416.76,
-      "unit_chg": 0.0,
-      "carry_fee": 0.25,
-      "management_fee": 0.0,
-      "realized_pnl": 0.0,
-      "realized_mgm": 0.0,
-      "realized_carry": 0.0,
-      "nav_per_unit": 1.06970918
-    }
-  ]
+  }
 }

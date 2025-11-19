@@ -522,29 +522,19 @@
         "realized_pnl": 0.0,
         "total_return": 0.019581443334814947,
         "coin": "USDT"
+      },
+      {
+        "date": "2025-11-19",
+        "nav": 1.1176326762936897,
+        "principal": 100000.0,
+        "net_nav": 102051.5802571799,
+        "net_pnl": 2051.580257179902,
+        "realized_pnl": 0.0,
+        "total_return": 0.02051580257179902,
+        "coin": "USDT"
       }
     ],
     "arbitrage": [],
     "arbitrage_coin": []
-  },
-  "investment_details": [
-    {
-      "fund": "Alpha-Bridge",
-      "date": "2025/9/27",
-      "investor": "lg",
-      "action": "Subscription",
-      "coin": "USDT",
-      "amount": 100000.0,
-      "unit": 92097.19,
-      "principal": 100000.0,
-      "unit_total": 92097.19,
-      "unit_chg": 0.0,
-      "carry_fee": 0.3,
-      "management_fee": 0.0,
-      "realized_pnl": 0.0,
-      "realized_mgm": 0.0,
-      "realized_carry": 0.0,
-      "nav_per_unit": 1.0858094
-    }
-  ]
+  }
 }

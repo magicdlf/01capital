@@ -172,29 +172,19 @@
         "realized_pnl": 0.0,
         "total_return": -0.005835077797699254,
         "coin": "USDT"
+      },
+      {
+        "date": "2025-11-19",
+        "nav": 1.1176326762936897,
+        "principal": 1000000.0,
+        "net_nav": 995455.8214976472,
+        "net_pnl": -4544.178502352792,
+        "realized_pnl": 0.0,
+        "total_return": -0.004544178502352792,
+        "coin": "USDT"
       }
     ],
     "arbitrage": [],
     "arbitrage_coin": []
-  },
-  "investment_details": [
-    {
-      "fund": "Alpha-Bridge",
-      "date": "2025/11/1",
-      "investor": "gang",
-      "action": "Subscription",
-      "coin": "USDT",
-      "amount": 1000000.0,
-      "unit": 890682.46,
-      "principal": 1000000.0,
-      "unit_total": 890682.46,
-      "unit_chg": 0.0,
-      "carry_fee": 0.2,
-      "management_fee": 0.0,
-      "realized_pnl": 0.0,
-      "realized_mgm": 0.0,
-      "realized_carry": 0.0,
-      "nav_per_unit": 1.12273458
-    }
-  ]
+  }
 }

@@ -2723,46 +2723,18 @@
         "realized_pnl": 0.0,
         "total_return": 0.056826204187816615,
         "coin": "USDT"
+      },
+      {
+        "date": "2025-11-19",
+        "nav": 1.0659239231299258,
+        "principal": 13394218.94,
+        "net_nav": 14159013.262924729,
+        "net_pnl": 764794.3229247298,
+        "realized_pnl": 0.0,
+        "total_return": 0.05709883691991747,
+        "coin": "USDT"
       }
     ],
     "arbitrage_coin": []
-  },
-  "investment_details": [
-    {
-      "fund": "Stable-Harbor-USDT",
-      "date": "2025/2/19",
-      "investor": "hp",
-      "action": "Subscription",
-      "coin": "USDT",
-      "amount": 13394218.94,
-      "unit": 13364082.62,
-      "principal": 13394218.94,
-      "unit_total": 13364082.62,
-      "unit_chg": 0.0,
-      "carry_fee": 0.1,
-      "management_fee": 0.02,
-      "realized_pnl": 0.0,
-      "realized_mgm": 0.0,
-      "realized_carry": 0.0,
-      "nav_per_unit": 1.00225502
-    },
-    {
-      "fund": "Stable-Harbor-USDT",
-      "date": "2025/7/4",
-      "investor": "hp",
-      "action": "Carry Distribution",
-      "coin": "USDT",
-      "amount": -27080.6,
-      "unit": -26442.38,
-      "principal": 13394218.94,
-      "unit_total": 13337640.24,
-      "unit_chg": 0.0,
-      "carry_fee": 0.1,
-      "management_fee": 0.02,
-      "realized_pnl": 0.0,
-      "realized_mgm": 0.0,
-      "realized_carry": 27080.6,
-      "nav_per_unit": 1.02413638
-    }
-  ]
+  }
 }
