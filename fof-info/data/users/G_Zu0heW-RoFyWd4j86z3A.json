@@ -5895,7 +5895,7 @@
       "realized_pnl": 0.0,
       "realized_mgm": 0.0,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.0
     },
     {
       "fund": "Alpha-Bridge",
@@ -5913,7 +5913,7 @@
       "realized_pnl": 0.0,
       "realized_mgm": 0.0,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.0330107
     },
     {
       "fund": "Alpha-Bridge",
@@ -5931,7 +5931,7 @@
       "realized_pnl": 0.0,
       "realized_mgm": 0.0,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 0.97927273
     },
     {
       "fund": "Alpha-Bridge",
@@ -5949,7 +5949,7 @@
       "realized_pnl": 0.0,
       "realized_mgm": 0.0,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 0.97927273
     },
     {
       "fund": "Alpha-Bridge",
@@ -5967,7 +5967,7 @@
       "realized_pnl": 44907.89,
       "realized_mgm": 10247.98,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.04744613
     },
     {
       "fund": "Alpha-Bridge",
@@ -5985,7 +5985,7 @@
       "realized_pnl": 44907.89,
       "realized_mgm": 10247.98,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.04744613
     },
     {
       "fund": "Alpha-Bridge",
@@ -6003,7 +6003,7 @@
       "realized_pnl": 44907.89,
       "realized_mgm": 20439.03,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.07213213
     },
     {
       "fund": "Stable-Harbor-BTC",
@@ -6021,7 +6021,7 @@
       "realized_pnl": 0.0,
       "realized_mgm": 0.0,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.0
     },
     {
       "fund": "Stable-Harbor-BTC",
@@ -6039,7 +6039,7 @@
       "realized_pnl": 1.9495,
       "realized_mgm": 0.0,
       "realized_carry": 0.4874,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.0324482
     },
     {
       "fund": "Stable-Harbor-BTC",
@@ -6057,7 +6057,7 @@
       "realized_pnl": 1.9495,
       "realized_mgm": 0.0,
       "realized_carry": 0.4874,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.0324482
     },
     {
       "fund": "Stable-Harbor-BTC",
@@ -6075,7 +6075,7 @@
       "realized_pnl": 1.9495,
       "realized_mgm": 0.0,
       "realized_carry": 0.7432,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.050433
     }
   ]
 }

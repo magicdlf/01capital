@@ -2704,7 +2704,7 @@
       "realized_pnl": 0.0,
       "realized_mgm": 0.0,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.04758024
     },
     {
       "fund": "Alpha-Bridge",
@@ -2722,7 +2722,7 @@
       "realized_pnl": 2610.38,
       "realized_mgm": 1118.73,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.07213213
     },
     {
       "fund": "Alpha-Bridge",
@@ -2740,7 +2740,7 @@
       "realized_pnl": 2610.38,
       "realized_mgm": 1118.73,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.07213213
     }
   ]
 }

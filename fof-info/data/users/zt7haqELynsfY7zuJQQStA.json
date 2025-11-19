@@ -2754,7 +2754,7 @@
       "realized_pnl": 0.0,
       "realized_mgm": 0.0,
       "realized_carry": 0.0,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.00225502
     },
     {
       "fund": "Stable-Harbor-USDT",
@@ -2772,7 +2772,7 @@
       "realized_pnl": 0.0,
       "realized_mgm": 0.0,
       "realized_carry": 27080.6,
-      "nav_per_unit": 0
+      "nav_per_unit": 1.02413638
     }
   ]
 }
