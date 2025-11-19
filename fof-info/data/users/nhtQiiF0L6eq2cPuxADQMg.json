@@ -2326,5 +2326,61 @@
     ],
     "arbitrage": [],
     "arbitrage_coin": []
-  }
+  },
+  "investment_details": [
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/4/1",
+      "investor": "tt",
+      "action": "Subscription",
+      "coin": "USDT",
+      "amount": 500000.0,
+      "unit": 473921.49,
+      "principal": 500000.0,
+      "unit_total": 473921.49,
+      "unit_chg": 0.0,
+      "carry_fee": 0.2,
+      "management_fee": 0.0,
+      "realized_pnl": 0.0,
+      "realized_mgm": 0.0,
+      "realized_carry": 0.0,
+      "nav_per_unit": 0
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/7/4",
+      "investor": "tt",
+      "action": "Carry Distribution",
+      "coin": "USDT",
+      "amount": -1472.29,
+      "unit": -1373.24,
+      "principal": 500000.0,
+      "unit_total": 467055.32,
+      "unit_chg": 0.0,
+      "carry_fee": 0.2,
+      "management_fee": 0.0,
+      "realized_pnl": 5889.15,
+      "realized_mgm": 1472.29,
+      "realized_carry": 0.0,
+      "nav_per_unit": 0
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/7/4",
+      "investor": "tt",
+      "action": "Profit Distribution",
+      "coin": "USDT",
+      "amount": -5889.15,
+      "unit": -5492.93,
+      "principal": 500000.0,
+      "unit_total": 467055.32,
+      "unit_chg": 0.0,
+      "carry_fee": 0.2,
+      "management_fee": 0.0,
+      "realized_pnl": 5889.15,
+      "realized_mgm": 1472.29,
+      "realized_carry": 0.0,
+      "nav_per_unit": 0
+    }
+  ]
 }

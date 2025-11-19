@@ -536,5 +536,25 @@
     ],
     "arbitrage": [],
     "arbitrage_coin": []
-  }
+  },
+  "investment_details": [
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/9/27",
+      "investor": "lg",
+      "action": "Subscription",
+      "coin": "USDT",
+      "amount": 100000.0,
+      "unit": 92097.19,
+      "principal": 100000.0,
+      "unit_total": 92097.19,
+      "unit_chg": 0.0,
+      "carry_fee": 0.3,
+      "management_fee": 0.0,
+      "realized_pnl": 0.0,
+      "realized_mgm": 0.0,
+      "realized_carry": 0.0,
+      "nav_per_unit": 0
+    }
+  ]
 }

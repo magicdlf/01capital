@@ -206,5 +206,25 @@
         "coin": "BTC"
       }
     ]
-  }
+  },
+  "investment_details": [
+    {
+      "fund": "Stable-Harbor-BTC",
+      "date": "2025/6/27",
+      "investor": "cheryl",
+      "action": "Subscription",
+      "coin": "BTC",
+      "amount": 7.305,
+      "unit": 6.9565,
+      "principal": 7.305,
+      "unit_total": 6.9565,
+      "unit_chg": 0.0,
+      "carry_fee": 0.25,
+      "management_fee": 0.0,
+      "realized_pnl": 0.0,
+      "realized_mgm": 0.0,
+      "realized_carry": 0.0,
+      "nav_per_unit": 0
+    }
+  ]
 }
