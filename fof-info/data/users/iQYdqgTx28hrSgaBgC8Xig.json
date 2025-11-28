@@ -214,6 +214,16 @@
         "realized_pnl": 0.0,
         "total_return": 0.022080971508685845,
         "coin": "BTC"
+      },
+      {
+        "date": "2025/11/28",
+        "nav": 1.0808789115,
+        "principal": 7.305,
+        "net_nav": 7.4656006108873125,
+        "net_pnl": 0.16060061088731237,
+        "realized_pnl": 0.0,
+        "total_return": 0.021985025446586225,
+        "coin": "BTC"
       }
     ]
   },
