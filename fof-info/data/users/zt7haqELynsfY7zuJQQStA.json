@@ -2826,12 +2826,42 @@
       },
       {
         "date": "2025-11-29",
-        "nav": 1.066300061711666,
+        "nav": 1.066300062,
         "principal": 13394218.94,
-        "net_nav": 14163528.3839,
-        "net_pnl": 769309.4439000001,
+        "net_nav": 14163528.387361126,
+        "net_pnl": 769309.447361126,
         "realized_pnl": 0.0,
-        "total_return": 0.05743593167665513,
+        "total_return": 0.05743593193505959,
+        "coin": "USDT"
+      },
+      {
+        "date": "2025-11-30",
+        "nav": 1.066300062,
+        "principal": 13394218.94,
+        "net_nav": 14163528.387361126,
+        "net_pnl": 769309.447361126,
+        "realized_pnl": 0.0,
+        "total_return": 0.05743593193505959,
+        "coin": "USDT"
+      },
+      {
+        "date": "2025-12-01",
+        "nav": 1.066300062,
+        "principal": 13394218.94,
+        "net_nav": 14163528.387361126,
+        "net_pnl": 769309.447361126,
+        "realized_pnl": 0.0,
+        "total_return": 0.05743593193505959,
+        "coin": "USDT"
+      },
+      {
+        "date": "2025-12-02",
+        "nav": 1.066694582,
+        "principal": 13487596.61,
+        "net_nav": 14261653.47477956,
+        "net_pnl": 774056.8647795594,
+        "realized_pnl": 0.0,
+        "total_return": 0.0578081002492552,
         "coin": "USDT"
       }
     ],
@@ -2873,6 +2903,42 @@
       "realized_mgm": 0.0,
       "realized_carry": 27080.6,
       "nav_per_unit": 1.02413638
+    },
+    {
+      "fund": "Stable-Harbor-USDT",
+      "date": "2025/12/1",
+      "investor": "hp",
+      "action": "Carry Distribution",
+      "coin": "USDT",
+      "amount": -58398.23,
+      "unit": -54767.16,
+      "principal": 13487596.61,
+      "unit_total": 13370444.74,
+      "unit_chg": 0.0,
+      "carry_fee": 0.1,
+      "management_fee": 0.02,
+      "realized_pnl": 0.0,
+      "realized_mgm": 0.0,
+      "realized_carry": 85478.83,
+      "nav_per_unit": 1.066300062
+    },
+    {
+      "fund": "Stable-Harbor-USDT",
+      "date": "2025/12/1",
+      "investor": "hp",
+      "action": "Subscription",
+      "coin": "USDT",
+      "amount": 93377.67,
+      "unit": 87571.66,
+      "principal": 13487596.61,
+      "unit_total": 13370444.74,
+      "unit_chg": 0.0,
+      "carry_fee": 0.1,
+      "management_fee": 0.02,
+      "realized_pnl": 0.0,
+      "realized_mgm": 0.0,
+      "realized_carry": 85478.83,
+      "nav_per_unit": 1.066300062
     }
   ]
 }
