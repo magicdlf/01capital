@@ -1665,6 +1665,42 @@
       "realized_mgm": 0.0,
       "realized_carry": 0.0,
       "nav_per_unit": 1.06970918
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/12",
+      "investor": "turbo",
+      "action": "Carry Distribution",
+      "coin": "USDT",
+      "amount": -6345.74,
+      "unit": -5645.61,
+      "principal": 0.0,
+      "unit_total": 0.0,
+      "unit_chg": 0.0,
+      "carry_fee": 0.25,
+      "management_fee": 0.0,
+      "realized_pnl": 19037.23,
+      "realized_mgm": 0.0,
+      "realized_carry": 6345.74,
+      "nav_per_unit": 1.12401398
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/12",
+      "investor": "turbo",
+      "action": "Redemption",
+      "coin": "USDT",
+      "amount": -519037.23,
+      "unit": -461771.15,
+      "principal": 0.0,
+      "unit_total": 0.0,
+      "unit_chg": 0.0,
+      "carry_fee": 0.25,
+      "management_fee": 0.0,
+      "realized_pnl": 19037.23,
+      "realized_mgm": 0.0,
+      "realized_carry": 6345.74,
+      "nav_per_unit": 1.12401398
     }
   ]
 }

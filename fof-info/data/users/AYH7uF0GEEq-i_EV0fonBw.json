@@ -5855,6 +5855,24 @@
       "realized_mgm": 35503.66,
       "realized_carry": 0.0,
       "nav_per_unit": 1.12273458
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/12",
+      "investor": "octopus",
+      "action": "Subscription",
+      "coin": "USDT",
+      "amount": 519037.23,
+      "unit": 461771.15,
+      "principal": 4474178.92,
+      "unit_total": 4175736.48,
+      "unit_chg": 0.0,
+      "carry_fee": 0.0,
+      "management_fee": 0.02,
+      "realized_pnl": 112152.14,
+      "realized_mgm": 35503.66,
+      "realized_carry": 0.0,
+      "nav_per_unit": 1.12401398
     }
   ]
 }
