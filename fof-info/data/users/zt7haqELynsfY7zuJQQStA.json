@@ -3099,6 +3099,24 @@
       "realized_mgm": 0.0,
       "realized_carry": 85478.83,
       "nav_per_unit": 1.066300062
+    },
+    {
+      "fund": "Stable-Harbor-USDT",
+      "date": "2025/12/18",
+      "investor": "hp",
+      "action": "Carry Distribution",
+      "coin": "USDT",
+      "amount": -2051.17,
+      "unit": -1920.87,
+      "principal": 13487596.61,
+      "unit_total": 13368523.87,
+      "unit_chg": 0.0,
+      "carry_fee": 0.1,
+      "management_fee": 0.02,
+      "realized_pnl": 0.0,
+      "realized_mgm": 0.0,
+      "realized_carry": 87530.0,
+      "nav_per_unit": 1.066300062
     }
   ]
 }
