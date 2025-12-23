@@ -107,7 +107,13 @@
                             <button class="list-group-item list-group-item-action" data-product="stable">稳健系列</button>
                             <div class="list-group-item p-0 ps-4 stable-sub-options" style="display: none;">
                                 <button class="list-group-item list-group-item-action" data-product="stable-usd">稳健系列-U本位</button>
-                                <button class="list-group-item list-group-item-action" data-product="stable-coin">稳健系列-币本位</button>
+                                <div class="list-group-item p-0">
+                                    <button class="list-group-item list-group-item-action" data-product="stable-coin">稳健系列-币本位</button>
+                                    <div class="list-group-item p-0 ps-4 stable-coin-sub-options" style="display: none;">
+                                        <button class="list-group-item list-group-item-action" data-product="stable-coin-btc">BTC本位</button>
+                                        <button class="list-group-item list-group-item-action" data-product="stable-coin-eth">ETH本位</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <button class="list-group-item list-group-item-action" data-product="aggressive">进取系列</button>
@@ -224,7 +230,8 @@
                                     <option value="">请选择产品</option>
                                     <option value="balanced">Alpha-Bridge</option>
                                     <option value="stable-usd">Stable-Harbor-USDT</option>
-                                    <option value="stable-coin">Stable-Harbor-BTC</option>
+                                    <option value="stable-coin-btc">Stable-Harbor-BTC</option>
+                                    <option value="stable-coin-eth">Stable-Harbor-ETH</option>
                                     <option value="aggressive">Deep-Growth</option>
                                 </select>
                             </div>

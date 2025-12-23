@@ -88,9 +88,9 @@ const productData = {
         ],
         alt: '稳健系列-U本位业绩'
     },
-    'stable-coin': {
+    'stable-coin-btc': {
         title: 'Stable-Harbor-BTC',
-        desc: '以币本位计价，专注于低风险套利策略，追求稳定收益，严格控制回撤。',
+        desc: '以BTC本位计价，专注于低风险套利策略，追求稳定收益，严格控制回撤。',
         facts: [
             { label: '成立时间', value: '2024/8/16' },
             { label: '策略成分', value: '套利' },
@@ -101,7 +101,22 @@ const productData = {
             { label: '区间收益率', value: '' },
             { label: '预计年化收益率', value: '' }
         ],
-        alt: '稳健系列-币本位业绩'
+        alt: '稳健系列-BTC本位业绩'
+    },
+    'stable-coin-eth': {
+        title: 'Stable-Harbor-ETH',
+        desc: '以ETH本位计价，专注于低风险套利策略，追求稳定收益，严格控制回撤。',
+        facts: [
+            { label: '成立时间', value: '2025/12/21' },
+            { label: '策略成分', value: '套利' },
+            { label: '最大回撤', value: '' },
+            { label: '实际杠杆', value: '1.5X' },
+            { label: 'Sharpe比率', value: '' },
+            { label: '杠杆限额', value: '5X' },
+            { label: '区间收益率', value: '' },
+            { label: '预计年化收益率', value: '' }
+        ],
+        alt: '稳健系列-ETH本位业绩'
     },
     balanced: {
         title: 'Alpha-Bridge',
@@ -162,6 +177,20 @@ if (productList && perfContent) {
                 return; // 不改变右侧内容
             }
             
+            // 处理稳健系列-币本位的特殊情况
+            if (key === 'stable-coin') {
+                // 切换子选项的显示状态
+                const subOptions = document.querySelector('.stable-coin-sub-options');
+                if (subOptions) {
+                    subOptions.style.display = subOptions.style.display === 'none' ? 'block' : 'none';
+                }
+                // 移除所有按钮的active类
+                productList.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                // 为稳健系列-币本位按钮添加active类
+                e.target.classList.add('active');
+                return; // 不改变右侧内容
+            }
+            
             // 处理其他产品选项
             if (key === 'balanced') {
                 setTimeout(() => {
@@ -171,9 +200,13 @@ if (productList && perfContent) {
                 setTimeout(() => {
                     showStableUsdProductSection('all'); // 默认显示成立以来
                 }, 100);
-            } else if (key === 'stable-coin') {
+            } else if (key === 'stable-coin-btc') {
                 setTimeout(() => {
-                    showStableCoinProductSection('all'); // 默认显示成立以来
+                    showStableCoinBtcProductSection('all'); // 默认显示成立以来
+                }, 100);
+            } else if (key === 'stable-coin-eth') {
+                setTimeout(() => {
+                    showStableCoinEthProductSection('all'); // 默认显示成立以来
                 }, 100);
             } else if (key === 'aggressive') {
                 setTimeout(() => {
@@ -565,48 +598,48 @@ function showStableProductSection(rangeDays = 30) {
     }
 }
 
-// 稳健系列-币本位业绩图表逻辑
-let stableCoinChart = null;
-let stableCoinData = [];
-let stableCoinDataLoaded = false;
+// 稳健系列-BTC本位业绩图表逻辑
+let stableCoinBtcChart = null;
+let stableCoinBtcData = [];
+let stableCoinBtcDataLoaded = false;
 
-function loadStableCoinCSVAndDraw(rangeDays = 30, callback) {
+function loadStableCoinBtcCSVAndDraw(rangeDays = 30, callback) {
     Papa.parse('data/arbitrage_coin.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
-            stableCoinData = results.data
+            stableCoinBtcData = results.data
                 .filter(row => row.Date && row['NAV per unit'])
                 .map(row => ({
                     date: row.Date,
                     nav: parseFloat(row['NAV per unit'])
                 }));
-            stableCoinDataLoaded = true;
-            renderStableCoinChart(rangeDays);
+            stableCoinBtcDataLoaded = true;
+            renderStableCoinBtcChart(rangeDays);
             if (callback) callback();
         }
     });
 }
 
-function renderStableCoinChart(rangeDays = 30) {
-    if (!stableCoinData.length) return;
+function renderStableCoinBtcChart(rangeDays = 30) {
+    if (!stableCoinBtcData.length) return;
     let dataSlice;
     
     // 计算实际需要的数据点数量
     let pointsToShow;
     if (rangeDays === 'all') {
-        dataSlice = stableCoinData;
+        dataSlice = stableCoinBtcData;
     } else {
         // 由于是周频数据，每周一个点，所以需要的数据点数量是 rangeDays/7 向上取整
         pointsToShow = Math.ceil(rangeDays / 7);
-        dataSlice = stableCoinData.slice(-pointsToShow);
+        dataSlice = stableCoinBtcData.slice(-pointsToShow);
     }
 
     const labels = dataSlice.map(d => d.date);
     const values = dataSlice.map(d => d.nav);
-    const ctx = document.getElementById('stableCoinChart').getContext('2d');
-    if (stableCoinChart) stableCoinChart.destroy();
-    stableCoinChart = new Chart(ctx, {
+    const ctx = document.getElementById('stableCoinBtcChart').getContext('2d');
+    if (stableCoinBtcChart) stableCoinBtcChart.destroy();
+    stableCoinBtcChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
@@ -668,7 +701,7 @@ function renderStableCoinChart(rangeDays = 30) {
     const maxDrawdown = calculateMaxDrawdown(dataSlice);
 
     // 更新表格中的值
-    const facts = productData['stable-coin'].facts;
+    const facts = productData['stable-coin-btc'].facts;
     facts[2].value = maxDrawdown ? maxDrawdown + '%' : '';  // 最大回撤
     facts[4].value = sharpe ? sharpe : '';  // Sharpe比率
     facts[6].value = returnRate ? returnRate + '%' : '';  // 区间收益率
@@ -682,29 +715,29 @@ function renderStableCoinChart(rangeDays = 30) {
     }
 }
 
-function showStableCoinProductSection(rangeDays = 30) {
+function showStableCoinBtcProductSection(rangeDays = 30) {
     // 1. 生成内容
-    if (perfContent && productData['stable-coin']) {
+    if (perfContent && productData['stable-coin-btc']) {
         perfContent.innerHTML = `
-            <h3>${productData['stable-coin'].title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
-            <p>${productData['stable-coin'].desc}</p>
-            ${renderFactsTable(productData['stable-coin'].facts)}
-            <div id="stable-coin-chart-controls" style="margin-bottom:16px;">
+            <h3>${productData['stable-coin-btc'].title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
+            <p>${productData['stable-coin-btc'].desc}</p>
+            ${renderFactsTable(productData['stable-coin-btc'].facts)}
+            <div id="stable-coin-btc-chart-controls" style="margin-bottom:16px;">
                 <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
                 <button class="btn btn-outline-dark btn-sm me-2" data-range="180">近6个月</button>
                 <button class="btn btn-outline-dark btn-sm" data-range="all">成立以来</button>
             </div>
-            <div class="performance-chart mb-3" id="stable-coin-chart-container">
-                <canvas id="stableCoinChart" height="320"></canvas>
+            <div class="performance-chart mb-3" id="stable-coin-btc-chart-container">
+                <canvas id="stableCoinBtcChart" height="320"></canvas>
             </div>
         `;
     }
     // 2. 显示图表UI
-    showStableCoinChartUI();
+    showStableCoinBtcChartUI();
     // 3. 渲染图表
-    loadStableCoinCSVAndDraw(rangeDays, bindStableCoinChartControls);
+    loadStableCoinBtcCSVAndDraw(rangeDays, bindStableCoinBtcChartControls);
     // 4. 设置对应按钮的高亮状态
-    const chartControls = document.getElementById('stable-coin-chart-controls');
+    const chartControls = document.getElementById('stable-coin-btc-chart-controls');
     if (chartControls) {
         chartControls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
         const activeBtn = chartControls.querySelector(`button[data-range="${rangeDays}"]`);
@@ -712,23 +745,194 @@ function showStableCoinProductSection(rangeDays = 30) {
     }
 }
 
-function showStableCoinChartUI() {
-    const container = document.getElementById('stable-coin-chart-container');
+function showStableCoinBtcChartUI() {
+    const container = document.getElementById('stable-coin-btc-chart-container');
     if (container) container.style.display = 'block';
 }
 
-function hideStableCoinChartUI() {
-    const container = document.getElementById('stable-coin-chart-container');
+function hideStableCoinBtcChartUI() {
+    const container = document.getElementById('stable-coin-btc-chart-container');
     if (container) container.style.display = 'none';
 }
 
-function bindStableCoinChartControls() {
-    const controls = document.getElementById('stable-coin-chart-controls');
+function bindStableCoinBtcChartControls() {
+    const controls = document.getElementById('stable-coin-btc-chart-controls');
     if (controls) {
         controls.addEventListener('click', function(e) {
             if (e.target.matches('button[data-range]')) {
                 const range = e.target.getAttribute('data-range');
-                renderStableCoinChart(range);
+                renderStableCoinBtcChart(range);
+                controls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+            }
+        });
+    }
+}
+
+// 稳健系列-ETH本位业绩图表逻辑
+let stableCoinEthChart = null;
+let stableCoinEthData = [];
+let stableCoinEthDataLoaded = false;
+
+function loadStableCoinEthCSVAndDraw(rangeDays = 30, callback) {
+    Papa.parse('data/arbitrage_eth.csv?t=' + new Date().getTime(), {
+        download: true,
+        header: true,
+        complete: function(results) {
+            stableCoinEthData = results.data
+                .filter(row => row.Date && row['NAV per unit'])
+                .map(row => ({
+                    date: row.Date,
+                    nav: parseFloat(row['NAV per unit'])
+                }));
+            stableCoinEthDataLoaded = true;
+            renderStableCoinEthChart(rangeDays);
+            if (callback) callback();
+        }
+    });
+}
+
+function renderStableCoinEthChart(rangeDays = 30) {
+    if (!stableCoinEthData.length) return;
+    let dataSlice;
+    
+    // 计算实际需要的数据点数量
+    let pointsToShow;
+    if (rangeDays === 'all') {
+        dataSlice = stableCoinEthData;
+    } else {
+        // 由于是周频数据，每周一个点，所以需要的数据点数量是 rangeDays/7 向上取整
+        pointsToShow = Math.ceil(rangeDays / 7);
+        dataSlice = stableCoinEthData.slice(-pointsToShow);
+    }
+
+    const labels = dataSlice.map(d => d.date);
+    const values = dataSlice.map(d => d.nav);
+    const ctx = document.getElementById('stableCoinEthChart').getContext('2d');
+    if (stableCoinEthChart) stableCoinEthChart.destroy();
+    stableCoinEthChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '单位净值',
+                data: values,
+                borderColor: '#1a2530',
+                backgroundColor: 'rgba(26,37,48,0.08)',
+                pointRadius: 2,
+                tension: 0.2,
+                fill: true
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: false
+                },
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '单位净值: ' + context.parsed.y.toFixed(4);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { 
+                    display: true, 
+                    title: { display: false },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                },
+                y: {
+                    display: true,
+                    title: { display: false },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toFixed(4);
+                        }
+                    }
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            elements: { line: { borderWidth: 2 } }
+        }
+    });
+
+    // 计算收益率指标
+    const returnRate = calculateReturnRate(dataSlice);
+    const annualized = calculateAnnualizedReturn(dataSlice);
+    const sharpe = calculateAnnualizedSharpe(dataSlice);
+    const maxDrawdown = calculateMaxDrawdown(dataSlice);
+
+    // 更新表格中的值
+    const facts = productData['stable-coin-eth'].facts;
+    facts[2].value = maxDrawdown ? maxDrawdown + '%' : '';  // 最大回撤
+    facts[4].value = sharpe ? sharpe : '';  // Sharpe比率
+    facts[6].value = returnRate ? returnRate + '%' : '';  // 区间收益率
+    facts[7].value = annualized ? annualized + '%' : '';  // 预计年化收益率
+
+    // 更新表格内容
+    const factsHtml = renderFactsTable(facts);
+    const factsContainer = document.querySelector('#product-performance-content .container');
+    if (factsContainer) {
+        factsContainer.outerHTML = factsHtml;
+    }
+}
+
+function showStableCoinEthProductSection(rangeDays = 30) {
+    // 1. 生成内容
+    if (perfContent && productData['stable-coin-eth']) {
+        perfContent.innerHTML = `
+            <h3>${productData['stable-coin-eth'].title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
+            <p>${productData['stable-coin-eth'].desc}</p>
+            ${renderFactsTable(productData['stable-coin-eth'].facts)}
+            <div id="stable-coin-eth-chart-controls" style="margin-bottom:16px;">
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="180">近6个月</button>
+                <button class="btn btn-outline-dark btn-sm" data-range="all">成立以来</button>
+            </div>
+            <div class="performance-chart mb-3" id="stable-coin-eth-chart-container">
+                <canvas id="stableCoinEthChart" height="320"></canvas>
+            </div>
+        `;
+    }
+    // 2. 显示图表UI
+    showStableCoinEthChartUI();
+    // 3. 渲染图表
+    loadStableCoinEthCSVAndDraw(rangeDays, bindStableCoinEthChartControls);
+    // 4. 设置对应按钮的高亮状态
+    const chartControls = document.getElementById('stable-coin-eth-chart-controls');
+    if (chartControls) {
+        chartControls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = chartControls.querySelector(`button[data-range="${rangeDays}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+    }
+}
+
+function showStableCoinEthChartUI() {
+    const container = document.getElementById('stable-coin-eth-chart-container');
+    if (container) container.style.display = 'block';
+}
+
+function hideStableCoinEthChartUI() {
+    const container = document.getElementById('stable-coin-eth-chart-container');
+    if (container) container.style.display = 'none';
+}
+
+function bindStableCoinEthChartControls() {
+    const controls = document.getElementById('stable-coin-eth-chart-controls');
+    if (controls) {
+        controls.addEventListener('click', function(e) {
+            if (e.target.matches('button[data-range]')) {
+                const range = e.target.getAttribute('data-range');
+                renderStableCoinEthChart(range);
                 controls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
                 e.target.classList.add('active');
             }
@@ -1237,10 +1441,28 @@ function showInvestmentSummary() {
     const balancedLatestData = getLatestBalancedInvestorData(currentUser);
     const arbitrageLatestData = getLatestArbitrageInvestorData(currentUser);
     const arbitrageCoinLatestData = getLatestArbitrageCoinInvestorData(currentUser);
+    
+    // 分别获取BTC和ETH的最新数据
+    let arbitrageCoinBtcLatestData = null;
+    let arbitrageCoinEthLatestData = null;
+    if (currentUserData && currentUserData.investments) {
+        const arbitrageCoinData = currentUserData.investments.arbitrage_coin || [];
+        const btcData = arbitrageCoinData.filter(item => item.coin === 'BTC');
+        if (btcData.length > 0) {
+            arbitrageCoinBtcLatestData = btcData.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        }
+        // Stable-Harbor-ETH 只使用 investments.arbitrage_eth
+        if (Array.isArray(currentUserData.investments.arbitrage_eth) && currentUserData.investments.arbitrage_eth.length > 0) {
+            const ethAll = currentUserData.investments.arbitrage_eth.slice();
+            arbitrageCoinEthLatestData = ethAll.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        }
+    }
+    
     console.log('Current user:', currentUser);
     console.log('Latest balanced data for', currentUser, ':', balancedLatestData);
     console.log('Latest arbitrage data for', currentUser, ':', arbitrageLatestData);
-    console.log('Latest arbitrage coin data for', currentUser, ':', arbitrageCoinLatestData);
+    console.log('Latest arbitrage coin BTC data for', currentUser, ':', arbitrageCoinBtcLatestData);
+    console.log('Latest arbitrage coin ETH data for', currentUser, ':', arbitrageCoinEthLatestData);
     
     // 计算持仓天数和收益率
     let balancedHoldingDays = 0;
@@ -1249,9 +1471,12 @@ function showInvestmentSummary() {
     let arbitrageHoldingDays = 0;
     let arbitrageReturnRate = 0;
     let arbitrageAnnualizedReturn = 0;
-    let arbitrageCoinHoldingDays = 0;
-    let arbitrageCoinReturnRate = 0;
-    let arbitrageCoinAnnualizedReturn = 0;
+    let arbitrageCoinBtcHoldingDays = 0;
+    let arbitrageCoinBtcReturnRate = 0;
+    let arbitrageCoinBtcAnnualizedReturn = 0;
+    let arbitrageCoinEthHoldingDays = 0;
+    let arbitrageCoinEthReturnRate = 0;
+    let arbitrageCoinEthAnnualizedReturn = 0;
     
     if (balancedLatestData) {
         console.log('Processing balanced data for', currentUser);
@@ -1293,31 +1518,53 @@ function showInvestmentSummary() {
         arbitrageAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(arbitrageReturnRate), arbitrageHoldingDays);
     }
 
-    if (arbitrageCoinLatestData) {
-        console.log('Processing arbitrage coin data for', currentUser);
+    if (arbitrageCoinBtcLatestData) {
+        console.log('Processing arbitrage coin BTC data for', currentUser);
         // 获取当前投资者的所有Stable-Harbor-BTC记录
-        const arbitrageCoinRecords = currentUserData.investments.arbitrage_coin || [];
+        const arbitrageCoinBtcRecords = (currentUserData.investments.arbitrage_coin || []).filter(item => item.coin === 'BTC');
         // 取最早一条
-        const arbitrageCoinFirstRecord = arbitrageCoinRecords.length
-            ? arbitrageCoinRecords.sort((a, b) => new Date(a.date) - new Date(b.date))[0]
+        const arbitrageCoinBtcFirstRecord = arbitrageCoinBtcRecords.length
+            ? arbitrageCoinBtcRecords.sort((a, b) => new Date(a.date) - new Date(b.date))[0]
             : null;
         // 持仓天数 = （最早和最新日期的天数差+1）
-        if (arbitrageCoinFirstRecord && arbitrageCoinLatestData) {
-            arbitrageCoinHoldingDays = Math.ceil(
-                (new Date(arbitrageCoinLatestData.date) - new Date(arbitrageCoinFirstRecord.date)) / (1000 * 60 * 60 * 24)
+        if (arbitrageCoinBtcFirstRecord && arbitrageCoinBtcLatestData) {
+            arbitrageCoinBtcHoldingDays = Math.ceil(
+                (new Date(arbitrageCoinBtcLatestData.date) - new Date(arbitrageCoinBtcFirstRecord.date)) / (1000 * 60 * 60 * 24)
             ) + 1;
         }
         // 使用 total_return 作为收益率，注意 total_return 是小数，需乘以100
-        arbitrageCoinReturnRate = arbitrageCoinLatestData.total_return !== undefined ? (arbitrageCoinLatestData.total_return * 100).toFixed(2) : '0.00';
+        arbitrageCoinBtcReturnRate = arbitrageCoinBtcLatestData.total_return !== undefined ? (arbitrageCoinBtcLatestData.total_return * 100).toFixed(2) : '0.00';
         // 计算年化收益率
-        arbitrageCoinAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(arbitrageCoinReturnRate), arbitrageCoinHoldingDays);
+        arbitrageCoinBtcAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(arbitrageCoinBtcReturnRate), arbitrageCoinBtcHoldingDays);
+    }
+
+    if (arbitrageCoinEthLatestData) {
+        console.log('Processing arbitrage coin ETH data for', currentUser);
+        // 获取当前投资者的所有Stable-Harbor-ETH记录（仅使用 investments.arbitrage_eth）
+        let arbitrageCoinEthRecords = Array.isArray(currentUserData.investments.arbitrage_eth)
+            ? currentUserData.investments.arbitrage_eth.slice()
+            : [];
+        // 取最早一条
+        const arbitrageCoinEthFirstRecord = arbitrageCoinEthRecords.length
+            ? arbitrageCoinEthRecords.sort((a, b) => new Date(a.date) - new Date(b.date))[0]
+            : null;
+        // 持仓天数 = （最早和最新日期的天数差+1）
+        if (arbitrageCoinEthFirstRecord && arbitrageCoinEthLatestData) {
+            arbitrageCoinEthHoldingDays = Math.ceil(
+                (new Date(arbitrageCoinEthLatestData.date) - new Date(arbitrageCoinEthFirstRecord.date)) / (1000 * 60 * 60 * 24)
+            ) + 1;
+        }
+        // 使用 total_return 作为收益率，注意 total_return 是小数，需乘以100
+        arbitrageCoinEthReturnRate = arbitrageCoinEthLatestData.total_return !== undefined ? (arbitrageCoinEthLatestData.total_return * 100).toFixed(2) : '0.00';
+        // 计算年化收益率
+        arbitrageCoinEthAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(arbitrageCoinEthReturnRate), arbitrageCoinEthHoldingDays);
     }
 
     // 按币种分组计算总资产和收益
     const assetsByCoin = {};
     
-    // 处理 Alpha-Bridge 数据
-    if (balancedLatestData && balancedLatestData.principal > 0) {
+    // 处理 Alpha-Bridge 数据（即使本金为 0 也统计资产和收益，但不计入当前持仓数量）
+    if (balancedLatestData) {
         console.log('Adding balanced data to assetsByCoin');
         const coin = balancedLatestData.coin;
         if (!assetsByCoin[coin]) {
@@ -1333,11 +1580,14 @@ function showInvestmentSummary() {
         assetsByCoin[coin].totalNetPnl += balancedLatestData.net_pnl;
         assetsByCoin[coin].realizedPnl += balancedLatestData.realized_pnl;
         assetsByCoin[coin].unrealizedPnl += balancedLatestData.net_pnl;
-        assetsByCoin[coin].holdingCount++;
+        // 只有本金大于 0 时才算作当前持仓
+        if (balancedLatestData.principal > 0) {
+            assetsByCoin[coin].holdingCount++;
+        }
     }
 
-    // 处理 Stable-Harbor-USDT 数据
-    if (arbitrageLatestData && arbitrageLatestData.principal > 0) {
+    // 处理 Stable-Harbor-USDT 数据（同样逻辑）
+    if (arbitrageLatestData) {
         console.log('Adding arbitrage data to assetsByCoin');
         const coin = arbitrageLatestData.coin;
         if (!assetsByCoin[coin]) {
@@ -1353,13 +1603,15 @@ function showInvestmentSummary() {
         assetsByCoin[coin].totalNetPnl += arbitrageLatestData.net_pnl;
         assetsByCoin[coin].realizedPnl += arbitrageLatestData.realized_pnl;
         assetsByCoin[coin].unrealizedPnl += arbitrageLatestData.net_pnl;
-        assetsByCoin[coin].holdingCount++;
+        if (arbitrageLatestData.principal > 0) {
+            assetsByCoin[coin].holdingCount++;
+        }
     }
 
-    // 处理 Stable-Harbor-BTC 数据
-    if (arbitrageCoinLatestData && arbitrageCoinLatestData.principal > 0) {
-        console.log('Adding arbitrage coin data to assetsByCoin');
-        const coin = arbitrageCoinLatestData.coin;
+    // 处理 Stable-Harbor-BTC 数据（同样逻辑）
+    if (arbitrageCoinBtcLatestData) {
+        console.log('Adding arbitrage coin BTC data to assetsByCoin');
+        const coin = arbitrageCoinBtcLatestData.coin;
         if (!assetsByCoin[coin]) {
             assetsByCoin[coin] = {
                 totalNetNav: 0,
@@ -1369,11 +1621,35 @@ function showInvestmentSummary() {
                 holdingCount: 0
             };
         }
-        assetsByCoin[coin].totalNetNav += arbitrageCoinLatestData.net_nav;
-        assetsByCoin[coin].totalNetPnl += arbitrageCoinLatestData.net_pnl;
-        assetsByCoin[coin].realizedPnl += arbitrageCoinLatestData.realized_pnl;
-        assetsByCoin[coin].unrealizedPnl += arbitrageCoinLatestData.net_pnl;
-        assetsByCoin[coin].holdingCount++;
+        assetsByCoin[coin].totalNetNav += arbitrageCoinBtcLatestData.net_nav;
+        assetsByCoin[coin].totalNetPnl += arbitrageCoinBtcLatestData.net_pnl;
+        assetsByCoin[coin].realizedPnl += arbitrageCoinBtcLatestData.realized_pnl;
+        assetsByCoin[coin].unrealizedPnl += arbitrageCoinBtcLatestData.net_pnl;
+        if (arbitrageCoinBtcLatestData.principal > 0) {
+            assetsByCoin[coin].holdingCount++;
+        }
+    }
+
+    // 处理 Stable-Harbor-ETH 数据（同样逻辑）
+    if (arbitrageCoinEthLatestData) {
+        console.log('Adding arbitrage coin ETH data to assetsByCoin');
+        const coin = arbitrageCoinEthLatestData.coin;
+        if (!assetsByCoin[coin]) {
+            assetsByCoin[coin] = {
+                totalNetNav: 0,
+                totalNetPnl: 0,
+                realizedPnl: 0,
+                unrealizedPnl: 0,
+                holdingCount: 0
+            };
+        }
+        assetsByCoin[coin].totalNetNav += arbitrageCoinEthLatestData.net_nav;
+        assetsByCoin[coin].totalNetPnl += arbitrageCoinEthLatestData.net_pnl;
+        assetsByCoin[coin].realizedPnl += arbitrageCoinEthLatestData.realized_pnl;
+        assetsByCoin[coin].unrealizedPnl += arbitrageCoinEthLatestData.net_pnl;
+        if (arbitrageCoinEthLatestData.principal > 0) {
+            assetsByCoin[coin].holdingCount++;
+        }
     }
 
     console.log('Final assetsByCoin:', assetsByCoin);
@@ -1383,6 +1659,13 @@ function showInvestmentSummary() {
     if (Object.keys(assetsByCoin).length > 0) {
         // 计算总持仓数量
         const totalHoldingCount = Object.values(assetsByCoin).reduce((sum, data) => sum + data.holdingCount, 0);
+        // 币种展示顺序：总资产 ≥ 1 的在前，总资产 < 1 的在后
+        const sortedAssetsEntries = Object.entries(assetsByCoin).sort(([, a], [, b]) => {
+            const aSmall = a.totalNetNav < 1;
+            const bSmall = b.totalNetNav < 1;
+            if (aSmall === bSmall) return 0;
+            return aSmall ? 1 : -1; // 总资产 < 1 的放后面
+        });
         
         overviewHtml = `
             <div class="card mb-4">
@@ -1393,20 +1676,20 @@ function showInvestmentSummary() {
                             <tbody>
                                 <tr>
                                     <td class="fw-bold">总资产</td>
-                                    <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
+                                    <td>${sortedAssetsEntries.map(([coin, data]) => 
                                         `${coin} ${data.totalNetNav.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`
                                     ).join('&emsp;｜&emsp;')}</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">累计收益</td>
-                                    <td class="text-success">${Object.entries(assetsByCoin).map(([coin, data]) => {
+                                    <td class="text-success">${sortedAssetsEntries.map(([coin, data]) => {
                                         const total = data.realizedPnl + data.unrealizedPnl;
                                         return `+${coin} ${total.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`;
                                     }).join('&emsp;｜&emsp;')}</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold" style="white-space:nowrap;">已实现收益</td>
-                                    <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
+                                    <td>${sortedAssetsEntries.map(([coin, data]) => 
                                         `${coin} ${data.realizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`
                                     ).join('&emsp;｜&emsp;')}
                                     <!-- 分红日期提示，仅特定投资人显示且只显示一次 -->
@@ -1422,7 +1705,7 @@ function showInvestmentSummary() {
                                 </tr>
                                 <tr>
                                     <td class="fw-bold" style="white-space:nowrap;">未实现收益</td>
-                                    <td>${Object.entries(assetsByCoin).map(([coin, data]) => 
+                                    <td>${sortedAssetsEntries.map(([coin, data]) => 
                                         `${coin} ${data.unrealizedPnl.toLocaleString('zh-CN', {minimumFractionDigits: coin === 'BTC' ? 4 : 2, maximumFractionDigits: coin === 'BTC' ? 4 : 2})}`
                                     ).join('&emsp;｜&emsp;')}</td>
                                 </tr>
@@ -1540,14 +1823,24 @@ function showInvestmentSummary() {
                                             <td>${arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : (balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-')}</td>
                                         </tr>
                                         <tr>
-                                            <td>${productData['stable-coin'].title}</td>
-                                            <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.coin : 'BTC'}</td>
-                                            <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
-                                            <td>${arbitrageCoinLatestData ? arbitrageCoinLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageCoinLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
-                                            <td>${arbitrageCoinReturnRate ? arbitrageCoinReturnRate + '%' : '0.00%'}</td>
-                                            <td>${arbitrageCoinHoldingDays}</td>
-                                            <td>${arbitrageCoinAnnualizedReturn ? arbitrageCoinAnnualizedReturn + '%' : '0.00%'}</td>
-                                            <td>${arbitrageCoinLatestData ? formatDateToYMD(arbitrageCoinLatestData.date) : (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : (balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-'))}</td>
+                                            <td>${productData['stable-coin-btc'].title}</td>
+                                            <td>${arbitrageCoinBtcLatestData ? arbitrageCoinBtcLatestData.coin : 'BTC'}</td>
+                                            <td>${arbitrageCoinBtcLatestData ? arbitrageCoinBtcLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00'}</td>
+                                            <td>${arbitrageCoinBtcLatestData ? arbitrageCoinBtcLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00'}</td>
+                                            <td>${arbitrageCoinBtcReturnRate ? arbitrageCoinBtcReturnRate + '%' : '0.00%'}</td>
+                                            <td>${arbitrageCoinBtcHoldingDays}</td>
+                                            <td>${arbitrageCoinBtcAnnualizedReturn ? arbitrageCoinBtcAnnualizedReturn + '%' : '0.00%'}</td>
+                                            <td>${arbitrageCoinBtcLatestData ? formatDateToYMD(arbitrageCoinBtcLatestData.date) : (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : (balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-'))}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>${productData['stable-coin-eth'].title}</td>
+                                            <td>${arbitrageCoinEthLatestData ? arbitrageCoinEthLatestData.coin : 'ETH'}</td>
+                                            <td>${arbitrageCoinEthLatestData ? arbitrageCoinEthLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00'}</td>
+                                            <td>${arbitrageCoinEthLatestData ? arbitrageCoinEthLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00'}</td>
+                                            <td>${arbitrageCoinEthReturnRate ? arbitrageCoinEthReturnRate + '%' : '0.00%'}</td>
+                                            <td>${arbitrageCoinEthHoldingDays}</td>
+                                            <td>${arbitrageCoinEthAnnualizedReturn ? arbitrageCoinEthAnnualizedReturn + '%' : '0.00%'}</td>
+                                            <td>${arbitrageCoinEthLatestData ? formatDateToYMD(arbitrageCoinEthLatestData.date) : (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : (balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-'))}</td>
                                         </tr>
                                         <tr>
                                             <td>${productData['aggressive'].title}</td>
@@ -1676,8 +1969,19 @@ function showInvestmentSummary() {
                     }))
             );
 
-            const arbitrageCoinReturns = filterToMonthEnd(
+            const arbitrageCoinBtcReturns = filterToMonthEnd(
                 (currentUserData?.investments?.arbitrage_coin || [])
+                    .filter(record => record.coin === 'BTC')
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(record => ({
+                        x: formatDateToYMD(record.date),
+                        y: record.total_return * 100 // 转换为百分比
+                    }))
+            );
+            
+            // ETH 组合：只使用 investments.arbitrage_eth
+            const arbitrageCoinEthReturns = filterToMonthEnd(
+                (currentUserData?.investments?.arbitrage_eth || [])
                     .sort((a, b) => new Date(a.date) - new Date(b.date))
                     .map(record => ({
                         x: formatDateToYMD(record.date),
@@ -1687,7 +1991,8 @@ function showInvestmentSummary() {
 
             console.log('Balanced returns data:', balancedReturns);
             console.log('Arbitrage returns data:', arbitrageReturns);
-            console.log('Arbitrage coin returns data:', arbitrageCoinReturns);
+            console.log('Arbitrage coin BTC returns data:', arbitrageCoinBtcReturns);
+            console.log('Arbitrage coin ETH returns data:', arbitrageCoinEthReturns);
 
             // 准备图表数据
             const datasets = [];
@@ -1733,12 +2038,12 @@ function showInvestmentSummary() {
                     }
                 });
             }
-            if (arbitrageCoinReturns.length > 0) {
+            if (arbitrageCoinBtcReturns.length > 0) {
                 // 检查最后一个点是否为月末
-                const lastPointIsMonthEnd = arbitrageCoinReturns[arbitrageCoinReturns.length - 1].isMonthEnd;
+                const lastPointIsMonthEnd = arbitrageCoinBtcReturns[arbitrageCoinBtcReturns.length - 1].isMonthEnd;
                 datasets.push({
-                    label: productData['stable-coin'].title,
-                    data: arbitrageCoinReturns,
+                    label: productData['stable-coin-btc'].title,
+                    data: arbitrageCoinBtcReturns,
                     borderColor: '#e74c3c',
                     backgroundColor: 'rgba(231,76,60,0.1)',
                     tension: 0.2,
@@ -1746,7 +2051,28 @@ function showInvestmentSummary() {
                     segment: {
                         borderDash: ctx => {
                             // 如果是最后一个点且不是月末，则最后一段用虚线
-                            if (ctx.p1DataIndex === arbitrageCoinReturns.length - 1 && !lastPointIsMonthEnd) {
+                            if (ctx.p1DataIndex === arbitrageCoinBtcReturns.length - 1 && !lastPointIsMonthEnd) {
+                                return [5, 5];
+                            }
+                            return [];
+                        }
+                    }
+                });
+            }
+            if (arbitrageCoinEthReturns.length > 0) {
+                // 检查最后一个点是否为月末
+                const lastPointIsMonthEnd = arbitrageCoinEthReturns[arbitrageCoinEthReturns.length - 1].isMonthEnd;
+                datasets.push({
+                    label: productData['stable-coin-eth'].title,
+                    data: arbitrageCoinEthReturns,
+                    borderColor: '#9b59b6',
+                    backgroundColor: 'rgba(155,89,182,0.1)',
+                    tension: 0.2,
+                    fill: false,
+                    segment: {
+                        borderDash: ctx => {
+                            // 如果是最后一个点且不是月末，则最后一段用虚线
+                            if (ctx.p1DataIndex === arbitrageCoinEthReturns.length - 1 && !lastPointIsMonthEnd) {
                                 return [5, 5];
                             }
                             return [];
@@ -2153,9 +2479,20 @@ function updateMaxRedemptionAmount() {
                 maxAmount = latestArbitrage.net_nav || 0;
             }
         }
-    } else if (product === 'stable-coin') {
+    } else if (product === 'stable-coin-btc') {
         if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
-            const latestArbitrageCoin = investments.arbitrage_coin.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            const latestArbitrageCoin = investments.arbitrage_coin
+                .filter(item => item.coin === 'BTC')
+                .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrageCoin && latestArbitrageCoin.coin === currency) {
+                maxAmount = latestArbitrageCoin.net_nav || 0;
+            }
+        }
+    } else if (product === 'stable-coin-eth') {
+        if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
+            const latestArbitrageCoin = investments.arbitrage_coin
+                .filter(item => item.coin === 'ETH')
+                .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
             if (latestArbitrageCoin && latestArbitrageCoin.coin === currency) {
                 maxAmount = latestArbitrageCoin.net_nav || 0;
             }
@@ -2203,9 +2540,20 @@ function setMaxRedemptionAmount() {
                 maxAmount = latestArbitrage.net_nav || 0;
             }
         }
-    } else if (product === 'stable-coin') {
+    } else if (product === 'stable-coin-btc') {
         if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
-            const latestArbitrageCoin = investments.arbitrage_coin.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            const latestArbitrageCoin = investments.arbitrage_coin
+                .filter(item => item.coin === 'BTC')
+                .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrageCoin && latestArbitrageCoin.coin === currency) {
+                maxAmount = latestArbitrageCoin.net_nav || 0;
+            }
+        }
+    } else if (product === 'stable-coin-eth') {
+        if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
+            const latestArbitrageCoin = investments.arbitrage_coin
+                .filter(item => item.coin === 'ETH')
+                .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
             if (latestArbitrageCoin && latestArbitrageCoin.coin === currency) {
                 maxAmount = latestArbitrageCoin.net_nav || 0;
             }
@@ -2288,7 +2636,8 @@ function handleRedemptionSubmit() {
     const productNames = {
         'balanced': 'Alpha-Bridge',
         'stable-usd': 'Stable-Harbor-USDT',
-        'stable-coin': 'Stable-Harbor-BTC',
+        'stable-coin-btc': 'Stable-Harbor-BTC',
+        'stable-coin-eth': 'Stable-Harbor-ETH',
         'aggressive': 'Deep-Growth'
     };
     
@@ -2683,7 +3032,8 @@ function getCurrentCurrencyAmount(currency) {
 const fundNameMapping = {
     'zerone': 'Alpha-Bridge',
     'HPU': 'Stable-Harbor-USDT',
-    'binggan': 'Stable-Harbor-BTC'
+    'binggan': 'Stable-Harbor-BTC',
+    'HPE': 'Stable-Harbor-ETH'
 };
 
 // 加载并显示投资明细记录
