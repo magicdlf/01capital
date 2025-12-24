@@ -1048,7 +1048,7 @@ function showStableUsdProductSection(rangeDays = 30) {
     // 1. 生成内容
     if (perfContent && productData['stable-usd']) {
         perfContent.innerHTML = `
-            <h3>${productData['stable-usd'].title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
+            <h3>${productData['stable-usd'].title} <span style="font-size:1.1rem;color:#666;">（已暂停）</span></h3>
             <p>${productData['stable-usd'].desc}</p>
             ${renderFactsTable(productData['stable-usd'].facts)}
             <div id="stable-usd-chart-controls" style="margin-bottom:16px;">
@@ -1699,6 +1699,10 @@ function showInvestmentSummary() {
                                             return '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-01-06）</span>';
                                         } else if (["bon", "ying", "tt"].includes(user)) {
                                             return '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-07-04）</span>';
+                                        } else if (user === "hp") {
+                                            return '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-12-18）</span>';
+                                        } else if (user === "turbo") {
+                                            return '<span style="font-size:0.95em;color:#888;margin-left:8px;">（上次分红日期：2025-12-12）</span>';
                                         }
                                         return '';
                                     })()}</td>
