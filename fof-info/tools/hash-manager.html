@@ -817,13 +817,13 @@
                 datasets.push({
                     label: 'Stable-Harbor-BTC',
                     data: arbitrageCoinBtcReturns,
-                    borderColor: '#f39c12',
-                    backgroundColor: 'rgba(243,156,18,0.1)',
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231,76,60,0.1)',
                     tension: 0.2,
                     fill: false,
                     segment: {
                         borderDash: ctx => {
-                            if (ctx.p1DataIndex === arbitrageCoinReturns.length - 1 && !lastPointIsMonthEnd) {
+                            if (ctx.p1DataIndex === arbitrageCoinBtcReturns.length - 1 && !lastPointIsMonthEnd) {
                                 return [5, 5];
                             }
                             return [];
