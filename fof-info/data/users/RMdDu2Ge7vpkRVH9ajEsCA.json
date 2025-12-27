@@ -3045,22 +3045,22 @@
       },
       {
         "date": "2025-12-26",
-        "nav": 1.121991934749943,
+        "nav": 1.121991935,
         "principal": 169999.0,
-        "net_nav": 174936.87174723131,
-        "net_pnl": 4937.871747231313,
+        "net_nav": 174936.87177502757,
+        "net_pnl": 4937.8717750275755,
         "realized_pnl": 2610.38,
-        "total_return": 0.04440174205278451,
+        "total_return": 0.044401742216292894,
         "coin": "USDT"
       },
       {
         "date": "2025-12-27",
-        "nav": 1.1204031371361949,
+        "nav": 1.120384268807291,
         "principal": 169999.0,
-        "net_nav": 174760.26148271517,
-        "net_pnl": 4761.261482715157,
+        "net_nav": 174686.20338216628,
+        "net_pnl": 4687.203382166277,
         "realized_pnl": 2610.38,
-        "total_return": 0.04336285203274818,
+        "total_return": 0.042927213584587426,
         "coin": "USDT"
       }
     ],
@@ -3122,6 +3122,24 @@
       "realized_mgm": 1118.73,
       "realized_carry": 0.0,
       "nav_per_unit": 1.07213213
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/26",
+      "investor": "ying",
+      "action": "Carry Distribution",
+      "coin": "USDT",
+      "amount": -3234.97,
+      "unit": -2883.24,
+      "principal": 169999.0,
+      "unit_total": 155916.33,
+      "unit_chg": 0.0,
+      "carry_fee": 0.3,
+      "management_fee": 0.0,
+      "realized_pnl": 2610.38,
+      "realized_mgm": 1118.73,
+      "realized_carry": 4353.7,
+      "nav_per_unit": 1.121991935
     }
   ]
 }

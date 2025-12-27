@@ -5605,22 +5605,22 @@
       },
       {
         "date": "2025-12-26",
-        "nav": 1.121991934749943,
+        "nav": 1.121991935,
         "principal": 4474178.92,
-        "net_nav": 4645417.548060553,
-        "net_pnl": 171238.62806055322,
+        "net_nav": 4645417.549104669,
+        "net_pnl": 171238.6291046688,
         "realized_pnl": 112152.14,
-        "total_return": 0.07860920213153277,
+        "total_return": 0.07860920238392066,
         "coin": "USDT"
       },
       {
         "date": "2025-12-27",
-        "nav": 1.1204031371361949,
-        "principal": 4474178.92,
-        "net_nav": 4638526.791288938,
-        "net_pnl": 164347.8712889381,
+        "nav": 1.120384268807291,
+        "principal": 6118404.25,
+        "net_nav": 6280286.502311619,
+        "net_pnl": 161882.25231161894,
         "realized_pnl": 112152.14,
-        "total_return": 0.07694353964847789,
+        "total_return": 0.07695979717376766,
         "coin": "USDT"
       }
     ],
@@ -6024,6 +6024,42 @@
       "realized_mgm": 35503.66,
       "realized_carry": 0.0,
       "nav_per_unit": 1.12401398
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/26",
+      "investor": "octopus",
+      "action": "Carry Distribution",
+      "coin": "USDT",
+      "amount": -39725.1,
+      "unit": -35405.87,
+      "principal": 6118404.25,
+      "unit_total": 5605782.61,
+      "unit_chg": 0.0,
+      "carry_fee": 0.0,
+      "management_fee": 0.02,
+      "realized_pnl": 112152.14,
+      "realized_mgm": 75228.76,
+      "realized_carry": 35503.66,
+      "nav_per_unit": 1.121991935
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/26",
+      "investor": "octopus",
+      "action": "Subscription",
+      "coin": "USDT",
+      "amount": 1644225.33,
+      "unit": 1465452.0,
+      "principal": 6118404.25,
+      "unit_total": 5605782.61,
+      "unit_chg": 0.0,
+      "carry_fee": 0.0,
+      "management_fee": 0.02,
+      "realized_pnl": 112152.14,
+      "realized_mgm": 75228.76,
+      "realized_carry": 35503.66,
+      "nav_per_unit": 1.121991935
     }
   ]
 }

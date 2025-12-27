@@ -5445,22 +5445,22 @@
       },
       {
         "date": "2025-12-26",
-        "nav": 1.121991934749943,
+        "nav": 1.121991935,
         "principal": 300.0,
-        "net_nav": 316.7370174173488,
-        "net_pnl": 16.73701741734878,
+        "net_nav": 316.7370174633386,
+        "net_pnl": 16.737017463338564,
         "realized_pnl": 1.05,
-        "total_return": 0.059290058057829276,
+        "total_return": 0.059290058211128545,
         "coin": "ETH"
       },
       {
         "date": "2025-12-27",
-        "nav": 1.1204031371361949,
+        "nav": 1.120384268807291,
         "principal": 300.0,
-        "net_nav": 316.49473227466297,
-        "net_pnl": 16.49473227466294,
+        "net_nav": 315.10726276261244,
+        "net_pnl": 15.10726276261245,
         "realized_pnl": 1.05,
-        "total_return": 0.05848244091554314,
+        "total_return": 0.0538575425420415,
         "coin": "ETH"
       }
     ],
@@ -5558,6 +5558,24 @@
       "realized_mgm": 0.0,
       "realized_carry": 1.73,
       "nav_per_unit": 1.06835875
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/26",
+      "investor": "jennifer",
+      "action": "Carry Distribution",
+      "coin": "ETH",
+      "amount": -2.72,
+      "unit": -2.41,
+      "principal": 300.0,
+      "unit_total": 780529.51,
+      "unit_chg": 773393.68,
+      "carry_fee": 0.2,
+      "management_fee": 0.0,
+      "realized_pnl": 1.05,
+      "realized_mgm": 0.0,
+      "realized_carry": 2.72,
+      "nav_per_unit": 1.128572402
     }
   ]
 }

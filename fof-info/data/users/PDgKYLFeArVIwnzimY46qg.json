@@ -5625,22 +5625,22 @@
       },
       {
         "date": "2025-12-26",
-        "nav": 1.121991934749943,
+        "nav": 1.121991935,
         "principal": 1000000.0,
-        "net_nav": 1050869.0349430526,
-        "net_pnl": 50869.03494305248,
+        "net_nav": 1050869.0351795494,
+        "net_pnl": 50869.035179549355,
         "realized_pnl": 54506.49,
-        "total_return": 0.10537552494305247,
+        "total_return": 0.10537552517954936,
         "coin": "USDT"
       },
       {
         "date": "2025-12-27",
-        "nav": 1.1204031371361949,
+        "nav": 1.120384268807291,
         "principal": 1000000.0,
-        "net_nav": 1049308.2460795413,
-        "net_pnl": 49308.24607954122,
-        "realized_pnl": 54506.49,
-        "total_return": 0.10381473607954121,
+        "net_nav": 998512.4209145734,
+        "net_pnl": -1487.5790854265979,
+        "realized_pnl": 105375.52,
+        "total_return": 0.10388794091457342,
         "coin": "USDT"
       }
     ],
@@ -5810,6 +5810,42 @@
       "realized_mgm": 17450.29,
       "realized_carry": 0.0,
       "nav_per_unit": 1.07213213
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/26",
+      "investor": "alex",
+      "action": "Carry Distribution",
+      "coin": "USDT",
+      "amount": -10337.84,
+      "unit": -9213.83,
+      "principal": 1000000.0,
+      "unit_total": 891272.01,
+      "unit_chg": 0.0,
+      "carry_fee": 0.0,
+      "management_fee": 0.02,
+      "realized_pnl": 105375.52,
+      "realized_mgm": 27788.13,
+      "realized_carry": 17450.29,
+      "nav_per_unit": 1.121991935
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/26",
+      "investor": "alex",
+      "action": "Profit Distribution",
+      "coin": "USDT",
+      "amount": -50869.03,
+      "unit": -45338.14,
+      "principal": 1000000.0,
+      "unit_total": 891272.01,
+      "unit_chg": 0.0,
+      "carry_fee": 0.25,
+      "management_fee": 0.0,
+      "realized_pnl": 0.0,
+      "realized_mgm": 10337.84,
+      "realized_carry": 0.0,
+      "nav_per_unit": 1.121991935
     }
   ]
 }

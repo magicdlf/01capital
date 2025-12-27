@@ -4075,22 +4075,22 @@
       },
       {
         "date": "2025-12-26",
-        "nav": 1.121991934749943,
+        "nav": 1.121991935,
         "principal": 1482262.28,
-        "net_nav": 1528406.6197339243,
-        "net_pnl": 46144.33973392419,
+        "net_nav": 1528406.619974753,
+        "net_pnl": 46144.33997475276,
         "realized_pnl": 0.0,
-        "total_return": 0.09317664634448009,
+        "total_return": 0.09317664651815827,
         "coin": "USDT"
       },
       {
         "date": "2025-12-27",
-        "nav": 1.1204031371361949,
+        "nav": 1.120384268807291,
         "principal": 1482262.28,
-        "net_nav": 1526876.4578638778,
-        "net_pnl": 44614.1778638777,
+        "net_nav": 1523729.6812002661,
+        "net_pnl": 41467.40120026617,
         "realized_pnl": 0.0,
-        "total_return": 0.09207313918705906,
+        "total_return": 0.08980377759919289,
         "coin": "USDT"
       }
     ],
@@ -4170,6 +4170,24 @@
       "realized_mgm": 0.0,
       "realized_carry": 4491.34,
       "nav_per_unit": 1.08713043
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/26",
+      "investor": "miao",
+      "action": "Carry Distribution",
+      "coin": "USDT",
+      "amount": -15284.81,
+      "unit": -13622.92,
+      "principal": 1482262.28,
+      "unit_total": 1362226.03,
+      "unit_chg": 0.0,
+      "carry_fee": 0.3,
+      "management_fee": 0.0,
+      "realized_pnl": 0.0,
+      "realized_mgm": 0.0,
+      "realized_carry": 15284.81,
+      "nav_per_unit": 1.121991935
     }
   ]
 }

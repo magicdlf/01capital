@@ -895,22 +895,22 @@
       },
       {
         "date": "2025-12-26",
-        "nav": 1.121991934749943,
+        "nav": 1.121991935,
         "principal": 100000.0,
-        "net_nav": 102332.61307519318,
-        "net_pnl": 2332.6130751931732,
+        "net_nav": 102332.61309131386,
+        "net_pnl": 2332.6130913138622,
         "realized_pnl": 0.0,
-        "total_return": 0.023326130751931733,
+        "total_return": 0.02332613091313862,
         "coin": "USDT"
       },
       {
         "date": "2025-12-27",
-        "nav": 1.1204031371361949,
+        "nav": 1.120384268807291,
         "principal": 100000.0,
-        "net_nav": 102230.18641819974,
-        "net_pnl": 2230.1864181997344,
-        "realized_pnl": 0.0,
-        "total_return": 0.022301864181997342,
+        "net_nav": 99856.71280284118,
+        "net_pnl": -143.28719715881743,
+        "realized_pnl": 2332.61,
+        "total_return": 0.021893228028411826,
         "coin": "USDT"
       }
     ],
@@ -936,6 +936,42 @@
       "realized_mgm": 0.0,
       "realized_carry": 0.0,
       "nav_per_unit": 1.0858094
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/26",
+      "investor": "lg",
+      "action": "Carry Distribution",
+      "coin": "USDT",
+      "amount": -999.69,
+      "unit": -891.0,
+      "principal": 100000.0,
+      "unit_total": 89127.2,
+      "unit_chg": 0.0,
+      "carry_fee": 0.3,
+      "management_fee": 0.0,
+      "realized_pnl": 2332.61,
+      "realized_mgm": 0.0,
+      "realized_carry": 999.69,
+      "nav_per_unit": 1.121991935
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2025/12/26",
+      "investor": "lg",
+      "action": "Profit Distribution",
+      "coin": "USDT",
+      "amount": -2332.61,
+      "unit": -2078.99,
+      "principal": 100000.0,
+      "unit_total": 89127.2,
+      "unit_chg": 0.0,
+      "carry_fee": 0.2,
+      "management_fee": 0.0,
+      "realized_pnl": 1.9495,
+      "realized_mgm": 0.0,
+      "realized_carry": 999.69,
+      "nav_per_unit": 1.121991935
     }
   ]
 }
