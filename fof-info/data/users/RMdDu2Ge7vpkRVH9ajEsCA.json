@@ -3077,10 +3077,10 @@
         "date": "2025-12-29",
         "nav": 1.12241759101518,
         "principal": 169999.0,
-        "net_nav": 175003.2315185278,
-        "net_pnl": 5004.231518527813,
+        "net_nav": 174983.32706296947,
+        "net_pnl": 4984.327062969469,
         "realized_pnl": 2610.38,
-        "total_return": 0.044792095944845636,
+        "total_return": 0.04467501022340996,
         "coin": "USDT"
       }
     ],
@@ -3158,7 +3158,7 @@
       "management_fee": 0.0,
       "realized_pnl": 2610.38,
       "realized_mgm": 1118.73,
-      "realized_carry": 4353.7,
+      "realized_carry": 3234.97,
       "nav_per_unit": 1.121991935
     }
   ]

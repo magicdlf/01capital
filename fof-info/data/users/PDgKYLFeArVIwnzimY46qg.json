@@ -5846,7 +5846,7 @@
       "management_fee": 0.02,
       "realized_pnl": 105375.52,
       "realized_mgm": 27788.13,
-      "realized_carry": 17450.29,
+      "realized_carry": 0.0,
       "nav_per_unit": 1.121991935
     },
     {

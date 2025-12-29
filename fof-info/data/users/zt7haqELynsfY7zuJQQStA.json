@@ -3025,6 +3025,16 @@
         "coin": "USDT"
       },
       {
+        "date": "2025-12-27",
+        "nav": 1.067834167,
+        "principal": 0.0,
+        "net_nav": 0.0,
+        "net_pnl": 0.0,
+        "realized_pnl": 787769.9472,
+        "total_return": 0.058883214,
+        "coin": "USDT"
+      },
+      {
         "date": "2025-12-28",
         "nav": 1.067834167,
         "principal": 0.0,
