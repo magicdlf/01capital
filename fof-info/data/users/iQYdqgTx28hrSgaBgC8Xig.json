@@ -264,6 +264,16 @@
         "realized_pnl": 0.0,
         "total_return": 0.02269175035171463,
         "coin": "BTC"
+      },
+      {
+        "date": "2026/01/02",
+        "nav": 1.0822176839,
+        "principal": 7.305,
+        "net_nav": 7.472590662128587,
+        "net_pnl": 0.1675906621285873,
+        "realized_pnl": 0.0,
+        "total_return": 0.022941911311237143,
+        "coin": "BTC"
       }
     ],
     "arbitrage_eth": []
