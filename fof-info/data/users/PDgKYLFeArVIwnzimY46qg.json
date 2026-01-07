@@ -5742,6 +5742,16 @@
         "realized_pnl": 105375.52,
         "total_return": 0.11221879318092666,
         "coin": "USDT"
+      },
+      {
+        "date": "2026-01-07",
+        "nav": 1.1301863662332912,
+        "principal": 1000000.0,
+        "net_nav": 1006644.7017465231,
+        "net_pnl": 6644.701746523195,
+        "realized_pnl": 105375.52,
+        "total_return": 0.1120202217465232,
+        "coin": "USDT"
       }
     ],
     "arbitrage": [],
