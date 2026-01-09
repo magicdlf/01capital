@@ -1,0 +1,29 @@
+{
+  "username": "zc",
+  "created_at": "2026-01-09T22:20:08.575869",
+  "investments": {
+    "balanced": [],
+    "arbitrage": [],
+    "arbitrage_coin": []
+  },
+  "investment_details": [
+    {
+      "fund": "Stable-Harbor-BTC",
+      "date": "2026/1/9",
+      "investor": "zc",
+      "action": "Subscription",
+      "coin": "BTC",
+      "amount": 10.0,
+      "unit": 9.2342,
+      "principal": 10.0,
+      "unit_total": 9.2342,
+      "unit_chg": 0.0,
+      "carry_fee": 0.2,
+      "management_fee": 0.0,
+      "realized_pnl": 0.0,
+      "realized_mgm": 0.0,
+      "realized_carry": 0.0,
+      "nav_per_unit": 1.082931713
+    }
+  ]
+}
