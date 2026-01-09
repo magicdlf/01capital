@@ -1237,9 +1237,17 @@ async function handleLogin() {
         console.log('Trying to fetch user data from:', hashFilename);
         
         // 尝试获取对应的用户数据文件
-        const response = await fetch('data/users/' + hashFilename + '?t=' + new Date().getTime());
+        const userDataUrl = 'data/users/' + hashFilename + '?t=' + new Date().getTime();
+        let response = null;
+        try {
+            response = await fetch(userDataUrl);
+        } catch (fetchError) {
+            // 在某些环境（例如 file:// 直接打开页面）下，请求不存在的文件可能会触发 fetch reject
+            // 这里将其视为“登录失败”，而不是“系统异常”，避免密码输错时出现误导文案
+            console.warn('Fetch user data failed:', fetchError);
+        }
         
-        if (response.ok) {
+        if (response && response.ok) {
             // 读取用户数据
             currentUserData = await response.json();
             currentUserHashFile = hashFilename;
@@ -1277,13 +1285,19 @@ async function handleLogin() {
             }, 100);
         } else {
             // 登录失败
-            console.log('Login failed - hash file not found');
+            console.log('Login failed - user data not found or not accessible', response ? response.status : 'fetch_error');
             errorElement.textContent = '用户名或密码错误';
             errorElement.classList.remove('d-none');
         }
     } catch (error) {
         console.error('Login error:', error);
-        errorElement.textContent = '登录过程中发生错误，请稍后重试';
+        // 这里是“真正的异常”：加密能力不可用、运行环境不支持等
+        // 给出更明确的提示，避免用户以为是密码问题
+        let message = '登录过程中发生错误，请稍后重试';
+        if (typeof crypto === 'undefined' || !crypto.subtle) {
+            message = '当前环境不支持安全登录，请使用现代浏览器，并通过 http://localhost:8000 方式访问（不要直接打开 file:// 页面）';
+        }
+        errorElement.textContent = message;
         errorElement.classList.remove('d-none');
     }
 }
