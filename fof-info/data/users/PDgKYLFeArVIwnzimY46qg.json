@@ -6026,6 +6026,42 @@
       "realized_mgm": 27788.13,
       "realized_carry": 0.0,
       "nav_per_unit": 1.121991935
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2026/1/14",
+      "investor": "alex",
+      "action": "Redemption",
+      "coin": "USDT",
+      "amount": -200000.0,
+      "unit": -176034.56,
+      "principal": 800000.0,
+      "unit_total": 715237.45,
+      "unit_chg": 0.0,
+      "carry_fee": 0.0,
+      "management_fee": 0.02,
+      "realized_pnl": 105375.52,
+      "realized_mgm": 27788.13,
+      "realized_carry": 0.0,
+      "nav_per_unit": 1.136140533
+    },
+    {
+      "fund": "DG",
+      "date": "2026/1/14",
+      "investor": "alex",
+      "action": "Subscription",
+      "coin": "USDT",
+      "amount": 200000.0,
+      "unit": 200000.0,
+      "principal": 200000.0,
+      "unit_total": 200000.0,
+      "unit_chg": 0.0,
+      "carry_fee": 0.2,
+      "management_fee": 0.0,
+      "realized_pnl": 0.0,
+      "realized_mgm": 0.0,
+      "realized_carry": 0.0,
+      "nav_per_unit": 1.0
     }
   ]
 }

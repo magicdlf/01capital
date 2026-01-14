@@ -6258,6 +6258,42 @@
       "realized_mgm": 75228.76,
       "realized_carry": 0.0,
       "nav_per_unit": 1.12732772
+    },
+    {
+      "fund": "Alpha-Bridge",
+      "date": "2026/1/14",
+      "investor": "octopus",
+      "action": "Redemption",
+      "coin": "USDT",
+      "amount": -200000.0,
+      "unit": -176034.56,
+      "principal": 3518404.25,
+      "unit_total": 3300819.65,
+      "unit_chg": 0.0,
+      "carry_fee": 0.0,
+      "management_fee": 0.02,
+      "realized_pnl": 112152.14,
+      "realized_mgm": 75228.76,
+      "realized_carry": 0.0,
+      "nav_per_unit": 1.136140533
+    },
+    {
+      "fund": "DG",
+      "date": "2026/1/14",
+      "investor": "octopus",
+      "action": "Subscription",
+      "coin": "USDT",
+      "amount": 200000.0,
+      "unit": 200000.0,
+      "principal": 200000.0,
+      "unit_total": 200000.0,
+      "unit_chg": 0.0,
+      "carry_fee": 0.2,
+      "management_fee": 0.0,
+      "realized_pnl": 0.0,
+      "realized_mgm": 0.0,
+      "realized_carry": 0.0,
+      "nav_per_unit": 1.0
     }
   ]
 }

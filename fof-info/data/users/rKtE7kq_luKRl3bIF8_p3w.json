@@ -24,6 +24,24 @@
       "realized_mgm": 0.0,
       "realized_carry": 0.0,
       "nav_per_unit": 1.082931713
+    },
+    {
+      "fund": "DG",
+      "date": "2026/1/14",
+      "investor": "zc",
+      "action": "Subscription",
+      "coin": "USDT",
+      "amount": 150000.0,
+      "unit": 150000.0,
+      "principal": 150000.0,
+      "unit_total": 150000.0,
+      "unit_chg": 0.0,
+      "carry_fee": 0.2,
+      "management_fee": 0.0,
+      "realized_pnl": 0.0,
+      "realized_mgm": 0.0,
+      "realized_carry": 0.0,
+      "nav_per_unit": 1.0
     }
   ]
 }
