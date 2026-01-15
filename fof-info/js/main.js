@@ -137,7 +137,7 @@ const productData = {
         title: 'Deep-Growth',
         desc: '聚焦趋势机会与波动捕捉，配置更高比例的风险策略，目标30%+的APY，容忍适度波动。',
         facts: [
-            { label: '实盘测试时间', value: '2025/4/24' },
+            { label: '成立时间', value: '2026/1/15' },
             { label: '策略成分', value: '多因子' },
             { label: '最大回撤', value: '' },
             { label: '实际杠杆', value: '1X' },
@@ -1440,6 +1440,17 @@ function getLatestArbitrageCoinInvestorData(investor) {
     return latestRecord;
 }
 
+function getLatestGrowthInvestorData(investor) {
+    if (!currentUserData || !currentUserData.investments) return null;
+    
+    // 注意：用户JSON里用 investments.growth 存储 Deep-Growth（进取系列）的数据
+    const growthData = currentUserData.investments.growth || [];
+    if (!growthData.length) return null;
+    
+    // 按日期排序并获取最新记录
+    return growthData.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+}
+
 function showInvestmentSummary() {
     console.log('Showing investment summary...');
     
@@ -1455,6 +1466,7 @@ function showInvestmentSummary() {
     const balancedLatestData = getLatestBalancedInvestorData(currentUser);
     const arbitrageLatestData = getLatestArbitrageInvestorData(currentUser);
     const arbitrageCoinLatestData = getLatestArbitrageCoinInvestorData(currentUser);
+    const growthLatestData = getLatestGrowthInvestorData(currentUser);
     
     // 分别获取BTC和ETH的最新数据
     let arbitrageCoinBtcLatestData = null;
@@ -1477,6 +1489,7 @@ function showInvestmentSummary() {
     console.log('Latest arbitrage data for', currentUser, ':', arbitrageLatestData);
     console.log('Latest arbitrage coin BTC data for', currentUser, ':', arbitrageCoinBtcLatestData);
     console.log('Latest arbitrage coin ETH data for', currentUser, ':', arbitrageCoinEthLatestData);
+    console.log('Latest growth data for', currentUser, ':', growthLatestData);
     
     // 计算持仓天数和收益率
     let balancedHoldingDays = 0;
@@ -1491,6 +1504,9 @@ function showInvestmentSummary() {
     let arbitrageCoinEthHoldingDays = 0;
     let arbitrageCoinEthReturnRate = 0;
     let arbitrageCoinEthAnnualizedReturn = 0;
+    let growthHoldingDays = 0;
+    let growthReturnRate = 0;
+    let growthAnnualizedReturn = 0;
     
     if (balancedLatestData) {
         console.log('Processing balanced data for', currentUser);
@@ -1572,6 +1588,21 @@ function showInvestmentSummary() {
         arbitrageCoinEthReturnRate = arbitrageCoinEthLatestData.total_return !== undefined ? (arbitrageCoinEthLatestData.total_return * 100).toFixed(2) : '0.00';
         // 计算年化收益率
         arbitrageCoinEthAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(arbitrageCoinEthReturnRate), arbitrageCoinEthHoldingDays);
+    }
+
+    if (growthLatestData) {
+        console.log('Processing growth data for', currentUser);
+        const growthRecords = currentUserData.investments.growth || [];
+        const growthFirstRecord = growthRecords.length
+            ? growthRecords.sort((a, b) => new Date(a.date) - new Date(b.date))[0]
+            : null;
+        if (growthFirstRecord && growthLatestData) {
+            growthHoldingDays = Math.ceil(
+                (new Date(growthLatestData.date) - new Date(growthFirstRecord.date)) / (1000 * 60 * 60 * 24)
+            ) + 1;
+        }
+        growthReturnRate = growthLatestData.total_return !== undefined ? (growthLatestData.total_return * 100).toFixed(2) : '0.00';
+        growthAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(growthReturnRate), growthHoldingDays);
     }
 
     // 按币种分组计算总资产和收益
@@ -1662,6 +1693,28 @@ function showInvestmentSummary() {
         assetsByCoin[coin].realizedPnl += arbitrageCoinEthLatestData.realized_pnl;
         assetsByCoin[coin].unrealizedPnl += arbitrageCoinEthLatestData.net_pnl;
         if (arbitrageCoinEthLatestData.principal > 0) {
+            assetsByCoin[coin].holdingCount++;
+        }
+    }
+
+    // 处理 Deep-Growth（用户JSON里是 investments.growth）（同样逻辑）
+    if (growthLatestData) {
+        console.log('Adding growth data to assetsByCoin');
+        const coin = growthLatestData.coin || 'USDT';
+        if (!assetsByCoin[coin]) {
+            assetsByCoin[coin] = {
+                totalNetNav: 0,
+                totalNetPnl: 0,
+                realizedPnl: 0,
+                unrealizedPnl: 0,
+                holdingCount: 0
+            };
+        }
+        assetsByCoin[coin].totalNetNav += growthLatestData.net_nav;
+        assetsByCoin[coin].totalNetPnl += growthLatestData.net_pnl;
+        assetsByCoin[coin].realizedPnl += growthLatestData.realized_pnl;
+        assetsByCoin[coin].unrealizedPnl += growthLatestData.net_pnl;
+        if (growthLatestData.principal > 0) {
             assetsByCoin[coin].holdingCount++;
         }
     }
@@ -1862,13 +1915,13 @@ function showInvestmentSummary() {
                                         </tr>
                                         <tr>
                                             <td>${productData['aggressive'].title}</td>
-                                            <td>USDT</td>
-                                            <td>0.00</td>
-                                            <td>0.00</td>
-                                            <td>0.00%</td>
-                                            <td>0</td>
-                                            <td>0.00%</td>
-                                            <td>${balancedLatestData ? formatDateToYMD(balancedLatestData.date) : (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : '-')}</td>
+                                            <td>${growthLatestData ? (growthLatestData.coin || 'USDT') : 'USDT'}</td>
+                                            <td>${growthLatestData ? growthLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2, maximumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2}) : '0.00'}</td>
+                                            <td>${growthLatestData ? growthLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2, maximumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2}) : '0.00'}</td>
+                                            <td>${growthReturnRate ? growthReturnRate + '%' : '0.00%'}</td>
+                                            <td>${growthHoldingDays}</td>
+                                            <td>${growthAnnualizedReturn ? growthAnnualizedReturn + '%' : '0.00%'}</td>
+                                            <td>${growthLatestData ? formatDateToYMD(growthLatestData.date) : '-'}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -2007,10 +2060,20 @@ function showInvestmentSummary() {
                     }))
             );
 
+            const growthReturns = filterToMonthEnd(
+                (currentUserData?.investments?.growth || [])
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(record => ({
+                        x: formatDateToYMD(record.date),
+                        y: record.total_return * 100 // 转换为百分比
+                    }))
+            );
+
             console.log('Balanced returns data:', balancedReturns);
             console.log('Arbitrage returns data:', arbitrageReturns);
             console.log('Arbitrage coin BTC returns data:', arbitrageCoinBtcReturns);
             console.log('Arbitrage coin ETH returns data:', arbitrageCoinEthReturns);
+            console.log('Growth returns data:', growthReturns);
 
             // 准备图表数据
             const datasets = [];
@@ -2091,6 +2154,25 @@ function showInvestmentSummary() {
                         borderDash: ctx => {
                             // 如果是最后一个点且不是月末，则最后一段用虚线
                             if (ctx.p1DataIndex === arbitrageCoinEthReturns.length - 1 && !lastPointIsMonthEnd) {
+                                return [5, 5];
+                            }
+                            return [];
+                        }
+                    }
+                });
+            }
+            if (growthReturns.length > 0) {
+                const lastPointIsMonthEnd = growthReturns[growthReturns.length - 1].isMonthEnd;
+                datasets.push({
+                    label: productData['aggressive'].title, // Deep-Growth
+                    data: growthReturns,
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46,204,113,0.1)',
+                    tension: 0.2,
+                    fill: false,
+                    segment: {
+                        borderDash: ctx => {
+                            if (ctx.p1DataIndex === growthReturns.length - 1 && !lastPointIsMonthEnd) {
                                 return [5, 5];
                             }
                             return [];
@@ -2428,7 +2510,7 @@ function loadAggressiveCSVAndDraw(rangeDays = 30, callback) {
 function showAggressiveProductSection(rangeDays = 30) {
     if (perfContent && productData['aggressive']) {
         perfContent.innerHTML = `
-            <h3>${productData['aggressive'].title} <span style="font-size:1.1rem;color:#666;">（待上线）</span></h3>
+            <h3>${productData['aggressive'].title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
             <p>${productData['aggressive'].desc}</p>
             ${renderFactsTable(productData['aggressive'].facts)}
             <div id="aggressive-chart-controls" style="margin-bottom:16px;">
@@ -2516,8 +2598,13 @@ function updateMaxRedemptionAmount() {
             }
         }
     } else if (product === 'aggressive') {
-        // 进取系列暂时没有数据，设为0
-        maxAmount = 0;
+        // Deep-Growth：用户JSON里用 investments.growth 存储
+        if (investments.growth && investments.growth.length > 0) {
+            const latestGrowth = investments.growth.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestGrowth && (latestGrowth.coin || 'USDT') === currency) {
+                maxAmount = latestGrowth.net_nav || 0;
+            }
+        }
     }
     
     // 显示最大可赎回金额
@@ -2577,8 +2664,13 @@ function setMaxRedemptionAmount() {
             }
         }
     } else if (product === 'aggressive') {
-        // 进取系列暂时没有数据，设为0
-        maxAmount = 0;
+        // Deep-Growth：用户JSON里用 investments.growth 存储
+        if (investments.growth && investments.growth.length > 0) {
+            const latestGrowth = investments.growth.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestGrowth && (latestGrowth.coin || 'USDT') === currency) {
+                maxAmount = latestGrowth.net_nav || 0;
+            }
+        }
     }
     
     // 设置赎回金额为最大值
@@ -2632,8 +2724,13 @@ function handleRedemptionSubmit() {
                 }
             }
         } else if (product === 'aggressive') {
-            // 进取系列暂时没有数据，设为0
-            maxAmount = 0;
+            // Deep-Growth：用户JSON里用 investments.growth 存储
+            if (investments.growth && investments.growth.length > 0) {
+                const latestGrowth = investments.growth.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                if (latestGrowth && (latestGrowth.coin || 'USDT') === currency) {
+                    maxAmount = latestGrowth.net_nav || 0;
+                }
+            }
         }
     }
     
@@ -2726,6 +2823,13 @@ function updateCurrentAmounts() {
         const latestArbitrage = investments.arbitrage.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
         if (latestArbitrage && latestArbitrage.coin === 'USDT') {
             usdtAmount += latestArbitrage.net_nav || 0;
+        }
+    }
+    // Deep-Growth（用户JSON里是 investments.growth）
+    if (investments.growth && investments.growth.length > 0) {
+        const latestGrowth = investments.growth.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        if (latestGrowth && (latestGrowth.coin || 'USDT') === 'USDT') {
+            usdtAmount += latestGrowth.net_nav || 0;
         }
     }
     
@@ -3007,6 +3111,13 @@ function getCurrentCurrencyAmount(currency) {
                 amount += latestArbitrage.net_nav || 0;
             }
         }
+        // Deep-Growth（用户JSON里是 investments.growth）
+        if (investments.growth && investments.growth.length > 0) {
+            const latestGrowth = investments.growth.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestGrowth && (latestGrowth.coin || 'USDT') === 'USDT') {
+                amount += latestGrowth.net_nav || 0;
+            }
+        }
     } else if (currency === 'BTC') {
         if (investments.balanced && investments.balanced.length > 0) {
             const latestBalanced = investments.balanced.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
@@ -3051,7 +3162,11 @@ const fundNameMapping = {
     'zerone': 'Alpha-Bridge',
     'HPU': 'Stable-Harbor-USDT',
     'binggan': 'Stable-Harbor-BTC',
-    'HPE': 'Stable-Harbor-ETH'
+    'HPE': 'Stable-Harbor-ETH',
+    // 兼容：用户 JSON 里可能用 growth 表示 Deep-Growth
+    'growth': 'Deep-Growth',
+    // 兼容：有些地方用 aggressive 作为 Deep-Growth 的 key
+    'aggressive': 'Deep-Growth'
 };
 
 // 加载并显示投资明细记录
@@ -3093,8 +3208,11 @@ function displayInvestmentDetails() {
         };
         
         // 获取产品名称（根据映射关系）
-        const fundNameA = fundNameMapping[a.fund] || a.fund;
-        const fundNameB = fundNameMapping[b.fund] || b.fund;
+        // 兼容老数据：可能是 fund，也可能是 product
+        const fundKeyA = a.fund || a.product || '';
+        const fundKeyB = b.fund || b.product || '';
+        const fundNameA = fundNameMapping[fundKeyA] || fundKeyA;
+        const fundNameB = fundNameMapping[fundKeyB] || fundKeyB;
         
         // 先按产品名称排序
         const productCompare = fundNameA.localeCompare(fundNameB, 'zh-CN');
@@ -3125,8 +3243,9 @@ function displayInvestmentDetails() {
         userRecords.forEach(record => {
             const row = document.createElement('tr');
             
-            // 产品名称已经存储在JSON中（fund字段存储的是映射后的产品名称）
-            const fundName = record.fund || '-';
+            // 产品名称：优先 fund，其次 product；并做映射（growth -> Deep-Growth）
+            const rawFund = record.fund || record.product || '-';
+            const fundName = fundNameMapping[rawFund] || rawFund;
             
             // 格式化日期为 yyyy-mm-dd 格式
             let formattedDate = '-';

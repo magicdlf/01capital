@@ -527,6 +527,8 @@
             const arbitrageCoinBtcLatestData = getLatestData(arbitrageCoinData.filter(item => item.coin === 'BTC'));
             // Stable-Harbor-ETH 只使用 investments.arbitrage_eth
             const arbitrageCoinEthLatestData = getLatestData(arbitrageEthData);
+            // Deep-Growth：用户JSON里用 investments.growth 存储
+            const growthLatestData = getLatestData(userData.investments.growth);
             
             // 按币种分组计算总资产和收益
             const assetsByCoin = {};
@@ -611,6 +613,27 @@
                 assetsByCoin[coin].realizedPnl += arbitrageCoinEthLatestData.realized_pnl;
                 assetsByCoin[coin].unrealizedPnl += arbitrageCoinEthLatestData.net_pnl;
                 if (arbitrageCoinEthLatestData.principal > 0) {
+                    assetsByCoin[coin].holdingCount++;
+                }
+            }
+
+            // Deep-Growth：同样逻辑（用户JSON里是 investments.growth）
+            if (growthLatestData) {
+                const coin = growthLatestData.coin || 'USDT';
+                if (!assetsByCoin[coin]) {
+                    assetsByCoin[coin] = {
+                        totalNetNav: 0,
+                        totalNetPnl: 0,
+                        realizedPnl: 0,
+                        unrealizedPnl: 0,
+                        holdingCount: 0
+                    };
+                }
+                assetsByCoin[coin].totalNetNav += growthLatestData.net_nav;
+                assetsByCoin[coin].totalNetPnl += growthLatestData.net_pnl;
+                assetsByCoin[coin].realizedPnl += growthLatestData.realized_pnl;
+                assetsByCoin[coin].unrealizedPnl += growthLatestData.net_pnl;
+                if (growthLatestData.principal > 0) {
                     assetsByCoin[coin].holdingCount++;
                 }
             }
@@ -771,6 +794,15 @@
                         y: record.total_return * 100
                     }))
             );
+
+            const growthReturns = filterToMonthEnd(
+                (userData?.investments?.growth || [])
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(record => ({
+                        x: formatDateToYMD(record.date),
+                        y: record.total_return * 100
+                    }))
+            );
             
             // 准备图表数据
             const datasets = [];
@@ -850,6 +882,26 @@
                     }
                 });
             }
+
+            if (growthReturns.length > 0) {
+                const lastPointIsMonthEnd = growthReturns[growthReturns.length - 1].isMonthEnd;
+                datasets.push({
+                    label: 'Deep-Growth',
+                    data: growthReturns,
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46,204,113,0.1)',
+                    tension: 0.2,
+                    fill: false,
+                    segment: {
+                        borderDash: ctx => {
+                            if (ctx.p1DataIndex === growthReturns.length - 1 && !lastPointIsMonthEnd) {
+                                return [5, 5];
+                            }
+                            return [];
+                        }
+                    }
+                });
+            }
             
             // 创建图表
             window.returnChartInstance = new Chart(ctx, {
@@ -907,11 +959,14 @@
             const arbitrageCoinBtcLatestData = getLatestData(arbitrageCoinData.filter(item => item.coin === 'BTC'));
             // Stable-Harbor-ETH 只使用 investments.arbitrage_eth
             const arbitrageCoinEthLatestData = getLatestData(arbitrageEthData);
+            // Deep-Growth：用户JSON里用 investments.growth 存储
+            const growthLatestData = getLatestData(userData.investments.growth);
             
             const balancedStats = calculateStats(userData.investments.balanced);
             const arbitrageStats = calculateStats(userData.investments.arbitrage);
             const arbitrageCoinBtcStats = calculateStats(arbitrageCoinData.filter(item => item.coin === 'BTC'));
             const arbitrageCoinEthStats = calculateStats(arbitrageEthData);
+            const growthStats = calculateStats(userData.investments.growth);
             
             const detailsHtml = `
                 <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
@@ -971,13 +1026,13 @@
                             </tr>
                             <tr>
                                 <td>Deep-Growth</td>
-                                <td>USDT</td>
-                                <td>0.00</td>
-                                <td>0.00</td>
-                                <td>0.00%</td>
-                                <td>0</td>
-                                <td>0.00%</td>
-                                <td>-</td>
+                                <td>${growthLatestData ? (growthLatestData.coin || 'USDT') : 'USDT'}</td>
+                                <td>${growthLatestData ? growthLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2, maximumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2}) : '0.00'}</td>
+                                <td>${growthLatestData ? growthLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2, maximumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2}) : '0.00'}</td>
+                                <td>${growthStats.returnRate ? growthStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${growthStats.holdingDays}</td>
+                                <td>${growthStats.annualizedReturn ? growthStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${growthLatestData ? formatDateToYMD(growthLatestData.date) : '-'}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1051,7 +1106,11 @@
             'zerone': 'Alpha-Bridge',
             'HPU': 'Stable-Harbor-USDT',
             'binggan': 'Stable-Harbor-BTC',
-            'HPE': 'Stable-Harbor-ETH'
+            'HPE': 'Stable-Harbor-ETH',
+            // 兼容：用户 JSON 里可能用 growth 表示 Deep-Growth
+            'growth': 'Deep-Growth',
+            // 兼容：有些地方用 aggressive 作为 Deep-Growth 的 key
+            'aggressive': 'Deep-Growth'
         };
         
         // 加载并显示投资明细记录
@@ -1093,8 +1152,11 @@
                 };
                 
                 // 获取产品名称（根据映射关系）
-                const fundNameA = fundNameMapping[a.fund] || a.fund;
-                const fundNameB = fundNameMapping[b.fund] || b.fund;
+                // 兼容老数据：可能是 fund，也可能是 product
+                const fundKeyA = a.fund || a.product || '';
+                const fundKeyB = b.fund || b.product || '';
+                const fundNameA = fundNameMapping[fundKeyA] || fundKeyA;
+                const fundNameB = fundNameMapping[fundKeyB] || fundKeyB;
                 
                 // 先按产品名称排序
                 const productCompare = fundNameA.localeCompare(fundNameB, 'zh-CN');
@@ -1125,8 +1187,9 @@
                 userRecords.forEach(record => {
                     const row = document.createElement('tr');
                     
-                    // 产品名称已经存储在JSON中（fund字段存储的是映射后的产品名称）
-                    const fundName = record.fund || '-';
+                // 产品名称：优先 fund，其次 product；并做映射（growth -> Deep-Growth）
+                const rawFund = record.fund || record.product || '-';
+                const fundName = fundNameMapping[rawFund] || rawFund;
                     
                     // 格式化日期为 yyyy-mm-dd 格式
                     let formattedDate = '-';
