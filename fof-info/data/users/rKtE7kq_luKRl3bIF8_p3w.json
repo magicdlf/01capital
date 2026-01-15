@@ -4,7 +4,20 @@
   "investments": {
     "balanced": [],
     "arbitrage": [],
-    "arbitrage_coin": []
+    "arbitrage_coin": [],
+    "arbitrage_eth": [],
+    "growth": [
+      {
+        "date": "2026-01-15",
+        "nav": 1.0042497414644482,
+        "principal": 150000.0,
+        "net_nav": 150509.9689757338,
+        "net_pnl": 509.96897573377936,
+        "realized_pnl": 0.0,
+        "total_return": 0.003399793171558529,
+        "coin": "USDT"
+      }
+    ]
   },
   "investment_details": [
     {

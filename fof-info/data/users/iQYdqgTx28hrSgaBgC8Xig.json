@@ -286,7 +286,8 @@
         "coin": "BTC"
       }
     ],
-    "arbitrage_eth": []
+    "arbitrage_eth": [],
+    "growth": []
   },
   "investment_details": [
     {
