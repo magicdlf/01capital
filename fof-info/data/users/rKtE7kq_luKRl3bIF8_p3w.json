@@ -4,17 +4,38 @@
   "investments": {
     "balanced": [],
     "arbitrage": [],
-    "arbitrage_coin": [],
+    "arbitrage_coin": [
+      {
+        "date": "2026/01/16",
+        "nav": 1.0834071623,
+        "principal": 10.0,
+        "net_nav": 10.003518734488527,
+        "net_pnl": 0.0035187344885272863,
+        "realized_pnl": 0.0,
+        "total_return": 0.00035187344885272864,
+        "coin": "BTC"
+      }
+    ],
     "arbitrage_eth": [],
     "growth": [
       {
         "date": "2026-01-15",
-        "nav": 1.0042497414644482,
+        "nav": 1.004249741,
         "principal": 150000.0,
-        "net_nav": 150509.9689757338,
-        "net_pnl": 509.96897573377936,
+        "net_nav": 150509.96891999998,
+        "net_pnl": 509.9689199999906,
         "realized_pnl": 0.0,
-        "total_return": 0.003399793171558529,
+        "total_return": 0.0033997927999999374,
+        "coin": "USDT"
+      },
+      {
+        "date": "2026-01-16",
+        "nav": 1.008496138,
+        "principal": 150000.0,
+        "net_nav": 151019.53655999998,
+        "net_pnl": 1019.5365599999902,
+        "realized_pnl": 0.0,
+        "total_return": 0.006796910399999935,
         "coin": "USDT"
       }
     ]
