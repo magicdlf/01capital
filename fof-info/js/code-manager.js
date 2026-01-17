@@ -5,15 +5,10 @@
 
 class CodeManager {
     constructor() {
-        // 根据当前页面路径自动检测codes目录路径
-        const currentPath = window.location.pathname;
-        if (currentPath.includes('/tools/')) {
-            this.codesDir = '../data/codes/';
-            this.configPath = '../data/codes-config.json';
-        } else {
-            this.codesDir = 'data/codes/';
-            this.configPath = 'data/codes-config.json';
-        }
+        // 使用远程数据源
+        this.dataBaseUrl = 'https://data.01capital.info/arbcus';
+        this.codesDir = this.dataBaseUrl + '/';
+        this.configPath = this.dataBaseUrl + '/codes-config.json';
         this.codeLength = 8;
         this.validChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         // 缓存用户名到编码的映射

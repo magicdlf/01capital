@@ -1,3 +1,6 @@
+// 数据源配置
+const DATA_BASE_URL = 'https://data.01capital.info/arbcus';
+
 // EmailJS配置
 const EMAILJS_CONFIG = {
     serviceId: 'service_alzfhf8',
@@ -372,7 +375,7 @@ function hideBalancedChartUI() {
 }
 
 function loadBalancedCSVAndDraw(rangeDays = 30, callback) {
-    Papa.parse('data/balanced.csv?t=' + new Date().getTime(), {
+    Papa.parse(DATA_BASE_URL + '/balanced.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
@@ -535,7 +538,7 @@ function hideStableChartUI() {
 }
 
 function loadStableCSVAndDraw(rangeDays = 30, callback) {
-    Papa.parse('data/arbitrage.csv?t=' + new Date().getTime(), {
+    Papa.parse(DATA_BASE_URL + '/arbitrage.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
@@ -604,7 +607,7 @@ let stableCoinBtcData = [];
 let stableCoinBtcDataLoaded = false;
 
 function loadStableCoinBtcCSVAndDraw(rangeDays = 30, callback) {
-    Papa.parse('data/arbitrage_coin.csv?t=' + new Date().getTime(), {
+    Papa.parse(DATA_BASE_URL + '/arbitrage_coin.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
@@ -770,7 +773,7 @@ let stableCoinEthData = [];
 let stableCoinEthDataLoaded = false;
 
 function loadStableCoinEthCSVAndDraw(rangeDays = 30, callback) {
-    Papa.parse('data/arbitrage_eth.csv?t=' + new Date().getTime(), {
+    Papa.parse(DATA_BASE_URL + '/arbitrage_eth.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
@@ -941,7 +944,7 @@ let stableUsdData = [];
 let stableUsdDataLoaded = false;
 
 function loadStableUsdCSVAndDraw(rangeDays = 30, callback) {
-    Papa.parse('data/arbitrage.csv?t=' + new Date().getTime(), {
+    Papa.parse(DATA_BASE_URL + '/arbitrage.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
@@ -1232,7 +1235,7 @@ async function handleLogin() {
         console.log('Trying to fetch user data from:', hashFilename);
         
         // 尝试获取对应的用户数据文件
-        const userDataUrl = 'data/users/' + hashFilename + '?t=' + new Date().getTime();
+        const userDataUrl = DATA_BASE_URL + '/' + hashFilename + '?t=' + new Date().getTime();
         let response = null;
         try {
             response = await fetch(userDataUrl);
@@ -1303,38 +1306,6 @@ function calculateAnnualizedReturnFromDays(returnRate, days) {
     return ((Math.pow(1 + returnRate/100, 365/days) - 1) * 100).toFixed(2);
 }
 
-// 移除缓存标志，始终重新加载CSV数据
-let balancedInvestorData = [];
-
-function loadBalancedInvestorData() {
-    // 始终重新加载CSV数据
-    return new Promise((resolve, reject) => {
-        Papa.parse('data/balanced_investor.csv?t=' + new Date().getTime(), {
-            download: true,
-            header: true,
-            complete: function(results) {
-                balancedInvestorData = results.data
-                    .filter(row => row.Date && row.investor && row['NAV per unit'])
-                    .map(row => ({
-                        date: row.Date,
-                        investor: row.investor,
-                        nav: parseFloat(row['NAV per unit']),
-                        principal: parseFloat(row.principal || 0),
-                        net_nav: parseFloat(row.net_nav || 0),
-                        net_pnl: parseFloat(row.net_pnl || 0),
-                        realized_pnl: parseFloat(row.realized_pnl || 0),
-                        total_return: parseFloat(row.total_return || 0),
-                        coin: (row.product === 'Stable-Harbor-BTC' && (!row.coin || row.coin === '')) ? 'BTC' : (row.coin || 'USDT')
-                    }));
-                resolve(balancedInvestorData);
-            },
-            error: function(error) {
-                reject(error);
-            }
-        });
-    });
-}
-
 function getLatestBalancedInvestorData(investor) {
     if (!currentUserData || !currentUserData.investments) return null;
     
@@ -1343,37 +1314,6 @@ function getLatestBalancedInvestorData(investor) {
     
     // 按日期排序并获取最新记录
     return balancedData.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-}
-
-let arbitrageInvestorData = [];
-
-function loadArbitrageInvestorData() {
-    // 始终重新加载CSV数据
-    return new Promise((resolve, reject) => {
-        Papa.parse('data/arbitrage_investor.csv?t=' + new Date().getTime(), {
-            download: true,
-            header: true,
-            complete: function(results) {
-                arbitrageInvestorData = results.data
-                    .filter(row => row.Date && row.investor && row['NAV per unit'])
-                    .map(row => ({
-                        date: row.Date,
-                        investor: row.investor,
-                        nav: parseFloat(row['NAV per unit']),
-                        principal: parseFloat(row.principal || 0),
-                        net_nav: parseFloat(row.net_nav || 0),
-                        net_pnl: parseFloat(row.net_pnl || 0),
-                        realized_pnl: parseFloat(row.realized_pnl || 0),
-                        total_return: parseFloat(row.total_return || 0),
-                        coin: row.coin || 'USDT'
-                    }));
-                resolve(arbitrageInvestorData);
-            },
-            error: function(error) {
-                reject(error);
-            }
-        });
-    });
 }
 
 function getLatestArbitrageInvestorData(investor) {
@@ -1388,37 +1328,6 @@ function getLatestArbitrageInvestorData(investor) {
     const latestRecord = arbitrageData.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
     console.log('Latest arbitrage record:', latestRecord);
     return latestRecord;
-}
-
-let arbitrageCoinInvestorData = [];
-
-function loadArbitrageCoinInvestorData() {
-    // 始终重新加载CSV数据
-    return new Promise((resolve, reject) => {
-        Papa.parse('data/arbitrage_coin_investor.csv?t=' + new Date().getTime(), {
-            download: true,
-            header: true,
-            complete: function(results) {
-                arbitrageCoinInvestorData = results.data
-                    .filter(row => row.Date && row.investor && row['NAV per unit'])
-                    .map(row => ({
-                        date: row.Date,
-                        investor: row.investor,
-                        nav: parseFloat(row['NAV per unit']),
-                        principal: parseFloat(row.principal || 0),
-                        net_nav: parseFloat(row.net_nav || 0),
-                        net_pnl: parseFloat(row.net_pnl || 0),
-                        realized_pnl: parseFloat(row.realized_pnl || 0),
-                        total_return: parseFloat(row.total_return || 0),
-                        coin: (row.product === 'Stable-Harbor-BTC' && (!row.coin || row.coin === '')) ? 'BTC' : (row.coin || 'BTC')
-                    }));
-                resolve(arbitrageCoinInvestorData);
-            },
-            error: function(error) {
-                reject(error);
-            }
-        });
-    });
 }
 
 function getLatestArbitrageCoinInvestorData(investor) {
@@ -2485,7 +2394,7 @@ function bindAggressiveChartControls() {
 }
 
 function loadAggressiveCSVAndDraw(rangeDays = 30, callback) {
-    Papa.parse('data/growth.csv?t=' + new Date().getTime(), {
+    Papa.parse(DATA_BASE_URL + '/growth.csv?t=' + new Date().getTime(), {
         download: true,
         header: true,
         complete: function(results) {
