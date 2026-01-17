@@ -437,7 +437,14 @@
             }
             
             try {
-                const response = await fetch(`https://data.01capital.info/arbcus/${currentHashFile}?t=${new Date().getTime()}`);
+                const response = await fetch(`https://data.01capital.info/arbcus/${currentHashFile}?t=${new Date().getTime()}`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
                 if (response.ok) {
                     const userData = await response.json();
                     previewDiv.innerHTML = `
@@ -487,7 +494,14 @@
             }
             
             try {
-                const response = await fetch(`https://data.01capital.info/arbcus/${currentHashFile}?t=${new Date().getTime()}`);
+                const response = await fetch(`https://data.01capital.info/arbcus/${currentHashFile}?t=${new Date().getTime()}`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
                 if (response.ok) {
                     const userData = await response.json();
                     

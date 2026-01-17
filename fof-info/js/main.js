@@ -386,6 +386,12 @@ function loadBalancedCSVAndDraw(rangeDays = 30, callback) {
             balancedDataLoaded = true;
             renderBalancedChart(rangeDays);
             if (callback) callback();
+        },
+        error: function(error) {
+            console.error('加载CSV文件失败:', error);
+            if (error.message && error.message.includes('CORS')) {
+                console.error('CORS错误：请确保服务器已正确配置CORS，或尝试清除浏览器缓存后刷新页面');
+            }
         }
     });
 }
@@ -1238,11 +1244,23 @@ async function handleLogin() {
         const userDataUrl = DATA_BASE_URL + '/' + hashFilename + '?t=' + new Date().getTime();
         let response = null;
         try {
-            response = await fetch(userDataUrl);
+            // 明确指定 CORS 模式，确保跨域请求正常工作
+            response = await fetch(userDataUrl, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'omit', // 不需要发送 cookies
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
         } catch (fetchError) {
             // 在某些环境（例如 file:// 直接打开页面）下，请求不存在的文件可能会触发 fetch reject
-            // 这里将其视为“登录失败”，而不是“系统异常”，避免密码输错时出现误导文案
+            // 这里将其视为"登录失败"，而不是"系统异常"，避免密码输错时出现误导文案
             console.warn('Fetch user data failed:', fetchError);
+            if (fetchError.message && fetchError.message.includes('CORS')) {
+                errorElement.textContent = '跨域请求失败，请检查服务器CORS配置';
+                errorElement.classList.remove('d-none');
+            }
         }
         
         if (response && response.ok) {

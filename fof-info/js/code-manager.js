@@ -40,7 +40,14 @@ class CodeManager {
      */
     async loadCodesConfig() {
         try {
-            const response = await fetch(`${this.configPath}?t=${new Date().getTime()}`);
+            const response = await fetch(`${this.configPath}?t=${new Date().getTime()}`, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'omit',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
             if (!response.ok) {
                 throw new Error(`加载配置文件失败: ${response.status}`);
             }
@@ -57,7 +64,14 @@ class CodeManager {
     async loadCodeFile(code) {
         try {
             const filePath = this.getCodeFilePath(code);
-            const response = await fetch(`${filePath}?t=${new Date().getTime()}`);
+            const response = await fetch(`${filePath}?t=${new Date().getTime()}`, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'omit',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
             
             if (response.ok) {
                 return await response.json();
