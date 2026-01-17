@@ -624,15 +624,10 @@ function loadStableCoinBtcCSVAndDraw(rangeDays = 30, callback) {
 function renderStableCoinBtcChart(rangeDays = 30) {
     if (!stableCoinBtcData.length) return;
     let dataSlice;
-    
-    // 计算实际需要的数据点数量
-    let pointsToShow;
     if (rangeDays === 'all') {
         dataSlice = stableCoinBtcData;
     } else {
-        // 由于是周频数据，每周一个点，所以需要的数据点数量是 rangeDays/7 向上取整
-        pointsToShow = Math.ceil(rangeDays / 7);
-        dataSlice = stableCoinBtcData.slice(-pointsToShow);
+        dataSlice = stableCoinBtcData.slice(-rangeDays);
     }
 
     const labels = dataSlice.map(d => d.date);
