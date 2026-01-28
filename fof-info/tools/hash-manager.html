@@ -1030,7 +1030,7 @@
                                 <td>${balancedStats.returnRate ? balancedStats.returnRate + '%' : '0.00%'}</td>
                                 <td>${balancedStats.holdingDays}</td>
                                 <td>${balancedStats.annualizedReturn ? balancedStats.annualizedReturn + '%' : '0.00%'}</td>
-                                <td>${balancedAllLatestData ? formatDateToYMD(balancedAllLatestData.date) : '-'}</td>
+                                <td>${isBalancedRedeemed ? (balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-') : (balancedAllLatestData ? formatDateToYMD(balancedAllLatestData.date) : '-')}</td>
                             </tr>
                             <tr>
                                 <td>Stable-Harbor-USDT</td>
@@ -1040,7 +1040,7 @@
                                 <td>${arbitrageStats.returnRate ? arbitrageStats.returnRate + '%' : '0.00%'}</td>
                                 <td>${arbitrageStats.holdingDays}</td>
                                 <td>${arbitrageStats.annualizedReturn ? arbitrageStats.annualizedReturn + '%' : '0.00%'}</td>
-                                <td>${arbitrageAllLatestData ? formatDateToYMD(arbitrageAllLatestData.date) : '-'}</td>
+                                <td>${isArbitrageRedeemed ? (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : '-') : (arbitrageAllLatestData ? formatDateToYMD(arbitrageAllLatestData.date) : '-')}</td>
                             </tr>
                             <tr>
                                 <td>Stable-Harbor-BTC</td>
@@ -1050,7 +1050,7 @@
                                 <td>${arbitrageCoinBtcStats.returnRate ? arbitrageCoinBtcStats.returnRate + '%' : '0.00%'}</td>
                                 <td>${arbitrageCoinBtcStats.holdingDays}</td>
                                 <td>${arbitrageCoinBtcStats.annualizedReturn ? arbitrageCoinBtcStats.annualizedReturn + '%' : '0.00%'}</td>
-                                <td>${arbitrageCoinBtcAllLatestData ? formatDateToYMD(arbitrageCoinBtcAllLatestData.date) : '-'}</td>
+                                <td>${isArbitrageCoinBtcRedeemed ? (arbitrageCoinBtcLatestData ? formatDateToYMD(arbitrageCoinBtcLatestData.date) : '-') : (arbitrageCoinBtcAllLatestData ? formatDateToYMD(arbitrageCoinBtcAllLatestData.date) : '-')}</td>
                             </tr>
                             <tr>
                                 <td>Stable-Harbor-ETH</td>
@@ -1060,7 +1060,7 @@
                                 <td>${arbitrageCoinEthStats.returnRate ? arbitrageCoinEthStats.returnRate + '%' : '0.00%'}</td>
                                 <td>${arbitrageCoinEthStats.holdingDays}</td>
                                 <td>${arbitrageCoinEthStats.annualizedReturn ? arbitrageCoinEthStats.annualizedReturn + '%' : '0.00%'}</td>
-                                <td>${arbitrageEthAllLatestData ? formatDateToYMD(arbitrageEthAllLatestData.date) : '-'}</td>
+                                <td>${isArbitrageEthRedeemed ? (arbitrageCoinEthLatestData ? formatDateToYMD(arbitrageCoinEthLatestData.date) : '-') : (arbitrageEthAllLatestData ? formatDateToYMD(arbitrageEthAllLatestData.date) : '-')}</td>
                             </tr>
                             <tr>
                                 <td>Deep-Growth</td>
@@ -1070,7 +1070,7 @@
                                 <td>${growthStats.returnRate ? growthStats.returnRate + '%' : '0.00%'}</td>
                                 <td>${growthStats.holdingDays}</td>
                                 <td>${growthStats.annualizedReturn ? growthStats.annualizedReturn + '%' : '0.00%'}</td>
-                                <td>${growthAllLatestData ? formatDateToYMD(growthAllLatestData.date) : '-'}</td>
+                                <td>${isGrowthRedeemed ? (growthLatestData ? formatDateToYMD(growthLatestData.date) : '-') : (growthAllLatestData ? formatDateToYMD(growthAllLatestData.date) : '-')}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1232,8 +1232,13 @@
                     // 格式化日期为 yyyy-mm-dd 格式（只显示年月日，不显示时间）
                     let formattedDate = '-';
                     if (record.date) {
-                        // 先去除时间部分（如果有空格，取空格前的部分）
-                        let dateOnly = record.date.split(' ')[0];
+                        // 先去除时间部分（如果有T或空格，取前面的部分）
+                        let dateOnly = record.date;
+                        if (dateOnly.includes('T')) {
+                            dateOnly = dateOnly.split('T')[0];
+                        } else if (dateOnly.includes(' ')) {
+                            dateOnly = dateOnly.split(' ')[0];
+                        }
                         
                         // 处理 "年/月/日" 格式
                         const parts = dateOnly.split('/');
@@ -1243,7 +1248,7 @@
                             const day = parts[2].padStart(2, '0');
                             formattedDate = `${year}-${month}-${day}`;
                         } else {
-                            // 处理 "年-月-日" 格式
+                            // 处理 "年-月-日" 格式（包括ISO格式 2024-11-13）
                             const dashParts = dateOnly.split('-');
                             if (dashParts.length >= 3) {
                                 const year = dashParts[0];

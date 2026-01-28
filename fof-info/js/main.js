@@ -1865,7 +1865,7 @@ function showInvestmentSummary() {
                                             <td>${balancedReturnRate ? balancedReturnRate + '%' : '0.00%'}</td>
                                             <td>${balancedHoldingDays}</td>
                                             <td>${balancedAnnualizedReturn ? balancedAnnualizedReturn + '%' : '0.00%'}</td>
-                                            <td>${balancedAllLatestData ? formatDateToYMD(balancedAllLatestData.date) : '-'}</td>
+                                            <td>${isBalancedRedeemed ? (balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-') : (balancedAllLatestData ? formatDateToYMD(balancedAllLatestData.date) : '-')}</td>
                                         </tr>
                                         <tr>
                                             <td>${productData['stable-usd'].title}</td>
@@ -1875,7 +1875,7 @@ function showInvestmentSummary() {
                                             <td>${arbitrageReturnRate ? arbitrageReturnRate + '%' : '0.00%'}</td>
                                             <td>${arbitrageHoldingDays}</td>
                                             <td>${arbitrageAnnualizedReturn ? arbitrageAnnualizedReturn + '%' : '0.00%'}</td>
-                                            <td>${arbitrageAllLatestData ? formatDateToYMD(arbitrageAllLatestData.date) : '-'}</td>
+                                            <td>${isArbitrageRedeemed ? (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : '-') : (arbitrageAllLatestData ? formatDateToYMD(arbitrageAllLatestData.date) : '-')}</td>
                                         </tr>
                                         <tr>
                                             <td>${productData['stable-coin-btc'].title}</td>
@@ -1885,7 +1885,7 @@ function showInvestmentSummary() {
                                             <td>${arbitrageCoinBtcReturnRate ? arbitrageCoinBtcReturnRate + '%' : '0.00%'}</td>
                                             <td>${arbitrageCoinBtcHoldingDays}</td>
                                             <td>${arbitrageCoinBtcAnnualizedReturn ? arbitrageCoinBtcAnnualizedReturn + '%' : '0.00%'}</td>
-                                            <td>${arbitrageCoinBtcAllLatestData ? formatDateToYMD(arbitrageCoinBtcAllLatestData.date) : '-'}</td>
+                                            <td>${isArbitrageCoinBtcRedeemed ? (arbitrageCoinBtcLatestData ? formatDateToYMD(arbitrageCoinBtcLatestData.date) : '-') : (arbitrageCoinBtcAllLatestData ? formatDateToYMD(arbitrageCoinBtcAllLatestData.date) : '-')}</td>
                                         </tr>
                                         <tr>
                                             <td>${productData['stable-coin-eth'].title}</td>
@@ -1895,7 +1895,7 @@ function showInvestmentSummary() {
                                             <td>${arbitrageCoinEthReturnRate ? arbitrageCoinEthReturnRate + '%' : '0.00%'}</td>
                                             <td>${arbitrageCoinEthHoldingDays}</td>
                                             <td>${arbitrageCoinEthAnnualizedReturn ? arbitrageCoinEthAnnualizedReturn + '%' : '0.00%'}</td>
-                                            <td>${arbitrageEthAllLatestData ? formatDateToYMD(arbitrageEthAllLatestData.date) : '-'}</td>
+                                            <td>${isArbitrageEthRedeemed ? (arbitrageCoinEthLatestData ? formatDateToYMD(arbitrageCoinEthLatestData.date) : '-') : (arbitrageEthAllLatestData ? formatDateToYMD(arbitrageEthAllLatestData.date) : '-')}</td>
                                         </tr>
                                         <tr>
                                             <td>${productData['aggressive'].title}</td>
@@ -1905,7 +1905,7 @@ function showInvestmentSummary() {
                                             <td>${growthReturnRate ? growthReturnRate + '%' : '0.00%'}</td>
                                             <td>${growthHoldingDays}</td>
                                             <td>${growthAnnualizedReturn ? growthAnnualizedReturn + '%' : '0.00%'}</td>
-                                            <td>${growthAllLatestData ? formatDateToYMD(growthAllLatestData.date) : '-'}</td>
+                                            <td>${isGrowthRedeemed ? (growthLatestData ? formatDateToYMD(growthLatestData.date) : '-') : (growthAllLatestData ? formatDateToYMD(growthAllLatestData.date) : '-')}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -3239,8 +3239,13 @@ function displayInvestmentDetails() {
             // 格式化日期为 yyyy-mm-dd 格式（只显示年月日，不显示时间）
             let formattedDate = '-';
             if (record.date) {
-                // 先去除时间部分（如果有空格，取空格前的部分）
-                let dateOnly = record.date.split(' ')[0];
+                // 先去除时间部分（如果有T或空格，取前面的部分）
+                let dateOnly = record.date;
+                if (dateOnly.includes('T')) {
+                    dateOnly = dateOnly.split('T')[0];
+                } else if (dateOnly.includes(' ')) {
+                    dateOnly = dateOnly.split(' ')[0];
+                }
                 
                 // 处理 "年/月/日" 格式
                 const parts = dateOnly.split('/');
@@ -3250,7 +3255,7 @@ function displayInvestmentDetails() {
                     const day = parts[2].padStart(2, '0');
                     formattedDate = `${year}-${month}-${day}`;
                 } else {
-                    // 处理 "年-月-日" 格式
+                    // 处理 "年-月-日" 格式（包括ISO格式 2024-11-13）
                     const dashParts = dateOnly.split('-');
                     if (dashParts.length >= 3) {
                         const year = dashParts[0];
