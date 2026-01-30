@@ -1,6 +1,5 @@
 // 数据源配置
-// TODO: 调试完成后改回: const DATA_BASE_URL = 'https://data.01capital.info/arbcus';
-const DATA_BASE_URL = 'data';
+const DATA_BASE_URL = 'https://data.01capital.info/arbcus';
 
 // EmailJS配置
 const EMAILJS_CONFIG = {
@@ -1082,8 +1081,7 @@ async function handleLogin() {
         console.log('Trying to fetch user data from:', hashFilename);
         
         // 尝试获取对应的用户数据文件
-        // TODO: 调试完成后改回: const userDataUrl = DATA_BASE_URL + '/' + hashFilename + '?t=' + new Date().getTime();
-        const userDataUrl = DATA_BASE_URL + '/users/' + hashFilename + '?t=' + new Date().getTime();
+        const userDataUrl = DATA_BASE_URL + '/' + hashFilename + '?t=' + new Date().getTime();
         let response = null;
         try {
             // 明确指定 CORS 模式，确保跨域请求正常工作

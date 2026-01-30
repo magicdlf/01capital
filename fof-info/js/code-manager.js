@@ -5,9 +5,7 @@
 
 class CodeManager {
     constructor() {
-        // 使用本地数据源（调试用）
-        // TODO: 调试完成后改回: this.dataBaseUrl = 'https://data.01capital.info/arbcus';
-        this.dataBaseUrl = 'data';
+        this.dataBaseUrl = 'https://data.01capital.info/arbcus';
         this.codesDir = this.dataBaseUrl + '/codes/';
         this.configPath = this.dataBaseUrl + '/codes-config.json';
         this.codeLength = 8;
