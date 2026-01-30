@@ -250,7 +250,6 @@
             </div>
             
             <div class="preview-section">
-                <h4>投资组合明细</h4>
                 <div id="portfolioDetails"></div>
             </div>
             
@@ -769,6 +768,23 @@
                 window.returnChartInstance.destroy();
             }
             
+            // 获取所有记录的最新数据（用于判断是否已赎回）
+            const balancedAllLatestData = getLatestData(userData.investments.balanced || []);
+            const arbitrageAllLatestData = getLatestData(userData.investments.arbitrage || []);
+            const arbitrage2AllLatestData = getLatestData(userData.investments.arbitrage2 || []);
+            const arbitrageCoinData = userData.investments.arbitrage_coin || [];
+            const arbitrageCoinBtcAllLatestData = getLatestData(arbitrageCoinData.filter(item => item.coin === 'BTC'));
+            const arbitrageEthAllLatestData = getLatestData(userData.investments.arbitrage_eth || []);
+            const growthAllLatestData = getLatestData(userData.investments.growth || []);
+            
+            // 判断是否已赎回（最新记录本金<1）
+            const isBalancedRedeemed = balancedAllLatestData && (balancedAllLatestData.principal || 0) < 1;
+            const isArbitrageRedeemed = arbitrageAllLatestData && (arbitrageAllLatestData.principal || 0) < 1;
+            const isArbitrage2Redeemed = arbitrage2AllLatestData && (arbitrage2AllLatestData.principal || 0) < 1;
+            const isArbitrageCoinBtcRedeemed = arbitrageCoinBtcAllLatestData && (arbitrageCoinBtcAllLatestData.principal || 0) < 1;
+            const isArbitrageEthRedeemed = arbitrageEthAllLatestData && (arbitrageEthAllLatestData.principal || 0) < 1;
+            const isGrowthRedeemed = growthAllLatestData && (growthAllLatestData.principal || 0) < 1;
+            
             // 工具函数：只保留每月最后一天的数据点
             function filterToMonthEnd(data) {
                 const grouped = {};
@@ -869,6 +885,11 @@
                     fill: false,
                     segment: {
                         borderDash: ctx => {
+                            // 如果已清仓，则全部用实线
+                            if (isBalancedRedeemed) {
+                                return [];
+                            }
+                            // 如果是最后一个点且不是月末，则最后一段用虚线
                             if (ctx.p1DataIndex === balancedReturns.length - 1 && !lastPointIsMonthEnd) {
                                 return [5, 5];
                             }
@@ -888,6 +909,11 @@
                     fill: false,
                     segment: {
                         borderDash: ctx => {
+                            // 如果已清仓，则全部用实线
+                            if (isArbitrageRedeemed) {
+                                return [];
+                            }
+                            // 如果是最后一个点且不是月末，则最后一段用虚线
                             if (ctx.p1DataIndex === arbitrageReturns.length - 1 && !lastPointIsMonthEnd) {
                                 return [5, 5];
                             }
@@ -907,6 +933,11 @@
                     fill: false,
                     segment: {
                         borderDash: ctx => {
+                            // 如果已清仓，则全部用实线
+                            if (isArbitrage2Redeemed) {
+                                return [];
+                            }
+                            // 如果是最后一个点且不是月末，则最后一段用虚线
                             if (ctx.p1DataIndex === arbitrage2Returns.length - 1 && !lastPointIsMonthEnd) {
                                 return [5, 5];
                             }
@@ -926,6 +957,11 @@
                     fill: false,
                     segment: {
                         borderDash: ctx => {
+                            // 如果已清仓，则全部用实线
+                            if (isArbitrageCoinBtcRedeemed) {
+                                return [];
+                            }
+                            // 如果是最后一个点且不是月末，则最后一段用虚线
                             if (ctx.p1DataIndex === arbitrageCoinBtcReturns.length - 1 && !lastPointIsMonthEnd) {
                                 return [5, 5];
                             }
@@ -945,6 +981,11 @@
                     fill: false,
                     segment: {
                         borderDash: ctx => {
+                            // 如果已清仓，则全部用实线
+                            if (isArbitrageEthRedeemed) {
+                                return [];
+                            }
+                            // 如果是最后一个点且不是月末，则最后一段用虚线
                             if (ctx.p1DataIndex === arbitrageCoinEthReturns.length - 1 && !lastPointIsMonthEnd) {
                                 return [5, 5];
                             }
@@ -965,6 +1006,11 @@
                     fill: false,
                     segment: {
                         borderDash: ctx => {
+                            // 如果已清仓，则全部用实线
+                            if (isGrowthRedeemed) {
+                                return [];
+                            }
+                            // 如果是最后一个点且不是月末，则最后一段用虚线
                             if (ctx.p1DataIndex === growthReturns.length - 1 && !lastPointIsMonthEnd) {
                                 return [5, 5];
                             }
@@ -1063,8 +1109,97 @@
             const arbitrageCoinEthStats = calculateStats(arbitrageEthFiltered);
             const growthStats = calculateStats(growthFiltered);
             
+            // 计算已清仓产品的清仓前数据
+            let balancedClosedData = null;
+            let balancedClosedStats = null;
+            let arbitrageClosedData = null;
+            let arbitrageClosedStats = null;
+            let arbitrage2ClosedData = null;
+            let arbitrage2ClosedStats = null;
+            let arbitrageCoinBtcClosedData = null;
+            let arbitrageCoinBtcClosedStats = null;
+            let arbitrageEthClosedData = null;
+            let arbitrageCoinEthClosedStats = null;
+            let growthClosedData = null;
+            let growthClosedStats = null;
+            
+            // 计算已清仓的Alpha-Bridge数据
+            if (isBalancedRedeemed) {
+                const balancedAllRecords = (userData.investments.balanced || [])
+                    .filter(record => (record.principal || 0) >= 1)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                if (balancedAllRecords.length > 0) {
+                    balancedClosedData = balancedAllRecords[0];
+                    balancedClosedStats = calculateStats(balancedAllRecords);
+                }
+            }
+            
+            // 计算已清仓的Stable-Harbor-USDT数据
+            if (isArbitrageRedeemed) {
+                const arbitrageAllRecords = (userData.investments.arbitrage || [])
+                    .filter(record => (record.principal || 0) >= 1)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                if (arbitrageAllRecords.length > 0) {
+                    arbitrageClosedData = arbitrageAllRecords[0];
+                    arbitrageClosedStats = calculateStats(arbitrageAllRecords);
+                }
+            }
+            
+            // 计算已清仓的Stable-Harbor-USDT 2.0数据
+            if (isArbitrage2Redeemed) {
+                const arbitrage2AllRecords = (userData.investments.arbitrage2 || [])
+                    .filter(record => (record.principal || 0) >= 1)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                if (arbitrage2AllRecords.length > 0) {
+                    arbitrage2ClosedData = arbitrage2AllRecords[0];
+                    arbitrage2ClosedStats = calculateStats(arbitrage2AllRecords);
+                }
+            }
+            
+            // 计算已清仓的Stable-Harbor-BTC数据
+            if (isArbitrageCoinBtcRedeemed) {
+                const arbitrageCoinBtcAllRecords = arbitrageCoinData
+                    .filter(item => item.coin === 'BTC' && (item.principal || 0) >= 1)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                if (arbitrageCoinBtcAllRecords.length > 0) {
+                    arbitrageCoinBtcClosedData = arbitrageCoinBtcAllRecords[0];
+                    arbitrageCoinBtcClosedStats = calculateStats(arbitrageCoinBtcAllRecords);
+                }
+            }
+            
+            // 计算已清仓的Stable-Harbor-ETH数据
+            if (isArbitrageEthRedeemed) {
+                const arbitrageEthAllRecords = arbitrageEthData
+                    .filter(record => (record.principal || 0) >= 1)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                if (arbitrageEthAllRecords.length > 0) {
+                    arbitrageEthClosedData = arbitrageEthAllRecords[0];
+                    arbitrageCoinEthClosedStats = calculateStats(arbitrageEthAllRecords);
+                }
+            }
+            
+            // 计算已清仓的Deep-Growth数据
+            if (isGrowthRedeemed) {
+                const growthAllRecords = (userData.investments.growth || [])
+                    .filter(record => (record.principal || 0) >= 1)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                if (growthAllRecords.length > 0) {
+                    growthClosedData = growthAllRecords[0];
+                    growthClosedStats = calculateStats(growthAllRecords);
+                }
+            }
+            
             const detailsHtml = `
-                <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">投资组合明细</h4>
+                    <div>
+                        <span id="currentHoldingBtn" style="cursor: pointer; text-decoration: underline; color: #000; margin-right: 20px; font-weight: bold;">当前持仓</span>
+                        <span id="closedPositionBtn" style="cursor: pointer; text-decoration: none; color: #6c757d; margin-right: 20px; font-weight: bold;">已清仓</span>
+                    </div>
+                </div>
+                
+                <!-- 当前持仓表格 -->
+                <div id="currentHoldingTable" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
                     <table class="table">
                         <thead style="position: sticky; top: 0; background-color: #f8f9fa; z-index: 10;">
                             <tr>
@@ -1082,69 +1217,194 @@
                             <tr>
                                 <td>Alpha-Bridge</td>
                                 <td>${balancedAllLatestData ? balancedAllLatestData.coin : 'USDT'}</td>
-                                <td>${isBalancedRedeemed ? '0.00' : (balancedLatestData ? balancedLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2}) : '0.00')}</td>
-                                <td>${isBalancedRedeemed ? '0.00' : (balancedLatestData ? balancedLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2}) : '0.00')}</td>
-                                <td>${balancedStats.returnRate ? balancedStats.returnRate + '%' : '0.00%'}</td>
-                                <td>${balancedStats.holdingDays}</td>
-                                <td>${balancedStats.annualizedReturn ? balancedStats.annualizedReturn + '%' : '0.00%'}</td>
-                                <td>${isBalancedRedeemed ? (balancedLatestData ? formatDateToYMD(balancedLatestData.date) : '-') : (balancedAllLatestData ? formatDateToYMD(balancedAllLatestData.date) : '-')}</td>
+                                <td>${balancedLatestData ? balancedLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${balancedLatestData ? balancedLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (balancedLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${balancedLatestData && balancedStats.returnRate ? balancedStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${balancedLatestData ? balancedStats.holdingDays : '0'}</td>
+                                <td>${balancedLatestData && balancedStats.annualizedReturn ? balancedStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${balancedLatestData && balancedAllLatestData ? formatDateToYMD(balancedAllLatestData.date) : '-'}</td>
                             </tr>
                             <tr>
                                 <td>Stable-Harbor-USDT</td>
                                 <td>${arbitrageAllLatestData ? arbitrageAllLatestData.coin : 'USDT'}</td>
-                                <td>${isArbitrageRedeemed ? '0.00' : (arbitrageLatestData ? arbitrageLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2}) : '0.00')}</td>
-                                <td>${isArbitrageRedeemed ? '0.00' : (arbitrageLatestData ? arbitrageLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2}) : '0.00')}</td>
-                                <td>${arbitrageStats.returnRate ? arbitrageStats.returnRate + '%' : '0.00%'}</td>
-                                <td>${arbitrageStats.holdingDays}</td>
-                                <td>${arbitrageStats.annualizedReturn ? arbitrageStats.annualizedReturn + '%' : '0.00%'}</td>
-                                <td>${isArbitrageRedeemed ? (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : '-') : (arbitrageAllLatestData ? formatDateToYMD(arbitrageAllLatestData.date) : '-')}</td>
+                                <td>${arbitrageLatestData ? arbitrageLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${arbitrageLatestData ? arbitrageLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageLatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${arbitrageLatestData && arbitrageStats.returnRate ? arbitrageStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${arbitrageLatestData ? arbitrageStats.holdingDays : '0'}</td>
+                                <td>${arbitrageLatestData && arbitrageStats.annualizedReturn ? arbitrageStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${arbitrageLatestData && arbitrageAllLatestData ? formatDateToYMD(arbitrageAllLatestData.date) : '-'}</td>
                             </tr>
                             <tr>
                                 <td>Stable-Harbor-USDT 2.0</td>
                                 <td>${arbitrage2AllLatestData ? arbitrage2AllLatestData.coin : 'USDT'}</td>
-                                <td>${isArbitrage2Redeemed ? '0.00' : (arbitrage2LatestData ? arbitrage2LatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2}) : '0.00')}</td>
-                                <td>${isArbitrage2Redeemed ? '0.00' : (arbitrage2LatestData ? arbitrage2LatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2}) : '0.00')}</td>
-                                <td>${arbitrage2Stats.returnRate ? arbitrage2Stats.returnRate + '%' : '0.00%'}</td>
-                                <td>${arbitrage2Stats.holdingDays}</td>
-                                <td>${arbitrage2Stats.annualizedReturn ? arbitrage2Stats.annualizedReturn + '%' : '0.00%'}</td>
-                                <td>${isArbitrage2Redeemed ? (arbitrage2LatestData ? formatDateToYMD(arbitrage2LatestData.date) : '-') : (arbitrage2AllLatestData ? formatDateToYMD(arbitrage2AllLatestData.date) : '-')}</td>
+                                <td>${arbitrage2LatestData ? arbitrage2LatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${arbitrage2LatestData ? arbitrage2LatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2}) : '0.00'}</td>
+                                <td>${arbitrage2LatestData && arbitrage2Stats.returnRate ? arbitrage2Stats.returnRate + '%' : '0.00%'}</td>
+                                <td>${arbitrage2LatestData ? arbitrage2Stats.holdingDays : '0'}</td>
+                                <td>${arbitrage2LatestData && arbitrage2Stats.annualizedReturn ? arbitrage2Stats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${arbitrage2LatestData && arbitrage2AllLatestData ? formatDateToYMD(arbitrage2AllLatestData.date) : '-'}</td>
                             </tr>
                             <tr>
                                 <td>Stable-Harbor-BTC</td>
                                 <td>${arbitrageCoinBtcAllLatestData ? arbitrageCoinBtcAllLatestData.coin : 'BTC'}</td>
-                                <td>${isArbitrageCoinBtcRedeemed ? '0.00' : (arbitrageCoinBtcLatestData ? arbitrageCoinBtcLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00')}</td>
-                                <td>${isArbitrageCoinBtcRedeemed ? '0.00' : (arbitrageCoinBtcLatestData ? arbitrageCoinBtcLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00')}</td>
-                                <td>${arbitrageCoinBtcStats.returnRate ? arbitrageCoinBtcStats.returnRate + '%' : '0.00%'}</td>
-                                <td>${arbitrageCoinBtcStats.holdingDays}</td>
-                                <td>${arbitrageCoinBtcStats.annualizedReturn ? arbitrageCoinBtcStats.annualizedReturn + '%' : '0.00%'}</td>
-                                <td>${isArbitrageCoinBtcRedeemed ? (arbitrageCoinBtcLatestData ? formatDateToYMD(arbitrageCoinBtcLatestData.date) : '-') : (arbitrageCoinBtcAllLatestData ? formatDateToYMD(arbitrageCoinBtcAllLatestData.date) : '-')}</td>
+                                <td>${arbitrageCoinBtcLatestData ? arbitrageCoinBtcLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00'}</td>
+                                <td>${arbitrageCoinBtcLatestData ? arbitrageCoinBtcLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00'}</td>
+                                <td>${arbitrageCoinBtcLatestData && arbitrageCoinBtcStats.returnRate ? arbitrageCoinBtcStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${arbitrageCoinBtcLatestData ? arbitrageCoinBtcStats.holdingDays : '0'}</td>
+                                <td>${arbitrageCoinBtcLatestData && arbitrageCoinBtcStats.annualizedReturn ? arbitrageCoinBtcStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${arbitrageCoinBtcLatestData && arbitrageCoinBtcAllLatestData ? formatDateToYMD(arbitrageCoinBtcAllLatestData.date) : '-'}</td>
                             </tr>
                             <tr>
                                 <td>Stable-Harbor-ETH</td>
                                 <td>${arbitrageEthAllLatestData ? arbitrageEthAllLatestData.coin : 'ETH'}</td>
-                                <td>${isArbitrageEthRedeemed ? '0.00' : (arbitrageCoinEthLatestData ? arbitrageCoinEthLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00')}</td>
-                                <td>${isArbitrageEthRedeemed ? '0.00' : (arbitrageCoinEthLatestData ? arbitrageCoinEthLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00')}</td>
-                                <td>${arbitrageCoinEthStats.returnRate ? arbitrageCoinEthStats.returnRate + '%' : '0.00%'}</td>
-                                <td>${arbitrageCoinEthStats.holdingDays}</td>
-                                <td>${arbitrageCoinEthStats.annualizedReturn ? arbitrageCoinEthStats.annualizedReturn + '%' : '0.00%'}</td>
-                                <td>${isArbitrageEthRedeemed ? (arbitrageCoinEthLatestData ? formatDateToYMD(arbitrageCoinEthLatestData.date) : '-') : (arbitrageEthAllLatestData ? formatDateToYMD(arbitrageEthAllLatestData.date) : '-')}</td>
+                                <td>${arbitrageCoinEthLatestData ? arbitrageCoinEthLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00'}</td>
+                                <td>${arbitrageCoinEthLatestData ? arbitrageCoinEthLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00'}</td>
+                                <td>${arbitrageCoinEthLatestData && arbitrageCoinEthStats.returnRate ? arbitrageCoinEthStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${arbitrageCoinEthLatestData ? arbitrageCoinEthStats.holdingDays : '0'}</td>
+                                <td>${arbitrageCoinEthLatestData && arbitrageCoinEthStats.annualizedReturn ? arbitrageCoinEthStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${arbitrageCoinEthLatestData && arbitrageEthAllLatestData ? formatDateToYMD(arbitrageEthAllLatestData.date) : '-'}</td>
                             </tr>
                             <tr>
                                 <td>Deep-Growth</td>
                                 <td>${growthAllLatestData ? (growthAllLatestData.coin || 'USDT') : 'USDT'}</td>
-                                <td>${isGrowthRedeemed ? '0.00' : (growthLatestData ? growthLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2, maximumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2}) : '0.00')}</td>
-                                <td>${isGrowthRedeemed ? '0.00' : (growthLatestData ? growthLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2, maximumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2}) : '0.00')}</td>
-                                <td>${growthStats.returnRate ? growthStats.returnRate + '%' : '0.00%'}</td>
-                                <td>${growthStats.holdingDays}</td>
-                                <td>${growthStats.annualizedReturn ? growthStats.annualizedReturn + '%' : '0.00%'}</td>
-                                <td>${isGrowthRedeemed ? (growthLatestData ? formatDateToYMD(growthLatestData.date) : '-') : (growthAllLatestData ? formatDateToYMD(growthAllLatestData.date) : '-')}</td>
+                                <td>${growthLatestData ? growthLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2, maximumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2}) : '0.00'}</td>
+                                <td>${growthLatestData ? growthLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2, maximumFractionDigits: ((growthLatestData.coin || 'USDT') === 'BTC' || (growthLatestData.coin || 'USDT') === 'ETH') ? 4 : 2}) : '0.00'}</td>
+                                <td>${growthLatestData && growthStats.returnRate ? growthStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${growthLatestData ? growthStats.holdingDays : '0'}</td>
+                                <td>${growthLatestData && growthStats.annualizedReturn ? growthStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${growthLatestData && growthAllLatestData ? formatDateToYMD(growthAllLatestData.date) : '-'}</td>
                             </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 已清仓表格 -->
+                <div id="closedPositionTable" class="table-responsive" style="max-height: 500px; overflow-y: auto; display: none;">
+                    <table class="table">
+                        <thead style="position: sticky; top: 0; background-color: #f8f9fa; z-index: 10;">
+                            <tr>
+                                <th style="background-color: #f8f9fa; position: sticky; top: 0;">产品名称</th>
+                                <th style="background-color: #f8f9fa; position: sticky; top: 0;">币种</th>
+                                <th style="background-color: #f8f9fa; position: sticky; top: 0;">本金</th>
+                                <th style="background-color: #f8f9fa; position: sticky; top: 0;">清仓价值</th>
+                                <th style="background-color: #f8f9fa; position: sticky; top: 0;">收益率</th>
+                                <th style="background-color: #f8f9fa; position: sticky; top: 0;">持仓天数</th>
+                                <th style="background-color: #f8f9fa; position: sticky; top: 0;">年化收益率</th>
+                                <th style="background-color: #f8f9fa; position: sticky; top: 0;">清仓日期</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${isBalancedRedeemed && balancedClosedData ? `
+                            <tr>
+                                <td>Alpha-Bridge</td>
+                                <td>${balancedClosedData.coin || 'USDT'}</td>
+                                <td>${balancedClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (balancedClosedData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (balancedClosedData.coin === 'BTC') ? 4 : 2})}</td>
+                                <td>${balancedClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (balancedClosedData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (balancedClosedData.coin === 'BTC') ? 4 : 2})}</td>
+                                <td>${balancedClosedStats ? balancedClosedStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${balancedClosedStats ? balancedClosedStats.holdingDays : '0'}</td>
+                                <td>${balancedClosedStats ? balancedClosedStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${formatDateToYMD(balancedClosedData.date)}</td>
+                            </tr>
+                            ` : ''}
+                            ${isArbitrageRedeemed && arbitrageClosedData ? `
+                            <tr>
+                                <td>Stable-Harbor-USDT</td>
+                                <td>${arbitrageClosedData.coin || 'USDT'}</td>
+                                <td>${arbitrageClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageClosedData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageClosedData.coin === 'BTC') ? 4 : 2})}</td>
+                                <td>${arbitrageClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrageClosedData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrageClosedData.coin === 'BTC') ? 4 : 2})}</td>
+                                <td>${arbitrageClosedStats ? arbitrageClosedStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${arbitrageClosedStats ? arbitrageClosedStats.holdingDays : '0'}</td>
+                                <td>${arbitrageClosedStats ? arbitrageClosedStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${formatDateToYMD(arbitrageClosedData.date)}</td>
+                            </tr>
+                            ` : ''}
+                            ${isArbitrage2Redeemed && arbitrage2ClosedData ? `
+                            <tr>
+                                <td>Stable-Harbor-USDT 2.0</td>
+                                <td>${arbitrage2ClosedData.coin || 'USDT'}</td>
+                                <td>${arbitrage2ClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrage2ClosedData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrage2ClosedData.coin === 'BTC') ? 4 : 2})}</td>
+                                <td>${arbitrage2ClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrage2ClosedData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrage2ClosedData.coin === 'BTC') ? 4 : 2})}</td>
+                                <td>${arbitrage2ClosedStats ? arbitrage2ClosedStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${arbitrage2ClosedStats ? arbitrage2ClosedStats.holdingDays : '0'}</td>
+                                <td>${arbitrage2ClosedStats ? arbitrage2ClosedStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${formatDateToYMD(arbitrage2ClosedData.date)}</td>
+                            </tr>
+                            ` : ''}
+                            ${isArbitrageCoinBtcRedeemed && arbitrageCoinBtcClosedData ? `
+                            <tr>
+                                <td>Stable-Harbor-BTC</td>
+                                <td>${arbitrageCoinBtcClosedData.coin || 'BTC'}</td>
+                                <td>${arbitrageCoinBtcClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4})}</td>
+                                <td>${arbitrageCoinBtcClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4})}</td>
+                                <td>${arbitrageCoinBtcClosedStats ? arbitrageCoinBtcClosedStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${arbitrageCoinBtcClosedStats ? arbitrageCoinBtcClosedStats.holdingDays : '0'}</td>
+                                <td>${arbitrageCoinBtcClosedStats ? arbitrageCoinBtcClosedStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${formatDateToYMD(arbitrageCoinBtcClosedData.date)}</td>
+                            </tr>
+                            ` : ''}
+                            ${isArbitrageEthRedeemed && arbitrageEthClosedData ? `
+                            <tr>
+                                <td>Stable-Harbor-ETH</td>
+                                <td>${arbitrageEthClosedData.coin || 'ETH'}</td>
+                                <td>${arbitrageEthClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4})}</td>
+                                <td>${arbitrageEthClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4})}</td>
+                                <td>${arbitrageCoinEthClosedStats ? arbitrageCoinEthClosedStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${arbitrageCoinEthClosedStats ? arbitrageCoinEthClosedStats.holdingDays : '0'}</td>
+                                <td>${arbitrageCoinEthClosedStats ? arbitrageCoinEthClosedStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${formatDateToYMD(arbitrageEthClosedData.date)}</td>
+                            </tr>
+                            ` : ''}
+                            ${isGrowthRedeemed && growthClosedData ? `
+                            <tr>
+                                <td>Deep-Growth</td>
+                                <td>${growthClosedData.coin || 'USDT'}</td>
+                                <td>${growthClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: ((growthClosedData.coin || 'USDT') === 'BTC' || (growthClosedData.coin || 'USDT') === 'ETH') ? 4 : 2, maximumFractionDigits: ((growthClosedData.coin || 'USDT') === 'BTC' || (growthClosedData.coin || 'USDT') === 'ETH') ? 4 : 2})}</td>
+                                <td>${growthClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: ((growthClosedData.coin || 'USDT') === 'BTC' || (growthClosedData.coin || 'USDT') === 'ETH') ? 4 : 2, maximumFractionDigits: ((growthClosedData.coin || 'USDT') === 'BTC' || (growthClosedData.coin || 'USDT') === 'ETH') ? 4 : 2})}</td>
+                                <td>${growthClosedStats ? growthClosedStats.returnRate + '%' : '0.00%'}</td>
+                                <td>${growthClosedStats ? growthClosedStats.holdingDays : '0'}</td>
+                                <td>${growthClosedStats ? growthClosedStats.annualizedReturn + '%' : '0.00%'}</td>
+                                <td>${formatDateToYMD(growthClosedData.date)}</td>
+                            </tr>
+                            ` : ''}
+                            ${!((isBalancedRedeemed && balancedClosedData) || (isArbitrageRedeemed && arbitrageClosedData) || (isArbitrage2Redeemed && arbitrage2ClosedData) || (isArbitrageCoinBtcRedeemed && arbitrageCoinBtcClosedData) || (isArbitrageEthRedeemed && arbitrageEthClosedData) || (isGrowthRedeemed && growthClosedData)) ? `
+                            <tr>
+                                <td colspan="8" class="text-center">暂无已清仓记录</td>
+                            </tr>
+                            ` : ''}
                         </tbody>
                     </table>
                 </div>
             `;
             
             detailsDiv.innerHTML = detailsHtml;
+            
+            // 绑定按钮切换事件
+            const currentHoldingBtn = document.getElementById('currentHoldingBtn');
+            const closedPositionBtn = document.getElementById('closedPositionBtn');
+            const currentHoldingTable = document.getElementById('currentHoldingTable');
+            const closedPositionTable = document.getElementById('closedPositionTable');
+            
+            if (currentHoldingBtn && closedPositionBtn && currentHoldingTable && closedPositionTable) {
+                // 当前持仓按钮点击事件
+                currentHoldingBtn.addEventListener('click', function() {
+                    currentHoldingBtn.style.textDecoration = 'underline';
+                    currentHoldingBtn.style.color = '#000';
+                    closedPositionBtn.style.textDecoration = 'none';
+                    closedPositionBtn.style.color = '#6c757d';
+                    currentHoldingTable.style.display = 'block';
+                    closedPositionTable.style.display = 'none';
+                });
+                
+                // 已清仓按钮点击事件
+                closedPositionBtn.addEventListener('click', function() {
+                    closedPositionBtn.style.textDecoration = 'underline';
+                    closedPositionBtn.style.color = '#000';
+                    currentHoldingBtn.style.textDecoration = 'none';
+                    currentHoldingBtn.style.color = '#6c757d';
+                    closedPositionTable.style.display = 'block';
+                    currentHoldingTable.style.display = 'none';
+                });
+            }
         }
         
         // 辅助函数
