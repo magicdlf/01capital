@@ -241,8 +241,8 @@ def main():
     """Main function with command line argument support"""
     # Parse command line arguments
     csv_data_path = "/Users/weijiaxin/Desktop/01 Capital/01 nav" # Default CSV data path
-    json_save_path = "data/users"  # Default JSON save path
-    password_file_path = "data/password.csv"  # Default password file path
+    json_save_path = "/Users/weijiaxin/Desktop/01 Capital/网站/fof-info/data/users"  # Default JSON save path
+    password_file_path = "/Users/weijiaxin/Desktop/01 Capital/网站/fof-info/data/password.csv"  # Default password file path
     
     if len(sys.argv) >= 2:
         csv_data_path = sys.argv[1]

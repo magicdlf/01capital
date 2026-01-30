@@ -446,8 +446,11 @@
                 
                 const hashValue = base64;
                 
-                // 显示生成的hash值
-                hashInput.value = hashValue;
+                // 将hash值逆序显示
+                const reversedHashValue = hashValue.split('').reverse().join('');
+                
+                // 显示生成的逆序hash值
+                hashInput.value = reversedHashValue;
                 
                 // 显示成功信息
                 successElement.innerHTML = `

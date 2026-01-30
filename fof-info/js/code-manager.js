@@ -5,9 +5,10 @@
 
 class CodeManager {
     constructor() {
-        // 使用远程数据源
-        this.dataBaseUrl = 'https://data.01capital.info/arbcus';
-        this.codesDir = this.dataBaseUrl + '/';
+        // 使用本地数据源（调试用）
+        // TODO: 调试完成后改回: this.dataBaseUrl = 'https://data.01capital.info/arbcus';
+        this.dataBaseUrl = 'data';
+        this.codesDir = this.dataBaseUrl + '/codes/';
         this.configPath = this.dataBaseUrl + '/codes-config.json';
         this.codeLength = 8;
         this.validChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

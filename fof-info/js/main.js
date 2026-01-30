@@ -1,5 +1,6 @@
 // 数据源配置
-const DATA_BASE_URL = 'https://data.01capital.info/arbcus';
+// TODO: 调试完成后改回: const DATA_BASE_URL = 'https://data.01capital.info/arbcus';
+const DATA_BASE_URL = 'data';
 
 // EmailJS配置
 const EMAILJS_CONFIG = {
@@ -91,6 +92,21 @@ const productData = {
         ],
         alt: '稳健系列-U本位业绩'
     },
+    'stable-usd-2': {
+        title: 'Stable-Harbor-USDT 2.0',
+        desc: '以U本位计价，专注于低风险套利策略，追求稳定收益，严格控制回撤。',
+        facts: [
+            { label: '成立时间', value: '2026/1/29' },
+            { label: '策略成分', value: '套利' },
+            { label: '最大回撤', value: '' },
+            { label: '实际杠杆', value: '1.5X' },
+            { label: 'Sharpe比率', value: '' },
+            { label: '杠杆限额', value: '5X' },
+            { label: '区间收益率', value: '' },
+            { label: '预计年化收益率', value: '' }
+        ],
+        alt: '稳健系列-U本位2.0业绩'
+    },
     'stable-coin-btc': {
         title: 'Stable-Harbor-BTC',
         desc: '以BTC本位计价，专注于低风险套利策略，追求稳定收益，严格控制回撤。',
@@ -105,21 +121,6 @@ const productData = {
             { label: '预计年化收益率', value: '' }
         ],
         alt: '稳健系列-BTC本位业绩'
-    },
-    'stable-coin-eth': {
-        title: 'Stable-Harbor-ETH',
-        desc: '以ETH本位计价，专注于低风险套利策略，追求稳定收益，严格控制回撤。',
-        facts: [
-            { label: '成立时间', value: '2025/12/21' },
-            { label: '策略成分', value: '套利' },
-            { label: '最大回撤', value: '' },
-            { label: '实际杠杆', value: '1.5X' },
-            { label: 'Sharpe比率', value: '' },
-            { label: '杠杆限额', value: '5X' },
-            { label: '区间收益率', value: '' },
-            { label: '预计年化收益率', value: '' }
-        ],
-        alt: '稳健系列-ETH本位业绩'
     },
     balanced: {
         title: 'Alpha-Bridge',
@@ -180,6 +181,20 @@ if (productList && perfContent) {
                 return; // 不改变右侧内容
             }
             
+            // 处理稳健系列-U本位的特殊情况
+            if (key === 'stable-usd') {
+                // 切换子选项的显示状态
+                const subOptions = document.querySelector('.stable-usd-sub-options');
+                if (subOptions) {
+                    subOptions.style.display = subOptions.style.display === 'none' ? 'block' : 'none';
+                }
+                // 移除所有按钮的active类
+                productList.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                // 为稳健系列-U本位按钮添加active类
+                e.target.classList.add('active');
+                return; // 不改变右侧内容
+            }
+            
             // 处理稳健系列-币本位的特殊情况
             if (key === 'stable-coin') {
                 // 切换子选项的显示状态
@@ -199,17 +214,17 @@ if (productList && perfContent) {
                 setTimeout(() => {
                     showBalancedProductSection('all'); // 默认显示成立以来
                 }, 100);
-            } else if (key === 'stable-usd') {
+            } else if (key === 'stable-usd-1') {
                 setTimeout(() => {
                     showStableUsdProductSection('all'); // 默认显示成立以来
+                }, 100);
+            } else if (key === 'stable-usd-2') {
+                setTimeout(() => {
+                    showStableUsd2ProductSection('all'); // 默认显示成立以来
                 }, 100);
             } else if (key === 'stable-coin-btc') {
                 setTimeout(() => {
                     showStableCoinBtcProductSection('all'); // 默认显示成立以来
-                }, 100);
-            } else if (key === 'stable-coin-eth') {
-                setTimeout(() => {
-                    showStableCoinEthProductSection('all'); // 默认显示成立以来
                 }, 100);
             } else if (key === 'aggressive') {
                 setTimeout(() => {
@@ -367,12 +382,6 @@ function showBalancedChartUI() {
     document.getElementById('balanced-chart-container').style.display = '';
     document.getElementById('balancedChart').height = 320;
 }
-function hideBalancedChartUI() {
-    const controls = document.getElementById('balanced-chart-controls');
-    const container = document.getElementById('balanced-chart-container');
-    if (controls) controls.style.display = 'none';
-    if (container) container.style.display = 'none';
-}
 
 function loadBalancedCSVAndDraw(rangeDays = 30, callback) {
     Papa.parse(DATA_BASE_URL + '/balanced.csv?t=' + new Date().getTime(), {
@@ -437,169 +446,6 @@ function showBalancedProductSection(rangeDays = 30) {
     loadBalancedCSVAndDraw(rangeDays, bindBalancedChartControls);
     // 4. 设置对应按钮的高亮状态
     const chartControls = document.getElementById('balanced-chart-controls');
-    if (chartControls) {
-        chartControls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = chartControls.querySelector(`button[data-range="${rangeDays}"]`);
-        if (activeBtn) activeBtn.classList.add('active');
-    }
-}
-
-// 稳健型FOF业绩图表逻辑
-let stableChart = null;
-let stableData = [];
-let stableDataLoaded = false;
-
-function renderStableChart(rangeDays = 30) {
-    if (!stableData.length) return;
-    let dataSlice;
-    if (rangeDays === 'all') {
-        dataSlice = stableData;
-    } else {
-        dataSlice = stableData.slice(-rangeDays);
-    }
-    const labels = dataSlice.map(d => d.date);
-    const values = dataSlice.map(d => d.nav);
-    const ctx = document.getElementById('stableChart').getContext('2d');
-    if (stableChart) stableChart.destroy();
-    stableChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: '单位净值',
-                data: values,
-                borderColor: '#1a2530',
-                backgroundColor: 'rgba(26,37,48,0.08)',
-                pointRadius: 2,
-                tension: 0.2,
-                fill: true
-            }]
-        },
-        options: {
-            plugins: {
-                title: {
-                    display: false
-                },
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return '单位净值: ' + context.parsed.y.toFixed(4);
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: { display: true, title: { display: false } },
-                y: {
-                    display: true,
-                    title: { display: false },
-                    ticks: {
-                        callback: function(value) {
-                            return value.toFixed(4);
-                        }
-                    }
-                }
-            },
-            responsive: true,
-            maintainAspectRatio: false,
-            elements: { line: { borderWidth: 2 } }
-        }
-    });
-
-    // 计算收益率指标
-    const returnRate = calculateReturnRate(dataSlice);
-    const annualized = calculateAnnualizedReturn(dataSlice);
-    const sharpe = calculateAnnualizedSharpe(dataSlice);
-    const maxDrawdown = calculateMaxDrawdown(dataSlice);
-
-    // 更新表格中的值
-    const facts = productData['stable'].facts;
-    facts[2].value = maxDrawdown ? maxDrawdown + '%' : '';  // 最大回撤
-    facts[4].value = sharpe ? sharpe : '';  // Sharpe比率
-    facts[6].value = returnRate ? returnRate + '%' : '';  // 区间收益率
-    facts[7].value = annualized ? annualized + '%' : '';  // 预计年化收益率
-
-    // 更新表格内容
-    const factsHtml = renderFactsTable(facts);
-    const factsContainer = document.querySelector('#product-performance-content .container');
-    if (factsContainer) {
-        factsContainer.outerHTML = factsHtml;
-    }
-}
-
-function showStableChartUI() {
-    document.getElementById('stable-chart-controls').style.display = '';
-    document.getElementById('stable-chart-container').style.display = '';
-    document.getElementById('stableChart').height = 320;
-}
-
-function hideStableChartUI() {
-    const controls = document.getElementById('stable-chart-controls');
-    const container = document.getElementById('stable-chart-container');
-    if (controls) controls.style.display = 'none';
-    if (container) container.style.display = 'none';
-}
-
-function loadStableCSVAndDraw(rangeDays = 30, callback) {
-    Papa.parse(DATA_BASE_URL + '/arbitrage.csv?t=' + new Date().getTime(), {
-        download: true,
-        header: true,
-        complete: function(results) {
-            stableData = results.data.filter(row => row['Date'] && row['NAV per unit']).map(row => ({
-                date: row['Date'],
-                nav: parseFloat(row['NAV per unit'])
-            }));
-            stableDataLoaded = true;
-            renderStableChart(rangeDays);
-            if (callback) callback();
-        }
-    });
-}
-
-function bindStableChartControls() {
-    const chartControls = document.getElementById('stable-chart-controls');
-    if (chartControls) {
-        chartControls.querySelectorAll('button').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const days = this.getAttribute('data-range');
-                // 移除所有按钮的active类
-                chartControls.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-                // 为当前点击的按钮添加active类
-                this.classList.add('active');
-                // 渲染图表
-                renderStableChart(days);
-            });
-        });
-    }
-}
-
-function showStableProductSection(rangeDays = 30) {
-    // 1. 生成内容
-    if (perfContent && productData['stable']) {
-        perfContent.innerHTML = `
-            <h3>${productData['stable'].title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
-            <p>${productData['stable'].desc}</p>
-            ${renderFactsTable(productData['stable'].facts)}
-            <div id="stable-chart-controls" style="margin-bottom:16px;">
-                <button class="btn btn-outline-dark btn-sm me-2" data-range="7">近7天</button>
-                <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
-                <button class="btn btn-outline-dark btn-sm me-2" data-range="180">近6个月</button>
-                <button class="btn btn-outline-dark btn-sm" data-range="all">成立以来</button>
-            </div>
-            <div class="performance-chart mb-3" id="stable-chart-container">
-                <canvas id="stableChart" height="320"></canvas>
-            </div>
-        `;
-    }
-    // 2. 显示图表UI
-    showStableChartUI();
-    // 3. 渲染图表
-    loadStableCSVAndDraw(rangeDays, bindStableChartControls);
-    // 4. 设置对应按钮的高亮状态
-    const chartControls = document.getElementById('stable-chart-controls');
     if (chartControls) {
         chartControls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
         const activeBtn = chartControls.querySelector(`button[data-range="${rangeDays}"]`);
@@ -754,11 +600,6 @@ function showStableCoinBtcChartUI() {
     if (container) container.style.display = 'block';
 }
 
-function hideStableCoinBtcChartUI() {
-    const container = document.getElementById('stable-coin-btc-chart-container');
-    if (container) container.style.display = 'none';
-}
-
 function bindStableCoinBtcChartControls() {
     const controls = document.getElementById('stable-coin-btc-chart-controls');
     if (controls) {
@@ -773,181 +614,15 @@ function bindStableCoinBtcChartControls() {
     }
 }
 
-// 稳健系列-ETH本位业绩图表逻辑
-let stableCoinEthChart = null;
-let stableCoinEthData = [];
-let stableCoinEthDataLoaded = false;
-
-function loadStableCoinEthCSVAndDraw(rangeDays = 30, callback) {
-    Papa.parse(DATA_BASE_URL + '/arbitrage_eth.csv?t=' + new Date().getTime(), {
-        download: true,
-        header: true,
-        complete: function(results) {
-            stableCoinEthData = results.data
-                .filter(row => row.Date && row['NAV per unit'])
-                .map(row => ({
-                    date: row.Date,
-                    nav: parseFloat(row['NAV per unit'])
-                }));
-            stableCoinEthDataLoaded = true;
-            renderStableCoinEthChart(rangeDays);
-            if (callback) callback();
-        }
-    });
-}
-
-function renderStableCoinEthChart(rangeDays = 30) {
-    if (!stableCoinEthData.length) return;
-    let dataSlice;
-    
-    // 计算实际需要的数据点数量
-    let pointsToShow;
-    if (rangeDays === 'all') {
-        dataSlice = stableCoinEthData;
-    } else {
-        // 由于是周频数据，每周一个点，所以需要的数据点数量是 rangeDays/7 向上取整
-        pointsToShow = Math.ceil(rangeDays / 7);
-        dataSlice = stableCoinEthData.slice(-pointsToShow);
-    }
-
-    const labels = dataSlice.map(d => d.date);
-    const values = dataSlice.map(d => d.nav);
-    const ctx = document.getElementById('stableCoinEthChart').getContext('2d');
-    if (stableCoinEthChart) stableCoinEthChart.destroy();
-    stableCoinEthChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: '单位净值',
-                data: values,
-                borderColor: '#1a2530',
-                backgroundColor: 'rgba(26,37,48,0.08)',
-                pointRadius: 2,
-                tension: 0.2,
-                fill: true
-            }]
-        },
-        options: {
-            plugins: {
-                title: {
-                    display: false
-                },
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return '单位净值: ' + context.parsed.y.toFixed(4);
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: { 
-                    display: true, 
-                    title: { display: false },
-                    ticks: {
-                        maxRotation: 45,
-                        minRotation: 45
-                    }
-                },
-                y: {
-                    display: true,
-                    title: { display: false },
-                    ticks: {
-                        callback: function(value) {
-                            return value.toFixed(4);
-                        }
-                    }
-                }
-            },
-            responsive: true,
-            maintainAspectRatio: false,
-            elements: { line: { borderWidth: 2 } }
-        }
-    });
-
-    // 计算收益率指标
-    const returnRate = calculateReturnRate(dataSlice);
-    const annualized = calculateAnnualizedReturn(dataSlice);
-    const sharpe = calculateAnnualizedSharpe(dataSlice);
-    const maxDrawdown = calculateMaxDrawdown(dataSlice);
-
-    // 更新表格中的值
-    const facts = productData['stable-coin-eth'].facts;
-    facts[2].value = maxDrawdown ? maxDrawdown + '%' : '';  // 最大回撤
-    facts[4].value = sharpe ? sharpe : '';  // Sharpe比率
-    facts[6].value = returnRate ? returnRate + '%' : '';  // 区间收益率
-    facts[7].value = annualized ? annualized + '%' : '';  // 预计年化收益率
-
-    // 更新表格内容
-    const factsHtml = renderFactsTable(facts);
-    const factsContainer = document.querySelector('#product-performance-content .container');
-    if (factsContainer) {
-        factsContainer.outerHTML = factsHtml;
-    }
-}
-
-function showStableCoinEthProductSection(rangeDays = 30) {
-    // 1. 生成内容
-    if (perfContent && productData['stable-coin-eth']) {
-        perfContent.innerHTML = `
-            <h3>${productData['stable-coin-eth'].title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
-            <p>${productData['stable-coin-eth'].desc}</p>
-            ${renderFactsTable(productData['stable-coin-eth'].facts)}
-            <div id="stable-coin-eth-chart-controls" style="margin-bottom:16px;">
-                <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
-                <button class="btn btn-outline-dark btn-sm me-2" data-range="180">近6个月</button>
-                <button class="btn btn-outline-dark btn-sm" data-range="all">成立以来</button>
-            </div>
-            <div class="performance-chart mb-3" id="stable-coin-eth-chart-container">
-                <canvas id="stableCoinEthChart" height="320"></canvas>
-            </div>
-        `;
-    }
-    // 2. 显示图表UI
-    showStableCoinEthChartUI();
-    // 3. 渲染图表
-    loadStableCoinEthCSVAndDraw(rangeDays, bindStableCoinEthChartControls);
-    // 4. 设置对应按钮的高亮状态
-    const chartControls = document.getElementById('stable-coin-eth-chart-controls');
-    if (chartControls) {
-        chartControls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = chartControls.querySelector(`button[data-range="${rangeDays}"]`);
-        if (activeBtn) activeBtn.classList.add('active');
-    }
-}
-
-function showStableCoinEthChartUI() {
-    const container = document.getElementById('stable-coin-eth-chart-container');
-    if (container) container.style.display = 'block';
-}
-
-function hideStableCoinEthChartUI() {
-    const container = document.getElementById('stable-coin-eth-chart-container');
-    if (container) container.style.display = 'none';
-}
-
-function bindStableCoinEthChartControls() {
-    const controls = document.getElementById('stable-coin-eth-chart-controls');
-    if (controls) {
-        controls.addEventListener('click', function(e) {
-            if (e.target.matches('button[data-range]')) {
-                const range = e.target.getAttribute('data-range');
-                renderStableCoinEthChart(range);
-                controls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-                e.target.classList.add('active');
-            }
-        });
-    }
-}
-
 // 添加稳健系列-U本位业绩图表逻辑
 let stableUsdChart = null;
 let stableUsdData = [];
 let stableUsdDataLoaded = false;
+
+// 添加稳健系列-U本位2.0业绩图表逻辑
+let stableUsd2Chart = null;
+let stableUsd2Data = [];
+let stableUsd2DataLoaded = false;
 
 function loadStableUsdCSVAndDraw(rangeDays = 30, callback) {
     Papa.parse(DATA_BASE_URL + '/arbitrage.csv?t=' + new Date().getTime(), {
@@ -1084,11 +759,6 @@ function showStableUsdChartUI() {
     if (container) container.style.display = 'block';
 }
 
-function hideStableUsdChartUI() {
-    const container = document.getElementById('stable-usd-chart-container');
-    if (container) container.style.display = 'none';
-}
-
 function bindStableUsdChartControls() {
     const controls = document.getElementById('stable-usd-chart-controls');
     if (controls) {
@@ -1096,6 +766,177 @@ function bindStableUsdChartControls() {
             if (e.target.matches('button[data-range]')) {
                 const range = e.target.getAttribute('data-range');
                 renderStableUsdChart(range);
+                controls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+            }
+        });
+    }
+}
+
+// 稳健系列-U本位2.0业绩图表逻辑
+function loadStableUsd2CSVAndDraw(rangeDays = 30, callback) {
+    Papa.parse(DATA_BASE_URL + '/arbitrage2.csv?t=' + new Date().getTime(), {
+        download: true,
+        header: true,
+        complete: function(results) {
+            if (results.errors && results.errors.length > 0) {
+                console.error('CSV解析错误:', results.errors);
+            }
+            console.log('CSV解析结果:', results);
+            stableUsd2Data = results.data
+                .filter(row => row && row.Date && row['NAV per unit'] && !isNaN(parseFloat(row['NAV per unit'])))
+                .map(row => ({
+                    date: row.Date,
+                    nav: parseFloat(row['NAV per unit'])
+                }));
+            console.log('Stable USD 2.0 数据加载完成，数据点数量:', stableUsd2Data.length);
+            if (stableUsd2Data.length > 0) {
+                console.log('前5条数据:', stableUsd2Data.slice(0, 5));
+            }
+            stableUsd2DataLoaded = true;
+            renderStableUsd2Chart(rangeDays);
+            if (callback) callback();
+        },
+        error: function(error) {
+            console.error('加载arbitrage2.csv失败:', error);
+        }
+    });
+}
+
+function renderStableUsd2Chart(rangeDays = 30) {
+    if (!stableUsd2Data || !stableUsd2Data.length) {
+        console.warn('Stable USD 2.0 数据为空，无法渲染图表');
+        return;
+    }
+    let dataSlice;
+    if (rangeDays === 'all') {
+        dataSlice = stableUsd2Data;
+    } else {
+        dataSlice = stableUsd2Data.slice(-rangeDays);
+    }
+    const labels = dataSlice.map(d => d.date);
+    const values = dataSlice.map(d => d.nav);
+    const chartElement = document.getElementById('stableUsd2Chart');
+    if (!chartElement) {
+        console.error('找不到stableUsd2Chart元素');
+        return;
+    }
+    const ctx = chartElement.getContext('2d');
+    if (stableUsd2Chart) stableUsd2Chart.destroy();
+    stableUsd2Chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '单位净值',
+                data: values,
+                borderColor: '#1a2530',
+                backgroundColor: 'rgba(26,37,48,0.08)',
+                pointRadius: 2,
+                tension: 0.2,
+                fill: true
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: false
+                },
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '单位净值: ' + context.parsed.y.toFixed(4);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { display: true, title: { display: false } },
+                y: {
+                    display: true,
+                    title: { display: false },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toFixed(4);
+                        }
+                    }
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            elements: { line: { borderWidth: 2 } }
+        }
+    });
+
+    // 计算收益率指标
+    const returnRate = calculateReturnRate(dataSlice);
+    const annualized = calculateAnnualizedReturn(dataSlice);
+    const sharpe = calculateAnnualizedSharpe(dataSlice);
+    const maxDrawdown = calculateMaxDrawdown(dataSlice);
+
+    // 更新表格中的值
+    const facts = productData['stable-usd-2'].facts;
+    facts[2].value = maxDrawdown ? maxDrawdown + '%' : '';  // 最大回撤
+    facts[4].value = sharpe ? sharpe : '';  // Sharpe比率
+    facts[6].value = returnRate ? returnRate + '%' : '';  // 区间收益率
+    facts[7].value = annualized ? annualized + '%' : '';  // 预计年化收益率
+
+    // 更新表格内容
+    const factsHtml = renderFactsTable(facts);
+    const factsContainer = document.querySelector('#product-performance-content .container');
+    if (factsContainer) {
+        factsContainer.outerHTML = factsHtml;
+    }
+}
+
+function showStableUsd2ProductSection(rangeDays = 30) {
+    // 1. 生成内容
+    if (perfContent && productData['stable-usd-2']) {
+        perfContent.innerHTML = `
+            <h3>${productData['stable-usd-2'].title} <span style="font-size:1.1rem;color:#666;">（运行中）</span></h3>
+            <p>${productData['stable-usd-2'].desc}</p>
+            ${renderFactsTable(productData['stable-usd-2'].facts)}
+            <div id="stable-usd-2-chart-controls" style="margin-bottom:16px;">
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="7">近7天</button>
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="30">近30天</button>
+                <button class="btn btn-outline-dark btn-sm me-2" data-range="180">近6个月</button>
+                <button class="btn btn-outline-dark btn-sm" data-range="all">成立以来</button>
+            </div>
+            <div class="performance-chart mb-3" id="stable-usd-2-chart-container">
+                <canvas id="stableUsd2Chart" height="320"></canvas>
+            </div>
+        `;
+    }
+    // 2. 显示图表UI
+    showStableUsd2ChartUI();
+    // 3. 等待DOM更新后渲染图表
+    setTimeout(() => {
+        loadStableUsd2CSVAndDraw(rangeDays, bindStableUsd2ChartControls);
+    }, 100);
+    // 4. 设置对应按钮的高亮状态
+    const chartControls = document.getElementById('stable-usd-2-chart-controls');
+    if (chartControls) {
+        chartControls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = chartControls.querySelector(`button[data-range="${rangeDays}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+    }
+}
+
+function showStableUsd2ChartUI() {
+    const container = document.getElementById('stable-usd-2-chart-container');
+    if (container) container.style.display = 'block';
+}
+
+function bindStableUsd2ChartControls() {
+    const controls = document.getElementById('stable-usd-2-chart-controls');
+    if (controls) {
+        controls.addEventListener('click', function(e) {
+            if (e.target.matches('button[data-range]')) {
+                const range = e.target.getAttribute('data-range');
+                renderStableUsd2Chart(range);
                 controls.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
                 e.target.classList.add('active');
             }
@@ -1241,7 +1082,8 @@ async function handleLogin() {
         console.log('Trying to fetch user data from:', hashFilename);
         
         // 尝试获取对应的用户数据文件
-        const userDataUrl = DATA_BASE_URL + '/' + hashFilename + '?t=' + new Date().getTime();
+        // TODO: 调试完成后改回: const userDataUrl = DATA_BASE_URL + '/' + hashFilename + '?t=' + new Date().getTime();
+        const userDataUrl = DATA_BASE_URL + '/users/' + hashFilename + '?t=' + new Date().getTime();
         let response = null;
         try {
             // 明确指定 CORS 模式，确保跨域请求正常工作
@@ -1354,6 +1196,23 @@ function getLatestArbitrageInvestorData(investor) {
     return latestRecord;
 }
 
+function getLatestArbitrage2InvestorData(investor) {
+    if (!currentUserData || !currentUserData.investments) return null;
+    
+    const arbitrage2Data = currentUserData.investments.arbitrage2 || [];
+    if (!arbitrage2Data.length) return null;
+    
+    console.log('Getting arbitrage2 data from user hash file');
+    
+    // 筛选本金>1的记录（已赎回的用户不显示后续数据），按日期排序并获取最新记录
+    const filteredData = arbitrage2Data.filter(record => (record.principal || 0) > 1);
+    if (!filteredData.length) return null;
+    
+    const latestRecord = filteredData.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    console.log('Latest arbitrage2 record:', latestRecord);
+    return latestRecord;
+}
+
 function getLatestArbitrageCoinInvestorData(investor) {
     if (!currentUserData || !currentUserData.investments) return null;
     
@@ -1399,6 +1258,7 @@ function showInvestmentSummary() {
     // 获取当前投资者的最新数据
     const balancedLatestData = getLatestBalancedInvestorData(currentUser);
     const arbitrageLatestData = getLatestArbitrageInvestorData(currentUser);
+    const arbitrage2LatestData = getLatestArbitrage2InvestorData(currentUser);
     const arbitrageCoinLatestData = getLatestArbitrageCoinInvestorData(currentUser);
     const growthLatestData = getLatestGrowthInvestorData(currentUser);
     
@@ -1425,6 +1285,7 @@ function showInvestmentSummary() {
     // 获取所有记录的最新数据（不筛选本金，用于判断是否已赎回）
     let balancedAllLatestData = null;
     let arbitrageAllLatestData = null;
+    let arbitrage2AllLatestData = null;
     let arbitrageCoinBtcAllLatestData = null;
     let arbitrageEthAllLatestData = null;
     let growthAllLatestData = null;
@@ -1438,6 +1299,11 @@ function showInvestmentSummary() {
         const arbitrageAll = currentUserData.investments.arbitrage || [];
         if (arbitrageAll.length > 0) {
             arbitrageAllLatestData = arbitrageAll.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        }
+        
+        const arbitrage2All = currentUserData.investments.arbitrage2 || [];
+        if (arbitrage2All.length > 0) {
+            arbitrage2AllLatestData = arbitrage2All.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
         }
         
         const arbitrageCoinData = currentUserData.investments.arbitrage_coin || [];
@@ -1459,6 +1325,7 @@ function showInvestmentSummary() {
     // 判断是否已赎回（最新记录本金<1）
     const isBalancedRedeemed = balancedAllLatestData && (balancedAllLatestData.principal || 0) < 1;
     const isArbitrageRedeemed = arbitrageAllLatestData && (arbitrageAllLatestData.principal || 0) < 1;
+    const isArbitrage2Redeemed = arbitrage2AllLatestData && (arbitrage2AllLatestData.principal || 0) < 1;
     const isArbitrageCoinBtcRedeemed = arbitrageCoinBtcAllLatestData && (arbitrageCoinBtcAllLatestData.principal || 0) < 1;
     const isArbitrageEthRedeemed = arbitrageEthAllLatestData && (arbitrageEthAllLatestData.principal || 0) < 1;
     const isGrowthRedeemed = growthAllLatestData && (growthAllLatestData.principal || 0) < 1;
@@ -1466,6 +1333,7 @@ function showInvestmentSummary() {
     console.log('Current user:', currentUser);
     console.log('Latest balanced data for', currentUser, ':', balancedLatestData);
     console.log('Latest arbitrage data for', currentUser, ':', arbitrageLatestData);
+    console.log('Latest arbitrage2 data for', currentUser, ':', arbitrage2LatestData);
     console.log('Latest arbitrage coin BTC data for', currentUser, ':', arbitrageCoinBtcLatestData);
     console.log('Latest arbitrage coin ETH data for', currentUser, ':', arbitrageCoinEthLatestData);
     console.log('Latest growth data for', currentUser, ':', growthLatestData);
@@ -1477,6 +1345,9 @@ function showInvestmentSummary() {
     let arbitrageHoldingDays = 0;
     let arbitrageReturnRate = 0;
     let arbitrageAnnualizedReturn = 0;
+    let arbitrage2HoldingDays = 0;
+    let arbitrage2ReturnRate = 0;
+    let arbitrage2AnnualizedReturn = 0;
     let arbitrageCoinBtcHoldingDays = 0;
     let arbitrageCoinBtcReturnRate = 0;
     let arbitrageCoinBtcAnnualizedReturn = 0;
@@ -1527,6 +1398,28 @@ function showInvestmentSummary() {
         arbitrageReturnRate = arbitrageLatestData.total_return !== undefined ? (arbitrageLatestData.total_return * 100).toFixed(2) : '0.00';
         // 计算年化收益率
         arbitrageAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(arbitrageReturnRate), arbitrageHoldingDays);
+    }
+
+    if (arbitrage2LatestData) {
+        console.log('Processing arbitrage2 data for', currentUser);
+        // 获取当前投资者的所有Stable-Harbor-USDT 2.0记录（仅使用 investments.arbitrage2），筛选本金>1的记录（已赎回的用户不显示后续数据）
+        let arbitrage2Records = Array.isArray(currentUserData.investments.arbitrage2)
+            ? currentUserData.investments.arbitrage2.filter(record => (record.principal || 0) > 1)
+            : [];
+        // 取最早一条
+        const arbitrage2FirstRecord = arbitrage2Records.length
+            ? arbitrage2Records.sort((a, b) => new Date(a.date) - new Date(b.date))[0]
+            : null;
+        // 持仓天数 = （最早和最新日期的天数差+1）
+        if (arbitrage2FirstRecord && arbitrage2LatestData) {
+            arbitrage2HoldingDays = Math.ceil(
+                (new Date(arbitrage2LatestData.date) - new Date(arbitrage2FirstRecord.date)) / (1000 * 60 * 60 * 24)
+            ) + 1;
+        }
+        // 使用 total_return 作为收益率，注意 total_return 是小数，需乘以100
+        arbitrage2ReturnRate = arbitrage2LatestData.total_return !== undefined ? (arbitrage2LatestData.total_return * 100).toFixed(2) : '0.00';
+        // 计算年化收益率
+        arbitrage2AnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(arbitrage2ReturnRate), arbitrage2HoldingDays);
     }
 
     if (arbitrageCoinBtcLatestData) {
@@ -1633,6 +1526,28 @@ function showInvestmentSummary() {
         assetsByCoin[coin].realizedPnl += arbitrageLatestData.realized_pnl;
         assetsByCoin[coin].unrealizedPnl += arbitrageLatestData.net_pnl;
         if (arbitrageLatestData.principal > 0) {
+            assetsByCoin[coin].holdingCount++;
+        }
+    }
+
+    // 处理 Stable-Harbor-USDT 2.0 数据（同样逻辑）
+    if (arbitrage2LatestData) {
+        console.log('Adding arbitrage2 data to assetsByCoin');
+        const coin = arbitrage2LatestData.coin;
+        if (!assetsByCoin[coin]) {
+            assetsByCoin[coin] = {
+                totalNetNav: 0,
+                totalNetPnl: 0,
+                realizedPnl: 0,
+                unrealizedPnl: 0,
+                holdingCount: 0
+            };
+        }
+        assetsByCoin[coin].totalNetNav += arbitrage2LatestData.net_nav;
+        assetsByCoin[coin].totalNetPnl += arbitrage2LatestData.net_pnl;
+        assetsByCoin[coin].realizedPnl += arbitrage2LatestData.realized_pnl;
+        assetsByCoin[coin].unrealizedPnl += arbitrage2LatestData.net_pnl;
+        if (arbitrage2LatestData.principal > 0) {
             assetsByCoin[coin].holdingCount++;
         }
     }
@@ -1878,6 +1793,16 @@ function showInvestmentSummary() {
                                             <td>${isArbitrageRedeemed ? (arbitrageLatestData ? formatDateToYMD(arbitrageLatestData.date) : '-') : (arbitrageAllLatestData ? formatDateToYMD(arbitrageAllLatestData.date) : '-')}</td>
                                         </tr>
                                         <tr>
+                                            <td>${productData['stable-usd-2'].title}</td>
+                                            <td>${arbitrage2AllLatestData ? arbitrage2AllLatestData.coin : 'USDT'}</td>
+                                            <td>${isArbitrage2Redeemed ? '0.00' : (arbitrage2LatestData ? arbitrage2LatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2}) : '0.00')}</td>
+                                            <td>${isArbitrage2Redeemed ? '0.00' : (arbitrage2LatestData ? arbitrage2LatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2, maximumFractionDigits: (arbitrage2LatestData.coin === 'BTC') ? 4 : 2}) : '0.00')}</td>
+                                            <td>${arbitrage2ReturnRate ? arbitrage2ReturnRate + '%' : '0.00%'}</td>
+                                            <td>${arbitrage2HoldingDays}</td>
+                                            <td>${arbitrage2AnnualizedReturn ? arbitrage2AnnualizedReturn + '%' : '0.00%'}</td>
+                                            <td>${isArbitrage2Redeemed ? (arbitrage2LatestData ? formatDateToYMD(arbitrage2LatestData.date) : '-') : (arbitrage2AllLatestData ? formatDateToYMD(arbitrage2AllLatestData.date) : '-')}</td>
+                                        </tr>
+                                        <tr>
                                             <td>${productData['stable-coin-btc'].title}</td>
                                             <td>${arbitrageCoinBtcAllLatestData ? arbitrageCoinBtcAllLatestData.coin : 'BTC'}</td>
                                             <td>${isArbitrageCoinBtcRedeemed ? '0.00' : (arbitrageCoinBtcLatestData ? arbitrageCoinBtcLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00')}</td>
@@ -1888,7 +1813,7 @@ function showInvestmentSummary() {
                                             <td>${isArbitrageCoinBtcRedeemed ? (arbitrageCoinBtcLatestData ? formatDateToYMD(arbitrageCoinBtcLatestData.date) : '-') : (arbitrageCoinBtcAllLatestData ? formatDateToYMD(arbitrageCoinBtcAllLatestData.date) : '-')}</td>
                                         </tr>
                                         <tr>
-                                            <td>${productData['stable-coin-eth'].title}</td>
+                                            <td>Stable-Harbor-ETH</td>
                                             <td>${arbitrageEthAllLatestData ? arbitrageEthAllLatestData.coin : 'ETH'}</td>
                                             <td>${isArbitrageEthRedeemed ? '0.00' : (arbitrageCoinEthLatestData ? arbitrageCoinEthLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00')}</td>
                                             <td>${isArbitrageEthRedeemed ? '0.00' : (arbitrageCoinEthLatestData ? arbitrageCoinEthLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4}) : '0.00')}</td>
@@ -2027,6 +1952,16 @@ function showInvestmentSummary() {
                     }))
             );
 
+            const arbitrage2Returns = filterToMonthEnd(
+                (currentUserData?.investments?.arbitrage2 || [])
+                    .filter(record => (record.principal || 0) > 1)
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(record => ({
+                        x: formatDateToYMD(record.date),
+                        y: record.total_return * 100 // 转换为百分比
+                    }))
+            );
+
             const arbitrageCoinBtcReturns = filterToMonthEnd(
                 (currentUserData?.investments?.arbitrage_coin || [])
                     .filter(record => record.coin === 'BTC' && (record.principal || 0) > 1)
@@ -2060,6 +1995,7 @@ function showInvestmentSummary() {
 
             console.log('Balanced returns data:', balancedReturns);
             console.log('Arbitrage returns data:', arbitrageReturns);
+            console.log('Arbitrage2 returns data:', arbitrage2Returns);
             console.log('Arbitrage coin BTC returns data:', arbitrageCoinBtcReturns);
             console.log('Arbitrage coin ETH returns data:', arbitrageCoinEthReturns);
             console.log('Growth returns data:', growthReturns);
@@ -2108,6 +2044,27 @@ function showInvestmentSummary() {
                     }
                 });
             }
+            if (arbitrage2Returns.length > 0) {
+                // 检查最后一个点是否为月末
+                const lastPointIsMonthEnd = arbitrage2Returns[arbitrage2Returns.length - 1].isMonthEnd;
+                datasets.push({
+                    label: productData['stable-usd-2'].title,
+                    data: arbitrage2Returns,
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52,152,219,0.1)',
+                    tension: 0.2,
+                    fill: false,
+                    segment: {
+                        borderDash: ctx => {
+                            // 如果是最后一个点且不是月末，则最后一段用虚线
+                            if (ctx.p1DataIndex === arbitrage2Returns.length - 1 && !lastPointIsMonthEnd) {
+                                return [5, 5];
+                            }
+                            return [];
+                        }
+                    }
+                });
+            }
             if (arbitrageCoinBtcReturns.length > 0) {
                 // 检查最后一个点是否为月末
                 const lastPointIsMonthEnd = arbitrageCoinBtcReturns[arbitrageCoinBtcReturns.length - 1].isMonthEnd;
@@ -2133,10 +2090,10 @@ function showInvestmentSummary() {
                 // 检查最后一个点是否为月末
                 const lastPointIsMonthEnd = arbitrageCoinEthReturns[arbitrageCoinEthReturns.length - 1].isMonthEnd;
                 datasets.push({
-                    label: productData['stable-coin-eth'].title,
+                    label: 'Stable-Harbor-ETH',
                     data: arbitrageCoinEthReturns,
-                    borderColor: '#9b59b6',
-                    backgroundColor: 'rgba(155,89,182,0.1)',
+                    borderColor: '#8e44ad',
+                    backgroundColor: 'rgba(142,68,173,0.1)',
                     tension: 0.2,
                     fill: false,
                     segment: {
@@ -2454,13 +2411,6 @@ function showAggressiveChartUI() {
     document.getElementById('aggressiveChart').height = 320;
 }
 
-function hideAggressiveChartUI() {
-    const controls = document.getElementById('aggressive-chart-controls');
-    const container = document.getElementById('aggressive-chart-container');
-    if (controls) controls.style.display = 'none';
-    if (container) container.style.display = 'none';
-}
-
 function bindAggressiveChartControls() {
     const chartControls = document.getElementById('aggressive-chart-controls');
     if (chartControls) {
@@ -2566,6 +2516,13 @@ function updateMaxRedemptionAmount() {
             const latestArbitrage = investments.arbitrage.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
             if (latestArbitrage && latestArbitrage.coin === currency) {
                 maxAmount = latestArbitrage.net_nav || 0;
+            }
+        }
+    } else if (product === 'stable-usd-2') {
+        if (investments.arbitrage2 && investments.arbitrage2.length > 0) {
+            const latestArbitrage2 = investments.arbitrage2.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrage2 && latestArbitrage2.coin === currency) {
+                maxAmount = latestArbitrage2.net_nav || 0;
             }
         }
     } else if (product === 'stable-coin-btc') {
@@ -2698,14 +2655,21 @@ function handleRedemptionSubmit() {
                     maxAmount = latestBalanced.net_nav || 0;
                 }
             }
-        } else if (product === 'stable-usd') {
-            if (investments.arbitrage && investments.arbitrage.length > 0) {
-                const latestArbitrage = investments.arbitrage.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-                if (latestArbitrage && latestArbitrage.coin === currency) {
-                    maxAmount = latestArbitrage.net_nav || 0;
-                }
+    } else if (product === 'stable-usd') {
+        if (investments.arbitrage && investments.arbitrage.length > 0) {
+            const latestArbitrage = investments.arbitrage.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrage && latestArbitrage.coin === currency) {
+                maxAmount = latestArbitrage.net_nav || 0;
             }
-        } else if (product === 'stable-coin') {
+        }
+    } else if (product === 'stable-usd-2') {
+        if (investments.arbitrage2 && investments.arbitrage2.length > 0) {
+            const latestArbitrage2 = investments.arbitrage2.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            if (latestArbitrage2 && latestArbitrage2.coin === currency) {
+                maxAmount = latestArbitrage2.net_nav || 0;
+            }
+        }
+    } else if (product === 'stable-coin') {
             if (investments.arbitrage_coin && investments.arbitrage_coin.length > 0) {
                 const latestArbitrageCoin = investments.arbitrage_coin.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
                 if (latestArbitrageCoin && latestArbitrageCoin.coin === currency) {
@@ -2740,6 +2704,7 @@ function handleRedemptionSubmit() {
     const productNames = {
         'balanced': 'Alpha-Bridge',
         'stable-usd': 'Stable-Harbor-USDT',
+        'stable-usd-2': 'Stable-Harbor-USDT 2.0',
         'stable-coin-btc': 'Stable-Harbor-BTC',
         'stable-coin-eth': 'Stable-Harbor-ETH',
         'aggressive': 'Deep-Growth'
@@ -3150,6 +3115,7 @@ function getCurrentCurrencyAmount(currency) {
 const fundNameMapping = {
     'zerone': 'Alpha-Bridge',
     'HPU': 'Stable-Harbor-USDT',
+    'arbitrage2': 'Stable-Harbor-USDT 2.0',
     'binggan': 'Stable-Harbor-BTC',
     'HPE': 'Stable-Harbor-ETH',
     // 兼容：用户 JSON 里可能用 growth 表示 Deep-Growth

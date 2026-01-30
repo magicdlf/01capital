@@ -137,6 +137,27 @@
                             </div>
                             <button type="button" class="btn btn-success" id="generateHashButton">生成Shared Secret</button>
                         </form>
+
+                        <hr class="my-4">
+
+                        <!-- 逆序Shared Secret恢复工具 -->
+                        <div>
+                            <h6 class="mb-3">逆序Shared Secret恢复</h6>
+                            <form id="reverseHashForm">
+                                <div class="mb-3">
+                                    <label for="reversedSecretInput" class="form-label">从重置页面复制的Shared Secret（逆序）</label>
+                                    <input type="text" class="form-control" id="reversedSecretInput" placeholder="粘贴逆序的Shared Secret">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="recoveredHash" class="form-label">恢复后的原始Shared Secret</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="recoveredHash" readonly>
+                                        <button class="btn btn-outline-secondary" type="button" id="copyRecoveredButton">复制</button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="reverseHashButton">恢复原始顺序</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -299,6 +320,66 @@
                         copyButton.classList.remove('btn-outline-secondary');
                         copyButton.classList.add('btn-success');
                         
+                        setTimeout(() => {
+                            copyButton.textContent = '复制';
+                            copyButton.classList.remove('btn-success');
+                            copyButton.classList.add('btn-outline-secondary');
+                        }, 2000);
+                    }).catch(() => {
+                        showResult('复制失败，请手动复制', 'error');
+                    });
+                } else {
+                    showResult('复制失败，请手动复制', 'error');
+                }
+            }
+        }
+        
+        // 逆序字符串（用于恢复Shared Secret）
+        function reverseString(input) {
+            if (typeof input !== 'string') return '';
+            return input.split('').reverse().join('');
+        }
+
+        // 从逆序的 Shared Secret 恢复原始值
+        function recoverOriginalSecret() {
+            const reversedInput = document.getElementById('reversedSecretInput');
+            const recoveredOutput = document.getElementById('recoveredHash');
+            const value = (reversedInput.value || '').trim();
+            if (!value) {
+                showResult('请粘贴逆序的Shared Secret', 'error');
+                return;
+            }
+            const recovered = reverseString(value);
+            recoveredOutput.value = recovered;
+            showResult('已恢复原始Shared Secret', 'success');
+        }
+
+        // 复制恢复后的 Shared Secret
+        function copyRecoveredSecret() {
+            const output = document.getElementById('recoveredHash');
+            const copyButton = document.getElementById('copyRecoveredButton');
+            if (!output.value) {
+                showResult('没有可复制的内容', 'error');
+                return;
+            }
+            output.select();
+            output.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                copyButton.textContent = '已复制';
+                copyButton.classList.remove('btn-outline-secondary');
+                copyButton.classList.add('btn-success');
+                setTimeout(() => {
+                    copyButton.textContent = '复制';
+                    copyButton.classList.remove('btn-success');
+                    copyButton.classList.add('btn-outline-secondary');
+                }, 2000);
+            } catch (err) {
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(output.value).then(() => {
+                        copyButton.textContent = '已复制';
+                        copyButton.classList.remove('btn-outline-secondary');
+                        copyButton.classList.add('btn-success');
                         setTimeout(() => {
                             copyButton.textContent = '复制';
                             copyButton.classList.remove('btn-success');
@@ -1054,6 +1135,8 @@
         
         document.getElementById('copyInviteButton').addEventListener('click', copyInviteLink);
         document.getElementById('copyCodeButton').addEventListener('click', copyCodeToClipboard);
+        document.getElementById('reverseHashButton').addEventListener('click', recoverOriginalSecret);
+        document.getElementById('copyRecoveredButton').addEventListener('click', copyRecoveredSecret);
     </script>
 </body>
 </html>
