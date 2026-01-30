@@ -1242,10 +1242,34 @@ function getLatestGrowthInvestorData(investor) {
     return filteredData.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
 }
 
-function showInvestmentSummary() {
+async function showInvestmentSummary() {
     console.log('Showing investment summary...');
     
-    // 不再需要加载CSV文件，直接使用已加载的用户数据
+    // 每次显示持仓时都重新加载数据，确保数据是最新的
+    if (currentUserHashFile) {
+        try {
+            const userDataUrl = DATA_BASE_URL + '/' + currentUserHashFile + '?t=' + new Date().getTime();
+            const response = await fetch(userDataUrl, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'omit',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (response && response.ok) {
+                currentUserData = await response.json();
+                console.log('User data refreshed from server:', currentUserData);
+            } else {
+                console.warn('Failed to refresh user data, using cached data');
+            }
+        } catch (error) {
+            console.warn('Error refreshing user data, using cached data:', error);
+        }
+    }
+    
+    // 检查用户数据是否可用
     if (!currentUserData || !currentUserData.investments) {
         console.error('No user data available');
         return;
