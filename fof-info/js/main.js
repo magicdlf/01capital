@@ -1914,11 +1914,11 @@ async function showInvestmentSummary() {
                 <div class="col-12">
                     <div class="card mb-4">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h3 class="card-title h5 mb-0">投资组合明细</h3>
-                                <div>
-                                    <span id="currentHoldingBtn" style="cursor: pointer; text-decoration: underline; color: #000; margin-right: 20px; font-weight: bold;">当前持仓</span>
-                                    <span id="closedPositionBtn" style="cursor: pointer; text-decoration: none; color: #6c757d; margin-right: 20px; font-weight: bold;">已清仓</span>
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
+                                <h3 class="card-title h5 mb-2 mb-md-0">投资组合明细</h3>
+                                <div class="d-flex">
+                                    <span id="currentHoldingBtn" class="holding-tab-btn" style="cursor: pointer; text-decoration: underline; color: #000; margin-right: 20px; font-weight: bold;">当前持仓</span>
+                                    <span id="closedPositionBtn" class="holding-tab-btn" style="cursor: pointer; text-decoration: none; color: #6c757d; margin-right: 20px; font-weight: bold;">已清仓</span>
                                 </div>
                             </div>
                             
@@ -1927,14 +1927,14 @@ async function showInvestmentSummary() {
                                 <table class="table">
                                     <thead style="position: sticky; top: 0; background-color: #f8f9fa; z-index: 10;">
                                         <tr>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">产品名称</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">币种</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">本金</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">当前价值</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">收益率</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">持仓天数</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">年化收益率</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">数据日期</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">产品名称</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">币种</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">本金</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">当前价值</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">收益率</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">持仓天数</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">年化收益率</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">数据日期</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -2007,14 +2007,14 @@ async function showInvestmentSummary() {
                                 <table class="table">
                                     <thead style="position: sticky; top: 0; background-color: #f8f9fa; z-index: 10;">
                                         <tr>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">产品名称</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">币种</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">本金</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">清仓价值</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">收益率</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">持仓天数</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">年化收益率</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">清仓日期</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">产品名称</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">币种</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">本金</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">清仓价值</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">收益率</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">持仓天数</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">年化收益率</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">清仓日期</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -2112,15 +2112,15 @@ async function showInvestmentSummary() {
                                 <table class="table" id="investmentDetailTable">
                                     <thead style="position: sticky; top: 0; background-color: #f8f9fa; z-index: 10;">
                                         <tr>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">投资者</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">交易日期</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">产品名称</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">操作类型</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">币种</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">交易金额</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">份额变化</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">累计份额</th>
-                                            <th style="background-color: #f8f9fa; position: sticky; top: 0;">单位净值</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">投资者</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">交易日期</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">产品名称</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">操作类型</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">币种</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">交易金额</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">份额变化</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">累计份额</th>
+                                            <th class="table-header-nowrap" style="background-color: #f8f9fa; position: sticky; top: 0;">单位净值</th>
                                         </tr>
                                     </thead>
                                     <tbody id="investmentDetailTableBody">
@@ -2459,11 +2459,15 @@ async function showInvestmentSummary() {
                         },
                         legend: {
                             display: true,
-                            position: 'right',
+                            position: 'top',
                             align: 'center',
                             labels: {
                                 boxWidth: 12,
-                                padding: 15
+                                padding: 8,
+                                font: {
+                                    size: 11
+                                },
+                                usePointStyle: true
                             },
                             onClick: function(e, legendItem, legend) {
                                 const chart = legend.chart;

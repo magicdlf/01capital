@@ -4,6 +4,8 @@ body {
     line-height: 1.6;
     color: #333;
     background-color: #fff;
+    margin: 0;
+    padding: 0;
 }
 
 /* 确保所有表格在手机上可以横向滚动 */
@@ -12,10 +14,53 @@ body {
     overflow-x: auto;
 }
 
+/* 表头强制单行显示 */
+.table-header-nowrap {
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 收益曲线图表容器优化 */
+#assetAllocationChart {
+    max-height: 400px;
+}
+
+@media (max-width: 768px) {
+    /* 图表容器在手机端优化 */
+    #assetAllocationChart {
+        max-height: 250px;
+    }
+    
+    /* 确保图表容器有足够空间显示图例 */
+    #investment-summary .col-md-6 .card-body {
+        min-height: 280px;
+    }
+}
+
+/* 投资组合明细标签按钮 */
+.holding-tab-btn {
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 576px) {
+    .holding-tab-btn {
+        font-size: 0.85rem;
+        margin-right: 10px !important;
+    }
+}
+
 /* 导航栏样式 */
 .navbar {
     background-color: #fff !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1030; /* Bootstrap默认z-index */
+}
+
+/* 确保导航栏下方没有间隙 */
+.navbar.fixed-top + .hero-section {
+    margin-top: 0;
 }
 
 .navbar-brand {
@@ -38,9 +83,15 @@ body {
     background: #000;
     color: white;
     padding-top: 80px;
+    margin-top: 0;
     position: relative;
     overflow: hidden;
     min-height: 480px;
+}
+
+/* 确保hero-section从导航栏正下方开始，没有间隙 */
+html {
+    scroll-padding-top: 0;
 }
 .hero-section::after {
     content: '';
@@ -52,6 +103,7 @@ body {
     opacity: 1;
     z-index: 0;
     background-position: right -50% bottom -5%;
+    background-color: #000; /* 确保背景色与hero-section一致 */
 }
 .hero-section > .container, .hero-section .row {
     position: relative;
@@ -187,6 +239,27 @@ footer {
     }
     .hero-subtitle {
         font-size: 1.1rem;
+    }
+}
+
+/* iPad和其他平板设备优化 */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .hero-section {
+        padding-top: 76px; /* 确保与导航栏无缝衔接 */
+        margin-top: 0;
+    }
+    
+    /* 确保导航栏下方没有间隙 */
+    body {
+        padding-top: 0;
+        margin-top: 0;
+    }
+}
+
+/* 确保在所有设备上hero-section紧贴导航栏 */
+@media (min-width: 992px) {
+    .hero-section {
+        padding-top: 80px;
     }
 }
 
@@ -481,6 +554,36 @@ footer {
     #closedPositionTable .table td {
         padding: 0.4rem 0.2rem;
         font-size: 0.8rem;
+    }
+    
+    /* 收益曲线图表容器 */
+    #assetAllocationChart {
+        max-height: 300px !important;
+    }
+    
+    /* 个人投资摘要区域优化 */
+    #investment-summary .card-body {
+        padding: 1rem;
+    }
+    
+    #investment-summary h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    #investment-summary .card-title {
+        font-size: 1rem;
+    }
+    
+    /* 投资组合概览表格优化 */
+    #investment-summary .table td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.85rem;
+    }
+    
+    /* 确保表格容器在手机上正常显示 */
+    #investment-summary .table-responsive {
+        -webkit-overflow-scrolling: touch;
     }
 }
 
