@@ -958,20 +958,20 @@ function renderFactsTable(facts) {
     let left = '', right = '';
     for (let i = 0; i < facts.length; i++) {
         if (i % 2 === 0) {
-            left += `<tr><td class="fw-bold" style="width:40%">${facts[i].label}</td><td>${facts[i].value}</td></tr>`;
+            left += `<tr><td class="fw-bold facts-label">${facts[i].label}</td><td>${facts[i].value}</td></tr>`;
         } else {
-            right += `<tr><td class="fw-bold" style="width:40%">${facts[i].label}</td><td>${facts[i].value}</td></tr>`;
+            right += `<tr><td class="fw-bold facts-label">${facts[i].label}</td><td>${facts[i].value}</td></tr>`;
         }
     }
     return `
     <div class="container mb-3">
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
           <table class="table table-borderless mb-0">
             <tbody>${left}</tbody>
           </table>
         </div>
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
           <table class="table table-borderless mb-0">
             <tbody>${right}</tbody>
           </table>
@@ -1888,8 +1888,8 @@ async function showInvestmentSummary() {
         <div class="container">
             <h2 class="text-center mb-5">个人投资摘要</h2>
             <div class="row mb-4">
-                <div class="col-12 text-end">
-                    <button type="button" class="btn btn-primary me-2" id="currencyConversionBtn">
+                <div class="col-12 text-end investment-actions">
+                    <button type="button" class="btn btn-primary me-2 mb-2 mb-md-0" id="currencyConversionBtn">
                         <i class="bi bi-arrow-left-right"></i> 币种转换投资
                     </button>
                     <button type="button" class="btn btn-primary" id="redemptionBtn">
@@ -1898,10 +1898,10 @@ async function showInvestmentSummary() {
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-12 col-md-6">
                     ${overviewHtml}
                 </div>
-                <div class="col-md-6">
+                <div class="col-12 col-md-6">
                     <div class="card mb-4">
                         <div class="card-body">
                             <h5 class="card-title">收益曲线</h5>
@@ -3174,39 +3174,39 @@ function addConversionRow() {
     
     const rowId = `conversion-row-${rowCount + 1}`;
     const rowHtml = `
-        <div class="row mb-3" id="${rowId}">
-            <div class="col-md-3">
+        <div class="row mb-3 conversion-row" id="${rowId}">
+            <div class="col-12 col-md-3 mb-2 mb-md-0">
                 <label class="form-label">出售币种 <span class="text-danger">*</span></label>
-                <select class="form-select" id="sellCurrency-${rowCount + 1}" style="height: 38px;">
+                <select class="form-select" id="sellCurrency-${rowCount + 1}">
                     <option value="">请选择</option>
                     <option value="USDT">USDT</option>
                     <option value="BTC">BTC</option>
                     <option value="ETH">ETH</option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-12 col-md-3 mb-2 mb-md-0">
                 <label class="form-label">出售数量 <span class="text-danger">*</span></label>
                 <div class="input-group">
-                    <input type="number" class="form-control" id="sellAmount-${rowCount + 1}" placeholder="0.00" step="0.0001" min="0" style="height: 38px;">
-                    <button type="button" class="btn btn-outline-secondary" onclick="setMaxSellAmount('${rowCount + 1}')" style="height: 38px;">全部</button>
+                    <input type="number" class="form-control" id="sellAmount-${rowCount + 1}" placeholder="0.00" step="0.0001" min="0">
+                    <button type="button" class="btn btn-outline-secondary" onclick="setMaxSellAmount('${rowCount + 1}')">全部</button>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-12 col-md-3 mb-2 mb-md-0">
                 <label class="form-label">买入币种 <span class="text-danger">*</span></label>
-                <select class="form-select" id="buyCurrency-${rowCount + 1}" style="height: 38px;">
+                <select class="form-select" id="buyCurrency-${rowCount + 1}">
                     <option value="">请选择</option>
                     <option value="USDT">USDT</option>
                     <option value="BTC">BTC</option>
                     <option value="ETH">ETH</option>
                 </select>
             </div>
-            <div class="col-md-2">
+            <div class="col-12 col-md-2 mb-2 mb-md-0">
                 <label class="form-label">限价</label>
-                <input type="number" class="form-control" id="priceLimit-${rowCount + 1}" placeholder="0.00" step="0.0001" min="0" style="height: 38px;">
+                <input type="number" class="form-control" id="priceLimit-${rowCount + 1}" placeholder="0.00" step="0.0001" min="0">
             </div>
-            <div class="col-md-1 d-flex align-items-center">
-                ${rowCount > 0 ? `<button type="button" class="btn btn-outline-danger btn-sm" onclick="removeConversionRow('${rowId}')" style="height: 30px; width: 30px; padding: 0; border-radius: 50%; margin-top: 24px;">
-                    <span style="font-size: 16px; font-weight: bold;">−</span>
+            <div class="col-12 col-md-1 d-flex align-items-end justify-content-center justify-content-md-start">
+                ${rowCount > 0 ? `<button type="button" class="btn btn-outline-danger btn-sm remove-conversion-btn" onclick="removeConversionRow('${rowId}')">
+                    <span>−</span>
                 </button>` : ''}
             </div>
         </div>

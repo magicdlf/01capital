@@ -41,9 +41,9 @@
     <header class="hero-section">
         <div class="container">
             <div class="row min-vh-100 align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold mb-4" style="font-size: 4rem;">01 Capital</h1>
-                    <p class="lead" style="font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 1.75rem;">Expertise in Selection,Excellence in Performance</p>
+                <div class="col-12 col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4 hero-title">01 Capital</h1>
+                    <p class="lead hero-subtitle">Expertise in Selection,Excellence in Performance</p>
                 </div>
             </div>
         </div>
@@ -100,7 +100,7 @@
             <h2 class="text-center mb-5">产品介绍</h2>
             <div class="row">
                 <!-- 产品列表 -->
-                <div class="col-md-4 mb-4 mb-md-0">
+                <div class="col-12 col-md-4 mb-4 mb-md-0">
                     <div class="list-group" id="product-list">
                         <button class="list-group-item list-group-item-action" data-product="balanced">平衡系列</button>
                         <div class="list-group-item p-0">
@@ -125,7 +125,7 @@
                     </div>
                 </div>
                 <!-- 业绩展示 -->
-                <div class="col-md-8 products-content-pl">
+                <div class="col-12 col-md-8 products-content-pl">
                     <div id="product-performance-content">
                         <!-- 内容将由JavaScript动态生成 -->
                     </div>
@@ -220,7 +220,7 @@
 
     <!-- 赎回弹窗 -->
     <div class="modal fade" id="redemptionModal" tabindex="-1" aria-labelledby="redemptionModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="redemptionModalLabel">赎回申请</h5>
@@ -229,7 +229,7 @@
                 <div class="modal-body">
                     <form id="redemptionForm">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-12 col-md-6 mb-3">
                                 <label for="productSelect" class="form-label">产品名称 <span class="text-danger">*</span></label>
                                 <select class="form-select" id="productSelect" required>
                                     <option value="">请选择产品</option>
@@ -240,7 +240,7 @@
                                     <option value="aggressive">Deep-Growth</option>
                                 </select>
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-12 col-md-6 mb-3">
                                 <label for="redemptionCurrency" class="form-label">赎回币种 <span class="text-danger">*</span></label>
                                 <select class="form-select" id="redemptionCurrency" required>
                                     <option value="">请选择币种</option>
@@ -273,7 +273,7 @@
 
     <!-- 币种转换投资弹窗 -->
     <div class="modal fade" id="currencyConversionModal" tabindex="-1" aria-labelledby="currencyConversionModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="currencyConversionModalLabel">币种转换投资</h5>
@@ -285,13 +285,13 @@
                         <div class="mb-4">
                             <h6 class="mb-3">当前持仓概览</h6>
                             <div class="table-responsive">
-                                <table class="table table-bordered text-center align-middle" style="table-layout: fixed; width: 100%;">
+                                <table class="table table-bordered text-center align-middle currency-table">
                                     <thead class="table-light">
                                         <tr>
-                                            <th class="text-center align-middle" style="width: 25%;">项目</th>
-                                            <th class="text-center align-middle" style="width: 25%;">USDT</th>
-                                            <th class="text-center align-middle" style="width: 25%;">BTC</th>
-                                            <th class="text-center align-middle" style="width: 25%;">ETH</th>
+                                            <th class="text-center align-middle">项目</th>
+                                            <th class="text-center align-middle">USDT</th>
+                                            <th class="text-center align-middle">BTC</th>
+                                            <th class="text-center align-middle">ETH</th>
                                         </tr>
                                     </thead>
                                     <tbody>

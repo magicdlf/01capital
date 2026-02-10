@@ -6,6 +6,12 @@ body {
     background-color: #fff;
 }
 
+/* 确保所有表格在手机上可以横向滚动 */
+.table-responsive {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+}
+
 /* 导航栏样式 */
 .navbar {
     background-color: #fff !important;
@@ -149,6 +155,17 @@ footer {
     background-color: #000 !important;
 }
 
+/* Hero区域字体样式 */
+.hero-title {
+    font-size: 4rem;
+}
+
+.hero-subtitle {
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 1.75rem;
+}
+
 /* 响应式调整 */
 @media (max-width: 768px) {
     .hero-section {
@@ -161,8 +178,40 @@ footer {
     .hero-section > .container {
         margin-top: 0;
     }
-    .hero-section .col-lg-6 {
+    .hero-section .col-lg-6,
+    .hero-section .col-12 {
         margin-top: -280px;
+    }
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    .hero-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    /* 导航栏品牌文字 */
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+    
+    /* 容器内边距 */
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* 卡片内边距 */
+    .card-body {
+        padding: 1rem;
     }
 }
 
@@ -281,6 +330,12 @@ footer {
     margin-left: auto;
     margin-right: auto;
 }
+
+@media (max-width: 767px) {
+    #product-list {
+        max-width: 100%;
+    }
+}
 #product-list .list-group-item {
     background: #f5f6fa;
     color: #1a2530;
@@ -347,6 +402,85 @@ footer {
     .list-group-item.list-group-item-action {
         font-size: 1rem;
         padding: 16px 16px;
+    }
+    
+    /* 产品介绍区域标题 */
+    #products-performance h2 {
+        font-size: 1.75rem;
+    }
+    
+    /* 核心数据卡片 */
+    #about .display-6 {
+        font-size: 1.5rem;
+    }
+    
+    /* 未来规划卡片 */
+    #future-plans h2 {
+        font-size: 1.75rem;
+    }
+    
+    /* 页脚文字 */
+    footer p {
+        font-size: 0.9rem;
+    }
+    
+    /* 图表容器 */
+    .performance-chart {
+        padding: 15px;
+    }
+    
+    /* 按钮组间距 */
+    #stable-chart-controls,
+    #balanced-chart-controls,
+    #aggressive-chart-controls,
+    #stable-usd-chart-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    #stable-chart-controls .btn,
+    #balanced-chart-controls .btn,
+    #aggressive-chart-controls .btn,
+    #stable-usd-chart-controls .btn {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+    }
+    
+    /* 表格优化 */
+    .table {
+        font-size: 0.9rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.5rem 0.25rem;
+        white-space: nowrap;
+    }
+    
+    /* 投资组合概览表格 */
+    #investment-summary .table td {
+        white-space: normal;
+        word-break: break-word;
+    }
+    
+    /* 投资明细表格 */
+    #currentHoldingTable,
+    #closedPositionTable {
+        max-height: 400px !important;
+    }
+    
+    #currentHoldingTable .table,
+    #closedPositionTable .table {
+        font-size: 0.85rem;
+    }
+    
+    #currentHoldingTable .table th,
+    #currentHoldingTable .table td,
+    #closedPositionTable .table th,
+    #closedPositionTable .table td {
+        padding: 0.4rem 0.2rem;
+        font-size: 0.8rem;
     }
 }
 
@@ -436,5 +570,117 @@ footer {
     .partner-logo {
         height: 50px;
         padding: 0.5rem;
+    }
+    
+    /* 页脚区域调整 */
+    footer .col-md-6 {
+        margin-bottom: 2rem !important;
+    }
+    
+    footer p {
+        max-width: 100% !important;
+    }
+}
+
+/* 产品信息表格标签列 */
+.facts-label {
+    width: 40%;
+}
+
+@media (max-width: 768px) {
+    .facts-label {
+        width: auto;
+        min-width: 100px;
+    }
+}
+
+/* 投资操作按钮组 */
+.investment-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+@media (max-width: 576px) {
+    .investment-actions {
+        flex-direction: column;
+    }
+    
+    .investment-actions .btn {
+        width: 100%;
+        margin: 0 !important;
+    }
+}
+
+/* 币种转换行 */
+.conversion-row {
+    margin-bottom: 1rem;
+}
+
+.remove-conversion-btn {
+    height: 30px;
+    width: 30px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 576px) {
+    /* 核心数据区域 */
+    #about {
+        padding: 2rem 0 !important;
+    }
+    
+    #about h2 {
+        font-size: 1.5rem;
+        margin-bottom: 2rem !important;
+    }
+    
+    /* 产品介绍区域 */
+    #products-performance {
+        padding: 2rem 0 !important;
+    }
+    
+    /* 未来规划区域 */
+    #future-plans {
+        padding: 2rem 0 !important;
+    }
+    
+    #future-plans .card-title {
+        font-size: 1.1rem;
+    }
+    
+    #future-plans .card-text {
+        font-size: 0.9rem;
+    }
+    
+    /* 弹窗表格优化 */
+    .currency-table {
+        font-size: 0.85rem;
+    }
+    
+    .currency-table th,
+    .currency-table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    /* 弹窗按钮组 */
+    .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+    }
+    
+    /* 币种转换行在手机上垂直堆叠 */
+    .conversion-row .col-md-3,
+    .conversion-row .col-md-2,
+    .conversion-row .col-md-1 {
+        margin-bottom: 1rem;
     }
 } 
