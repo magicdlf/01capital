@@ -52,6 +52,7 @@ body {
     opacity: 1;
     z-index: 0;
     background-position: right -50% bottom -5%;
+    background-color: #000;
 }
 .hero-section > .container, .hero-section .row {
     position: relative;
@@ -166,14 +167,37 @@ footer {
     font-size: 1.75rem;
 }
 
-/* 响应式调整 */
+/* 响应式调整 - 平板设备 */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .hero-section {
+        min-height: 100vh;
+        padding-top: 80px;
+        background: transparent !important;
+        position: relative;
+    }
+    .hero-section::after {
+        background-size: 100% 100%;
+        background-position: center top;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        min-height: 100vh;
+        background-color: transparent;
+    }
+}
+
+/* 响应式调整 - 手机和平板 */
 @media (max-width: 768px) {
     .hero-section {
         min-height: 320px;
         padding-top: 60px;
     }
     .hero-section::after {
-        background-position: left 0 top 0;
+        background-size: cover;
+        background-position: center center;
     }
     .hero-section > .container {
         margin-top: 0;
@@ -186,7 +210,7 @@ footer {
         font-size: 2.5rem;
     }
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1.4rem;
     }
 }
 
@@ -195,7 +219,7 @@ footer {
         font-size: 2rem;
     }
     .hero-subtitle {
-        font-size: 0.95rem;
+        font-size: 1.2rem;
     }
     
     /* 导航栏品牌文字 */
@@ -334,6 +358,8 @@ footer {
 @media (max-width: 767px) {
     #product-list {
         max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
     }
 }
 #product-list .list-group-item {
@@ -399,9 +425,41 @@ footer {
 }
 
 @media (max-width: 768px) {
+    /* 产品列表按钮在手机版缩小美化 */
+    #product-list .list-group-item {
+        font-size: 0.9rem;
+        padding: 12px 16px;
+        margin-bottom: 12px;
+        border-radius: 12px !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    
+    #product-list .list-group-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    #product-list .list-group-item.active, 
+    #product-list .list-group-item:active {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    #product-list .list-group-item:hover:not(.active) {
+        box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+    
+    /* 子菜单按钮也缩小 */
+    #product-list .stable-sub-options .list-group-item,
+    #product-list .stable-usd-sub-options .list-group-item,
+    #product-list .stable-coin-sub-options .list-group-item {
+        font-size: 0.85rem;
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        border-radius: 10px !important;
+    }
+    
     .list-group-item.list-group-item-action {
-        font-size: 1rem;
-        padding: 16px 16px;
+        font-size: 0.9rem;
+        padding: 12px 16px;
     }
     
     /* 产品介绍区域标题 */
@@ -412,6 +470,30 @@ footer {
     /* 核心数据卡片 */
     #about .display-6 {
         font-size: 1.5rem;
+    }
+    
+    /* 手机竖屏：核心数据2x2布局，缩小字体 */
+    @media (max-width: 768px) and (orientation: portrait) {
+        #about .display-6 {
+            font-size: 1.1rem;
+        }
+        #about .card-body p {
+            font-size: 0.85rem;
+        }
+        #about .card-body {
+            padding: 1rem 0.5rem;
+        }
+    }
+    
+    /* 手机横屏：保持原来的字体大小和布局（竖着4个） */
+    @media (max-width: 768px) and (orientation: landscape) {
+        #about .display-6 {
+            font-size: 1.5rem;
+        }
+        #about .row > div {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
     }
     
     /* 未来规划卡片 */
@@ -466,21 +548,79 @@ footer {
     
     /* 投资明细表格 */
     #currentHoldingTable,
-    #closedPositionTable {
+    #closedPositionTable,
+    #investmentDetailTableContainer {
         max-height: 400px !important;
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        display: block;
+        width: 100%;
     }
     
     #currentHoldingTable .table,
-    #closedPositionTable .table {
+    #closedPositionTable .table,
+    #investmentDetailTable {
         font-size: 0.85rem;
+        width: 100%;
+        min-width: 700px; /* 确保表格有最小宽度，触发横向滚动 */
+        margin-bottom: 0;
     }
     
     #currentHoldingTable .table th,
     #currentHoldingTable .table td,
     #closedPositionTable .table th,
-    #closedPositionTable .table td {
-        padding: 0.4rem 0.2rem;
+    #closedPositionTable .table td,
+    #investmentDetailTable th,
+    #investmentDetailTable td {
+        padding: 0.4rem 0.5rem;
         font-size: 0.8rem;
+        vertical-align: middle;
+    }
+    
+    /* 产品名称字段允许换行（投资组合明细表：第1列） */
+    #currentHoldingTable .table th:first-child,
+    #currentHoldingTable .table td:first-child,
+    #closedPositionTable .table th:first-child,
+    #closedPositionTable .table td:first-child {
+        white-space: normal;
+        word-break: break-word;
+        min-width: 120px;
+        max-width: 150px;
+    }
+    
+    /* 投资明细记录表：产品名称（第3列）和操作类型（第4列）允许换行 */
+    #investmentDetailTable th:nth-child(3),
+    #investmentDetailTable td:nth-child(3),
+    #investmentDetailTable th:nth-child(4),
+    #investmentDetailTable td:nth-child(4) {
+        white-space: normal;
+        word-break: break-word;
+        min-width: 100px;
+        max-width: 120px;
+    }
+    
+    /* 投资组合明细表：其他字段不允许换行 */
+    #currentHoldingTable .table th:not(:first-child),
+    #currentHoldingTable .table td:not(:first-child),
+    #closedPositionTable .table th:not(:first-child),
+    #closedPositionTable .table td:not(:first-child) {
+        white-space: nowrap;
+    }
+    
+    /* 投资明细记录表：其他字段不允许换行（除了产品名称和操作类型） */
+    #investmentDetailTable th:not(:nth-child(3)):not(:nth-child(4)),
+    #investmentDetailTable td:not(:nth-child(3)):not(:nth-child(4)) {
+        white-space: nowrap;
+    }
+    
+    /* 确保表头在滚动时保持固定 */
+    #currentHoldingTable .table thead,
+    #closedPositionTable .table thead,
+    #investmentDetailTable thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
 }
 
@@ -500,6 +640,26 @@ footer {
 #assetAllocationChart {
     max-height: 240px;
     height: 120px;
+}
+
+/* 手机版收益曲线图表样式 */
+@media (max-width: 768px) {
+    #assetAllocationChart {
+        max-height: 300px;
+        height: 250px;
+    }
+    
+    /* 确保图表容器有足够的内边距，防止图例和日期超出 */
+    #investment-summary .card-body {
+        padding: 1rem;
+        overflow: hidden;
+    }
+    
+    /* 图表容器包装，确保内容不超出 */
+    #investment-summary .card-body > div {
+        overflow: hidden;
+        position: relative;
+    }
 }
 
 /* 合作伙伴logo样式 */
@@ -567,9 +727,47 @@ footer {
 
 /* 响应式调整 */
 @media (max-width: 768px) {
+    .partners-grid {
+        margin-top: 0.5rem;
+    }
+    
+    .partners-grid .row,
+    #partners-row {
+        --bs-gutter-y: 0.75rem;
+        --bs-gutter-x: 0.75rem;
+    }
+    
     .partner-logo {
-        height: 50px;
-        padding: 0.5rem;
+        height: 40px;
+        min-height: 40px;
+        padding: 0.4rem;
+        border-radius: 6px;
+    }
+    
+    .partner-logo img {
+        max-width: 85%;
+        max-height: 85%;
+    }
+    
+    /* 缩小各个logo的尺寸 */
+    .partner-logo .logo-1 {
+        max-width: 100%;
+        max-height: 100%;
+    }
+    
+    .partner-logo .logo-2 {
+        max-width: 110%;
+        max-height: 110%;
+    }
+    
+    .partner-logo .logo-3 {
+        max-width: 70%;
+        max-height: 70%;
+    }
+    
+    .partner-logo .logo-4 {
+        max-width: 75%;
+        max-height: 75%;
     }
     
     /* 页脚区域调整 */
@@ -589,7 +787,23 @@ footer {
 
 @media (max-width: 768px) {
     .facts-label {
-        width: auto;
+        width: 35%;
+        min-width: 100px;
+    }
+    /* 确保表格在竖屏时值列对齐 */
+    #product-performance-content .table {
+        table-layout: fixed;
+        width: 100%;
+    }
+    #product-performance-content .table td:not(.facts-label) {
+        text-align: left;
+        padding-left: 1rem;
+        word-break: break-word;
+    }
+    /* 确保两个表格在竖屏时标签宽度一致 */
+    #product-performance-content .row > div:first-child .table .facts-label,
+    #product-performance-content .row > div:last-child .table .facts-label {
+        width: 35%;
         min-width: 100px;
     }
 }
@@ -602,14 +816,25 @@ footer {
     gap: 0.5rem;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
     .investment-actions {
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 0.5rem;
     }
     
     .investment-actions .btn {
-        width: 100%;
+        flex: 1;
+        width: auto;
         margin: 0 !important;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+        white-space: nowrap;
+    }
+    
+    .investment-actions .btn i {
+        font-size: 0.9rem;
+        margin-right: 0.25rem;
     }
 }
 

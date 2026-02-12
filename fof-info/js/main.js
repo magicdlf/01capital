@@ -984,6 +984,45 @@ function renderFactsTable(facts) {
 // 登录模块和个人投资摘要
 let currentUser = null;
 
+/**
+ * 生成 SHA-256 hash 的辅助函数
+ * 优先使用 crypto.subtle，如果不可用则使用 crypto-js 作为降级方案
+ */
+async function generateSHA256Hash(input) {
+    // 优先尝试使用 crypto.subtle（在安全上下文中可用）
+    if (typeof crypto !== 'undefined' && crypto.subtle) {
+        try {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray;
+        } catch (error) {
+            console.warn('crypto.subtle failed, falling back to crypto-js:', error);
+        }
+    }
+    
+    // 降级方案：使用 crypto-js（适用于非安全上下文，如局域网 IP 访问）
+    if (typeof CryptoJS !== 'undefined' && CryptoJS.SHA256) {
+        try {
+            const hash = CryptoJS.SHA256(input);
+            const hashHex = hash.toString(CryptoJS.enc.Hex);
+            // 将 hex 字符串转换为字节数组
+            const hashArray = [];
+            for (let i = 0; i < hashHex.length; i += 2) {
+                hashArray.push(parseInt(hashHex.substring(i, i + 2), 16));
+            }
+            return hashArray;
+        } catch (error) {
+            console.error('crypto-js fallback failed:', error);
+            throw new Error('无法生成密码哈希，请确保已加载 crypto-js 库');
+        }
+    }
+    
+    // 如果两种方法都不可用
+    throw new Error('当前环境不支持安全登录功能，请使用现代浏览器（Chrome、Firefox、Safari、Edge 等）');
+}
+
 function showLoginModal() {
     console.log('Showing login modal...');
     const modalHtml = `
@@ -1063,12 +1102,9 @@ async function handleLogin() {
     }
     
     try {
-        // 生成用户凭证的hash
+        // 生成用户凭证的hash（使用降级方案支持非安全上下文）
         const combined = username.toLowerCase() + ':' + password;
-        const encoder = new TextEncoder();
-        const data = encoder.encode(combined);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashArray = await generateSHA256Hash(combined);
         
         // 使用前16字节生成Base64文件名（与生成工具保持一致）
         const shortHashArray = hashArray.slice(0, 16);
@@ -1147,12 +1183,23 @@ async function handleLogin() {
         }
     } catch (error) {
         console.error('Login error:', error);
-        // 这里是“真正的异常”：加密能力不可用、运行环境不支持等
+        // 这里是"真正的异常"：加密能力不可用、运行环境不支持等
         // 给出更明确的提示，避免用户以为是密码问题
         let message = '登录过程中发生错误，请稍后重试';
-        if (typeof crypto === 'undefined' || !crypto.subtle) {
-            message = '当前环境不支持安全登录，请使用现代浏览器，并通过 http://localhost:8000 方式访问（不要直接打开 file:// 页面）';
+        
+        // 检查错误类型
+        if (error.message && error.message.includes('无法生成密码哈希')) {
+            message = error.message;
+        } else if (error.message && error.message.includes('不支持安全登录')) {
+            message = error.message;
+        } else if (error.name === 'TypeError' && error.message && error.message.includes('crypto')) {
+            // 其他与 crypto 相关的错误
+            message = '加密功能初始化失败，请刷新页面重试。如果问题持续，请使用现代浏览器访问';
+        } else {
+            // 其他未知错误，显示更详细的信息用于调试
+            message = `登录失败: ${error.message || '未知错误'}。请检查网络连接或稍后重试`;
         }
+        
         errorElement.textContent = message;
         errorElement.classList.remove('d-none');
     }
@@ -1923,7 +1970,7 @@ async function showInvestmentSummary() {
                             </div>
                             
                             <!-- 当前持仓表格 -->
-                            <div id="currentHoldingTable" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                            <div id="currentHoldingTable" class="table-responsive" style="max-height: 500px;">
                                 <table class="table">
                                     <thead style="position: sticky; top: 0; background-color: #f8f9fa; z-index: 10;">
                                         <tr>
@@ -2003,7 +2050,7 @@ async function showInvestmentSummary() {
                             </div>
                             
                             <!-- 已清仓表格占位 -->
-                            <div id="closedPositionTable" class="table-responsive" style="max-height: 500px; overflow-y: auto; display: none;">
+                            <div id="closedPositionTable" class="table-responsive" style="max-height: 500px; display: none;">
                                 <table class="table">
                                     <thead style="position: sticky; top: 0; background-color: #f8f9fa; z-index: 10;">
                                         <tr>
@@ -2108,7 +2155,7 @@ async function showInvestmentSummary() {
                         <div class="card-body">
                             <h3 class="card-title h5">投资明细记录</h3>
                             <p class="text-muted small mb-3">注：单位净值仅展示4位小数</p>
-                            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                            <div class="table-responsive" id="investmentDetailTableContainer" style="max-height: 500px;">
                                 <table class="table" id="investmentDetailTable">
                                     <thead style="position: sticky; top: 0; background-color: #f8f9fa; z-index: 10;">
                                         <tr>
@@ -2445,6 +2492,9 @@ async function showInvestmentSummary() {
 
             console.log('Chart datasets:', datasets);
 
+            // 检测是否为手机版
+            const isMobile = window.innerWidth <= 768;
+            
             new Chart(ctx.getContext('2d'), {
                 type: 'line',
                 data: {
@@ -2453,17 +2503,33 @@ async function showInvestmentSummary() {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: isMobile ? {
+                            top: 10,
+                            right: 10,
+                            bottom: 40,
+                            left: 10
+                        } : {
+                            top: 10,
+                            right: 10,
+                            bottom: 10,
+                            left: 10
+                        }
+                    },
                     plugins: {
                         title: {
                             display: false
                         },
                         legend: {
                             display: true,
-                            position: 'right',
-                            align: 'center',
+                            position: isMobile ? 'bottom' : 'right',
+                            align: isMobile ? 'center' : 'center',
                             labels: {
                                 boxWidth: 12,
-                                padding: 15
+                                padding: isMobile ? 8 : 15,
+                                font: {
+                                    size: isMobile ? 10 : 12
+                                }
                             },
                             onClick: function(e, legendItem, legend) {
                                 const chart = legend.chart;
@@ -2499,8 +2565,15 @@ async function showInvestmentSummary() {
                             type: 'category',
                             title: { display: false },
                             ticks: {
-                                maxRotation: 45,
-                                minRotation: 45
+                                maxRotation: isMobile ? 0 : 45,
+                                minRotation: isMobile ? 0 : 45,
+                                font: {
+                                    size: isMobile ? 9 : 12
+                                },
+                                padding: isMobile ? 5 : 10
+                            },
+                            grid: {
+                                display: true
                             }
                         },
                         y: {
@@ -2508,7 +2581,11 @@ async function showInvestmentSummary() {
                             ticks: {
                                 callback: function(value) {
                                     return value.toFixed(2) + '%';
-                                }
+                                },
+                                font: {
+                                    size: isMobile ? 9 : 12
+                                },
+                                padding: isMobile ? 5 : 10
                             },
                             title: {
                                 display: false
@@ -3003,7 +3080,36 @@ function handleRedemptionSubmit() {
         }
     }
     
-    // 检查赎回金额是否超过最大可赎回金额
+    // 快赎金额限制（仅适用于USDT）
+    const fastRedemptionLimit = 1000000;
+    
+    // 先检查快赎金额限制（如果币种是USDT且金额超过快赎限额）
+    // 如果金额超过快赎限额，优先显示快赎金额限制错误（除非明显超过最大可赎回金额）
+    if (currency === 'USDT' && amount > fastRedemptionLimit) {
+        // 使用更宽松的比较，处理浮点数精度问题
+        // 如果金额明显超过最大可赎回金额（差值大于0.01），才显示最大可赎回金额错误
+        if (amount > maxAmount && (amount - maxAmount) > 0.01) {
+            // 明显超过最大可赎回金额
+            const formattedMaxAmount = maxAmount.toLocaleString('zh-CN', {
+                minimumFractionDigits: currency === 'BTC' ? 4 : 2,
+                maximumFractionDigits: currency === 'BTC' ? 4 : 2
+            });
+            alert(`超出最大可赎回金额，无法提交。\n当前持仓：${formattedMaxAmount} ${currency}\n赎回金额：${amount.toLocaleString('zh-CN', {
+                minimumFractionDigits: currency === 'BTC' ? 4 : 2,
+                maximumFractionDigits: currency === 'BTC' ? 4 : 2
+            })} ${currency}`);
+            return;
+        } else {
+            // 超过快赎限额但未明显超过最大可赎回金额（包括等于或接近的情况）
+            alert(`超过快赎金额，无法提交。\n单次快赎金额上限：${fastRedemptionLimit.toLocaleString('zh-CN')} ${currency}\n赎回金额：${amount.toLocaleString('zh-CN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })} ${currency}`);
+            return;
+        }
+    }
+    
+    // 检查赎回金额是否超过最大可赎回金额（非USDT或USDT但未超过快赎限额的情况）
     if (amount > maxAmount) {
         const formattedMaxAmount = maxAmount.toLocaleString('zh-CN', {
             minimumFractionDigits: currency === 'BTC' ? 4 : 2,
