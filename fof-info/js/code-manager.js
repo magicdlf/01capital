@@ -5,9 +5,9 @@
 
 class CodeManager {
     constructor() {
-        // 使用远程数据源
-        this.dataBaseUrl = 'https://data.01capital.info/arbcus';
-        this.codesDir = this.dataBaseUrl + '/';
+        // 使用本地数据源
+        this.dataBaseUrl = '/data';
+        this.codesDir = this.dataBaseUrl + '/codes/';
         this.configPath = this.dataBaseUrl + '/codes-config.json';
         this.codeLength = 8;
         this.validChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
