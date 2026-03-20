@@ -126,7 +126,7 @@ const productData = {
         desc: '精选多元策略组合 (套利 + 风险策略），平衡风险收益，力求在稳健风控下实现资产长期稳定增值。',
         facts: [
             { label: '成立时间', value: '2024/8/1' },
-            { label: '策略成分', value: '套利 + 多因子 （90% + 10%）' },
+            { label: '策略成分', value: '套利 + 多因子' },
             { label: '最大回撤', value: '' },
             { label: '实际杠杆', value: '套利：1X  ；多因子：0.8X' },
             { label: 'Sharpe比率', value: '3.55' },
