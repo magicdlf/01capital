@@ -7,7 +7,14 @@ import socketserver
 import os
 import socket
 
-PORT = 8888
+PORT = 8882
+
+
+class ThreadingHTTPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    """并发处理请求，避免手机浏览器并行拉取资源时单线程排队导致超时/白屏。"""
+    daemon_threads = True
+    allow_reuse_address = True
+
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
@@ -38,7 +45,7 @@ if __name__ == "__main__":
     
     local_ip = get_local_ip()
     
-    with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
+    with ThreadingHTTPServer(("", PORT), MyHTTPRequestHandler) as httpd:
         print("=" * 60)
         print("服务器已启动!")
         print("=" * 60)
@@ -46,6 +53,7 @@ if __name__ == "__main__":
         print(f"手机访问: http://{local_ip}:{PORT}")
         print("=" * 60)
         print("提示: 确保手机和电脑连接到同一个WiFi网络")
+        print("若手机无法打开: 系统设置 → 网络 → 防火墙 → 允许 python3 接受传入连接")
         print("按 Ctrl+C 停止服务器")
         print("=" * 60)
         try:

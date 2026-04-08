@@ -4,190 +4,192 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>01 Capital</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="vendor/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7wnpIl4lDg8lDaV4W0ID7vP6OKn5nfE02Mg" crossorigin="anonymous" onerror="this.remove()">
     <link href="css/style.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link rel="icon" href="images/icon.jpg" type="image/jpeg">
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+
+    <!-- 板块1：导航栏 -->
+    <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#">01 Capital</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="navbar-brand" href="#">01 CAPITAL</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">首页</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#products-performance">产品介绍</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#investment-summary" style="display: none;" id="investmentSummaryLink">个人投资摘要</a>
+                        <a class="nav-link" href="#investment-summary" style="display: none;" id="investmentSummaryLink">投资者专区</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#future-plans">最新进展</a>
+                        <a class="nav-link" href="#team">团队介绍</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#compliance">合规信息</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-login-link" href="javascript:void(0)" id="navLoginBtn">登录</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- 首页横幅 -->
-    <header class="hero-section">
-        <div class="container">
-            <div class="row min-vh-100 align-items-center">
-                <div class="col-12 col-lg-6">
-                    <h1 class="display-4 fw-bold mb-4 hero-title">01 Capital</h1>
-                    <p class="lead hero-subtitle">Expertise in Selection,Excellence in Performance</p>
-                </div>
+    <!-- 板块2：Hero 主视觉 -->
+    <header id="home" class="hero-section">
+        <div class="hero-grid-overlay"></div>
+        <div class="container position-relative">
+            <div class="hero-content text-center">
+                <h1 class="hero-title">01 CAPITAL</h1>
+                <p class="hero-tagline">Expertise in Selection, Excellence in Performance</p>
+                <p class="hero-meta">BVI Approved Investment Manager &nbsp;|&nbsp; AUM $30M+</p>
             </div>
         </div>
     </header>
 
-    <!-- 公司介绍 -->
-    <section id="about" class="py-5" style="background:#111; color:#fff;">
+    <!-- 板块3：核心数据条 -->
+    <section id="about" class="stats-section py-5">
         <div class="container">
-            <h2 class="text-center mb-5" style="color:#fff;">核心信息</h2>
-            <div class="row justify-content-center g-4">
-                <div class="col-6 col-md-6 col-lg-3">
-                    <div class="card h-100 text-center" style="background:#181818; border:none; color:#fff;">
-                        <div class="card-body">
-                            <h3 class="display-6 fw-bold">1年</h3>
-                            <hr style="border-color:#333;">
-                            <p class="mb-0">成立时长</p>
-                        </div>
+            <div class="row g-4 justify-content-center">
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card text-center">
+                        <div class="stat-number">1+</div>
+                        <div class="stat-label">成立年限</div>
                     </div>
                 </div>
-                <div class="col-6 col-md-6 col-lg-3">
-                    <div class="card h-100 text-center" style="background:#181818; border:none; color:#fff;">
-                        <div class="card-body">
-                            <h3 class="display-6 fw-bold">30M+</h3>
-                            <hr style="border-color:#333;">
-                            <p class="mb-0">当前 AUM</p>
-                        </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card text-center">
+                        <div class="stat-number">$30M+</div>
+                        <div class="stat-label">管理规模</div>
                     </div>
                 </div>
-                <div class="col-6 col-md-6 col-lg-3">
-                    <div class="card h-100 text-center" style="background:#181818; border:none; color:#fff;">
-                        <div class="card-body">
-                            <h3 class="display-6 fw-bold">10%+</h3>
-                            <hr style="border-color:#333;">
-                            <p class="mb-0">核心产品过去12个月累计收益</p>
-                        </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card text-center">
+                        <div class="stat-number">10%+</div>
+                        <div class="stat-label">核心产品12个月累计收益</div>
                     </div>
                 </div>
-                <div class="col-6 col-md-6 col-lg-3">
-                    <div class="card h-100 text-center" style="background:#181818; border:none; color:#fff;">
-                        <div class="card-body">
-                            <h3 class="display-6 fw-bold">BVI Licensed</h3>
-                            <hr style="border-color:#333;">
-                            <p class="mb-0" style="font-size:clamp(0.72rem,1.5vw,0.95rem); white-space:nowrap;">Approved Investment Manager</p>
-                        </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card text-center">
+                        <div class="stat-number">持牌合规</div>
+                        <div class="stat-label">BVI</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 产品介绍与业绩展示 -->
+    <!-- 板块4：产品介绍（含业绩表现） -->
     <section id="products-performance" class="py-5 anchor-fix">
         <div class="container">
-            <h2 class="text-center mb-5">产品介绍</h2>
-            <div class="row">
-                <!-- 产品列表 -->
-                <div class="col-12 col-md-4 mb-4 mb-md-0">
-                    <div class="list-group" id="product-list">
+            <h2 class="section-title text-center mb-5">产品介绍</h2>
+            <div class="row product-layout-row g-4 g-lg-5">
+                <div class="col-12 col-lg-3 mb-4 mb-lg-0 product-nav-col">
+                    <div class="list-group product-nav" id="product-list">
                         <button class="list-group-item list-group-item-action" data-product="balanced">平衡系列</button>
-                        <div class="list-group-item p-0">
-                            <button class="list-group-item list-group-item-action" data-product="stable">稳健系列</button>
-                            <div class="list-group-item p-0 ps-4 stable-sub-options" style="display: none;">
-                                <div class="list-group-item p-0">
-                                    <button class="list-group-item list-group-item-action" data-product="stable-usd">稳健系列-U本位</button>
-                                    <div class="list-group-item p-0 ps-4 stable-usd-sub-options" style="display: none;">
-                                        <button class="list-group-item list-group-item-action" data-product="stable-usd-1">U本位1.0</button>
-                                        <button class="list-group-item list-group-item-action" data-product="stable-usd-2">U本位2.0</button>
-                                    </div>
-                                </div>
-                                <div class="list-group-item p-0">
-                                    <button class="list-group-item list-group-item-action" data-product="stable-coin">稳健系列-币本位</button>
-                                    <div class="list-group-item p-0 ps-4 stable-coin-sub-options" style="display: none;">
-                                        <button class="list-group-item list-group-item-action" data-product="stable-coin-btc">BTC本位</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <button class="list-group-item list-group-item-action" data-product="stable-usd">稳健系列-U本位</button>
+                        <button class="list-group-item list-group-item-action" data-product="stable-coin-btc">稳健系列-币本位</button>
                         <button class="list-group-item list-group-item-action" data-product="aggressive">进取系列</button>
                     </div>
                 </div>
-                <!-- 业绩展示 -->
-                <div class="col-12 col-md-8 products-content-pl">
+                <div class="col-12 col-lg-9 product-content-col">
                     <div id="product-performance-content">
-                        <!-- 内容将由JavaScript动态生成 -->
+                        <!-- 内容由 JS 动态生成 -->
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 个人投资摘要 -->
-    <section id="investment-summary" class="py-5 bg-light">
-        <!-- 内容将由JavaScript动态生成 -->
+    <!-- 板块5：投资者专区 -->
+    <section id="investment-summary" class="py-5 anchor-fix">
+        <!-- 内容由 JS 动态生成（登录后填充） -->
     </section>
 
-    <!-- 最新进展 -->
-    <section id="future-plans" class="py-5 bg-light">
+    <!-- 板块6：团队介绍 -->
+    <section id="team" class="py-5">
         <div class="container">
-            <h2 class="text-center mb-5">最新进展</h2>
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h3 class="card-title h5">创新产品</h3>
-                            <p class="card-text">经过9个月的观察测试，现已发布周期性高收益产品，采用轻量配置与高频策略，单期周期控制在三个月以内，快速捕捉市场机会。</p>
+            <h2 class="section-title text-center mb-5">团队介绍</h2>
+            <div class="row g-4 justify-content-center">
+                <div class="col-6 col-md-4">
+                    <div class="team-card text-center">
+                        <div class="team-avatar mx-auto mb-3">
+                            <img src="images/miao.png" alt="Miaomiao Ge 肖像" width="90" height="90" loading="lazy" decoding="async">
                         </div>
+                        <h5 class="team-name">Miaomiao Ge</h5>
+                        <p class="team-role">Managing Partner</p>
+                        <p class="team-bio">统筹公司整体运营与战略方向</p>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h3 class="card-title h5">技术升级</h3>
-                            <p class="card-text">已实现交易自动化监控与风控预警，关键指标实时追踪，策略运行与管理更精细、更可控。</p>
+                <div class="col-6 col-md-4">
+                    <div class="team-card text-center">
+                        <div class="team-avatar mx-auto mb-3">
+                            <img src="images/linfeng.png" alt="Linfeng Dong 肖像" width="90" height="90" loading="lazy" decoding="async">
                         </div>
+                        <h5 class="team-name">Linfeng Dong</h5>
+                        <p class="team-role">CTO</p>
+                        <p class="team-bio">资深量化交易员兼系统工程师</p>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h3 class="card-title h5">合规升级</h3>
-                            <p class="card-text">已取得 BVI Approved Investment Manager 牌照，合规框架持续完善，运营更规范、更透明。</p>
+                <div class="col-6 col-md-4">
+                    <div class="team-card text-center">
+                        <div class="team-avatar mx-auto mb-3">
+                            <img src="images/jiaxin1.png" alt="Jiaxin Wei 肖像" width="90" height="90" loading="lazy" decoding="async">
                         </div>
+                        <h5 class="team-name">Jiaxin Wei</h5>
+                        <p class="team-role">CRO</p>
+                        <p class="team-bio">兼具投研与风控背景，负责设计风控框架及量化交易团队管理</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 页脚 -->
-    <footer class="py-5 bg-dark text-white">
+    <!-- 板块7：合规信息 -->
+    <section id="compliance" class="compliance-section py-5">
+        <div class="container">
+            <h2 class="section-title section-title-light text-center mb-5">合规信息</h2>
+            <div class="row align-items-center">
+                <div class="col-md-5 mb-4 mb-md-0 text-center text-md-start">
+                    <p class="compliance-badge">投资管理人</p>
+                    <p class="compliance-badge-en">Approved Investment Manager</p>
+                    <p class="compliance-authority">英属维尔京群岛金融服务委员会</p>
+                    <p class="compliance-authority-en">British Virgin Islands Financial Services Commission</p>
+                </div>
+                <div class="col-md-7">
+                    <ul class="compliance-list compliance-list-grid">
+                        <li>经BVI FSC批准从事投资管理业务</li>
+                        <li>独立基金行政管理</li>
+                        <li>每月净值报告与投资者对账单</li>
+                        <li>年度独立外部审计</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 板块8：页脚 -->
+    <footer class="site-footer py-5">
         <div class="container">
             <div class="row">
-                <!-- 公司简介 -->
-                <div class="col-md-6 mb-4 mb-md-0">
-                    <h5 class="mb-3">关于我们</h5>
-                    <p style="max-width: 450px;">01 Capital 是一家专注于系统化策略的资产管理机构，依托强健的基础设施与实时监控系统，追求长期稳健的复利增长。</p>
-                    <p style="max-width: 450px;" class="mt-3">01 Capital is an asset manager specializing in systematic strategies, powered by robust infrastructure and real-time monitoring to deliver long-term, risk-adjusted growth.</p>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-heading">关于我们</h5>
+                    <p class="footer-text">01 Capital 是一家专注于系统化策略的资产管理机构，依托强健的基础设施与实时监控系统，追求长期稳健的复利增长。</p>
+                    <p class="footer-text mt-3">01 Capital is an asset manager specializing in systematic strategies, powered by robust infrastructure and real-time monitoring to deliver long-term, risk-adjusted growth.</p>
                 </div>
-                <!-- 合作伙伴 -->
-                <div class="col-md-6">
-                    <h5 class="mb-3">支持平台</h5>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-heading">支持平台</h5>
                     <div class="partners-grid">
-                        <div class="row g-4" id="partners-row">
+                        <div class="row g-3" id="partners-row">
                             <div class="col-6">
                                 <div class="partner-logo">
                                     <img src="images/logo1.png" alt="支持平台1" class="img-fluid logo-1">
@@ -211,11 +213,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-4 footer-col-contact">
+                    <h5 class="footer-heading">联系我们</h5>
+                    <p class="footer-text">01primelabs@gmail.com</p>
+                    <p class="footer-text mt-2">BVI Approved Investment Manager</p>
+                </div>
             </div>
-            <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+            <hr class="footer-divider my-4">
             <div class="text-center">
-                <p class="mb-1">Licensed by BVI FSC | Approved Investment Manager</p>
-                <p class="mb-0">©01 Capital. All rights reserved.</p>
+                <p class="footer-copyright mb-0">&copy; 2026 01 Capital. 保留所有权利。 | BVI Approved Investment Manager</p>
             </div>
         </div>
     </footer>
@@ -237,7 +243,6 @@
                                     <option value="">请选择产品</option>
                                     <option value="balanced">Alpha-Bridge</option>
                                     <option value="stable-usd">Stable-Harbor-USDT</option>
-                                    <option value="stable-usd-2">Stable-Harbor-USDT 2.0</option>
                                     <option value="stable-coin-btc">Stable-Harbor-BTC</option>
                                     <option value="aggressive">Deep-Growth</option>
                                 </select>
@@ -283,7 +288,6 @@
                 </div>
                 <div class="modal-body">
                     <form id="currencyConversionForm">
-                        <!-- 当前持仓概览 -->
                         <div class="mb-4">
                             <h6 class="mb-3">当前持仓概览</h6>
                             <div class="table-responsive">
@@ -307,8 +311,6 @@
                                 </table>
                             </div>
                         </div>
-
-                        <!-- 币种转换操作 -->
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-end mb-3">
                                 <h6 class="mb-0">币种转换操作</h6>
@@ -319,7 +321,7 @@
                                 </div>
                             </div>
                             <div id="conversionRows">
-                                <!-- 转换行将通过JavaScript动态生成 -->
+                                <!-- 转换行由 JS 动态生成 -->
                             </div>
                         </div>
                     </form>
@@ -332,7 +334,39 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/main.js"></script>
+    <!-- 投资明细全量弹窗 -->
+    <div class="modal fade" id="investmentDetailModal" tabindex="-1" aria-labelledby="investmentDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="investmentDetailModalLabel">投资明细记录</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="investmentDetailTableContainer" class="table-responsive">
+                        <!-- 表格由 JS 动态生成 -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="vendor/chart.umd.min.js"></script>
+    <script src="vendor/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="vendor/papaparse.min.js"></script>
+    <script src="vendor/crypto-js.js"></script>
+    <script src="vendor/email.min.js"></script>
+    <script src="vendor/bootstrap.bundle.min.js"></script>
+    <script>
+        if (typeof bootstrap === 'undefined') {
+            var s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js';
+            document.body.appendChild(s);
+        }
+    </script>
+    <script type="module" src="js/main.js"></script>
 </body>
-</html> 
+</html>

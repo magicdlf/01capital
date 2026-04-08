@@ -1,811 +1,767 @@
-/* 全局样式 */
-body {
-    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    line-height: 1.6;
-    color: #333;
-    background-color: #fff;
+/* ============================================
+   01 Capital — Institutional Style
+   Color Palette:
+     Primary:    #0a1628 (navy)
+     Accent:     #c5a55a (gold)
+     Background: #ffffff / #f8f9fa
+     Positive:   #22c55e
+     Negative:   #ef4444
+   ============================================ */
+
+:root {
+    --navy: #0a1628;
+    --navy-light: #12243d;
+    --gold: #c5a55a;
+    --gold-hover: #d4b76a;
+    --bg-white: #ffffff;
+    --bg-gray: #f8f9fa;
+    --text-dark: #1a1a2e;
+    --text-muted: #6c757d;
+    --text-light: #adb5bd;
+    --positive: #22c55e;
+    --negative: #ef4444;
+    --footer-bg: #060e1a;
+    --border-light: #e2e8f0;
+    --font-brand: 'Times New Roman', 'Playfair Display', 'Georgia', serif;
+    --font-body: 'Playfair Display', 'Times New Roman', 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+    --font-number: 'Inter', 'Helvetica Neue', 'Arial', sans-serif;
 }
 
-/* 确保所有表格在手机上可以横向滚动 */
+/* ── Global ── */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-white);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 统一全站文字风格，中文与英文都贴近品牌主标题 */
+button,
+input,
+select,
+textarea,
+.btn,
+.nav-link,
+.navbar-brand,
+.section-title,
+.stat-number,
+.stat-label,
+.table,
+.card-title,
+.footer-text,
+.footer-heading {
+    font-family: inherit;
+}
+
 .table-responsive {
     -webkit-overflow-scrolling: touch;
     overflow-x: auto;
 }
 
-/* 导航栏样式 */
-.navbar {
-    background-color: #fff !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.navbar-brand {
-    font-weight: bold;
-    font-size: 1.5rem;
-    color: #000 !important;
-}
-
-.nav-link {
-    color: #333 !important;
-    font-weight: 500;
-}
-
-.nav-link:hover {
-    color: #000 !important;
-}
-
-/* 首页横幅样式（带下移背景图） */
-.hero-section {
-    background: #000;
-    color: white;
-    padding-top: 80px;
+/* ── Section Titles ── */
+.section-title {
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--navy);
     position: relative;
-    overflow: hidden;
-    min-height: 480px;
-}
-.hero-section::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0;
-    top: 0; bottom: 0;
-    background: url('../images/hero-bg2.png') no-repeat;
-    background-size: 100%;
-    opacity: 1;
-    z-index: 0;
-    background-position: right -50% bottom -5%;
-    background-color: #000;
-}
-.hero-section > .container, .hero-section .row {
-    position: relative;
-    z-index: 1;
-}
-.hero-section > .container {
-    position: relative;
-    z-index: 1;
-    margin-top: 0;
-    margin-bottom: 0;
-}
-.hero-section .col-lg-6 {
-    text-align: left;
-    margin-top: -380px;
+    padding-bottom: 18px;
 }
 
-/* 卡片样式 */
-.card {
-    border: none;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-    background-color: #fff;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
-.card-title {
-    color: #000;
-    font-weight: 600;
-}
-
-/* 业绩图表样式 */
-.performance-chart {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border: 1px solid #eee;
-}
-
-/* 联系表单样式 */
-.form-control {
-    border: 1px solid #ddd;
-    padding: 12px;
-    background-color: #fff;
-}
-
-.form-control:focus {
-    box-shadow: none;
-    border-color: #000;
-}
-
-/* 按钮样式 */
-.btn-primary {
-    background: #000;
-    border: none;
-    padding: 12px 30px;
-    transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-    background: #333;
-    transform: translateY(-2px);
-}
-
-/* 背景色调整 */
-.bg-light {
-    background-color: #f8f9fa !important;
-}
-
-/* 标题样式 */
-h2 {
-    color: #000;
-    font-weight: 600;
-    position: relative;
-    padding-bottom: 15px;
-}
-
-h2:after {
+.section-title::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 50px;
-    height: 2px;
-    background-color: #000;
+    width: 60px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 2px;
 }
 
-/* 列表样式 */
-.list-unstyled li {
-    margin-bottom: 10px;
-    color: #666;
+.section-title-light {
+    color: #fff;
 }
 
-/* 页脚样式 */
-footer {
-    background-color: #000 !important;
+/* ── Gold Outline Button ── */
+.btn-outline-gold {
+    color: var(--gold);
+    border: 1.5px solid var(--gold);
+    background: transparent;
+    padding: 10px 32px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border-radius: 4px;
 }
 
-/* Hero区域字体样式 */
-.hero-title {
-    font-size: 4rem;
+.btn-outline-gold:hover,
+.btn-outline-gold:focus {
+    background: var(--gold);
+    color: var(--navy);
+    border-color: var(--gold);
 }
 
-.hero-subtitle {
-    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+/* ── Anchor offset for fixed nav ── */
+.anchor-fix {
+    scroll-margin-top: 80px;
+}
+
+#about {
+    scroll-margin-top: 80px;
+}
+
+/* ============================================
+   板块1：导航栏
+   ============================================ */
+.navbar {
+    background-color: var(--navy) !important;
+    padding: 0.75rem 0;
+    transition: background-color 0.3s;
+    z-index: 1050;
+}
+
+.navbar-brand {
+    font-family: var(--font-brand);
     font-weight: 700;
-    font-size: 1.75rem;
+    font-size: 1.5rem;
+    color: #fff !important;
+    letter-spacing: 3px;
+    text-transform: uppercase;
 }
 
-/* 响应式调整 - 平板设备 */
-@media (max-width: 1024px) and (min-width: 769px) {
-    .hero-section {
-        min-height: 100vh;
-        padding-top: 80px;
-        background: transparent !important;
-        position: relative;
-    }
-    .hero-section::after {
-        background-size: 100% 100%;
-        background-position: center top;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        height: 100%;
-        min-height: 100vh;
-        background-color: transparent;
-    }
+.navbar .nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    transition: color 0.2s;
+    letter-spacing: 0.3px;
 }
 
-/* 响应式调整 - 手机和平板 */
-@media (max-width: 768px) {
-    .hero-section {
-        min-height: 320px;
-        padding-top: 60px;
-    }
-    .hero-section::after {
-        background-size: cover;
-        background-position: center center;
-    }
-    .hero-section > .container {
-        margin-top: 0;
-    }
-    .hero-section .col-lg-6,
-    .hero-section .col-12 {
-        margin-top: -280px;
-    }
-    .hero-title {
-        font-size: 2.5rem;
-    }
-    .hero-subtitle {
-        font-size: 1.4rem;
-    }
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+    color: #fff !important;
 }
 
-@media (max-width: 576px) {
-    .hero-title {
-        font-size: 2rem;
-    }
-    .hero-subtitle {
-        font-size: 1.2rem;
-    }
-    
-    /* 导航栏品牌文字 */
-    .navbar-brand {
-        font-size: 1.25rem;
-    }
-    
-    /* 容器内边距 */
-    .container {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    
-    /* 卡片内边距 */
-    .card-body {
-        padding: 1rem;
-    }
+.navbar .nav-link.nav-login-link {
+    color: var(--gold) !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
 }
 
-/* 动画效果 */
-.fade-in {
-    animation: fadeIn 1s ease-in;
+.navbar .nav-link.nav-login-link:hover,
+.navbar .nav-link.nav-login-link:focus {
+    color: var(--gold-hover) !important;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* 优势蜂巢环形布局 */
-.advantage-honeycomb {
+.navbar .nav-user-menu {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     align-items: center;
-    gap: 0px;
+    gap: 0.15rem;
+}
+
+.navbar .nav-welcome-text {
+    color: var(--gold);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.5rem 0.2rem 0.5rem 1rem;
+    white-space: nowrap;
+}
+
+.navbar .nav-link.nav-logout-link {
+    color: var(--gold) !important;
+    font-weight: 600;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.navbar .nav-link.nav-logout-link:hover,
+.navbar .nav-link.nav-logout-link:focus {
+    color: var(--gold-hover) !important;
+}
+
+.navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.3);
+    padding: 0.25rem 0.5rem;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255,255,255,0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* ============================================
+   板块2：Hero 主视觉
+   ============================================ */
+.hero-section {
+    background: var(--navy);
+    color: #fff;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: 76px;
+}
+
+.hero-grid-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(rgba(197, 165, 90, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(197, 165, 90, 0.03) 1px, transparent 1px),
+        linear-gradient(135deg, rgba(197, 165, 90, 0.04) 0%, transparent 60%),
+        linear-gradient(225deg, rgba(197, 165, 90, 0.02) 0%, transparent 50%);
+    background-size:
+        60px 60px,
+        60px 60px,
+        100% 100%,
+        100% 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(197, 165, 90, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    padding: 4rem 0;
+}
+
+.hero-title {
+    font-family: var(--font-brand);
+    font-size: clamp(2.5rem, 6vw, 4.4rem);
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 1.25rem;
+    color: #fff;
+    text-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.55),
+        0 3px 6px rgba(0, 0, 0, 0.45),
+        0 10px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* 数字信息使用更清晰的无衬线字体 */
+.stat-number,
+.hero-meta,
+.overview-value,
+.summary-card-dark .summary-value,
+.table td,
+.table th {
+    font-family: var(--font-number);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+.hero-tagline {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+    color: var(--gold);
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+}
+
+.hero-meta {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   板块3：核心数据条
+   ============================================ */
+.stats-section {
+    background: var(--bg-gray);
+}
+
+.stat-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 2rem 1.5rem;
+    transition: transform 0.3s, box-shadow 0.3s;
     height: 100%;
 }
-.advantage-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 18px;
-    width: 48%;
-    min-width: 260px;
-    margin-right: 2%;
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(10, 22, 40, 0.08);
 }
-.advantage-item:nth-child(even) {
-    margin-left: 50px;
-}
-.advantage-circle {
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    background: #2176ae;
-    color: #fff;
-    font-size: 1.3rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 18px;
-    flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-.advantage-item.yellow .advantage-circle {
-    background: #f7b84b;
-    color: #fff;
-}
-.advantage-item.blue-dark .advantage-circle {
-    background: #183153;
-    color: #fff;
-}
-.advantage-title-main {
-    font-size: 1.08rem;
+
+.stat-number {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
     font-weight: 700;
-    color: #2176ae;
-    margin-bottom: 2px;
-}
-.advantage-item.yellow .advantage-title-main {
-    color: #f7b84b;
-}
-.advantage-item.blue-dark .advantage-title-main {
-    color: #183153;
-}
-.advantage-title-sub {
-    font-size: 0.98rem;
-    color: #222;
-    font-weight: 400;
-}
-@media (max-width: 992px) {
-    .advantage-item {
-        width: 100%;
-        min-width: 0;
-        margin-right: 0;
-        margin-left: 0;
-    }
-    .advantage-item:nth-child(even) {
-        margin-left: 0;
-    }
-}
-@media (max-width: 576px) {
-    .advantage-honeycomb {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .advantage-item {
-        margin-bottom: 12px;
-    }
-    .advantage-circle {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
-        margin-right: 10px;
-    }
-    .advantage-title-main {
-        font-size: 1rem;
-    }
-    .advantage-title-sub {
-        font-size: 0.92rem;
-    }
+    color: var(--navy);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
 }
 
-/* 产品类型卡片按钮 */
-#product-list {
-    max-width: 270px;
-    margin-left: auto;
-    margin-right: auto;
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.4;
 }
 
-@media (max-width: 767px) {
-    #product-list {
-        max-width: 100%;
-        margin-left: 0;
-        margin-right: 0;
-    }
+/* ============================================
+   板块4：产品介绍
+   ============================================ */
+#products-performance {
+    background: var(--bg-white);
 }
-#product-list .list-group-item {
-    background: #f5f6fa;
-    color: #1a2530;
+
+.product-layout-row {
+    --bs-gutter-x: 2.25rem;
+}
+
+#products-performance .product-content-col {
+    padding-left: clamp(0.75rem, 1.5vw, 1.75rem);
+}
+
+/* 左侧产品导航 */
+.product-nav {
     border: none;
-    border-radius: 16px !important;
-    margin-bottom: 18px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    padding: 22px 28px;
-    text-align: center;
-    position: relative;
-    width: 100%;
-    box-sizing: border-box;
+    gap: 0;
 }
-#product-list .list-group-item:last-child {
+
+.product-nav .list-group-item {
+    background: var(--bg-gray);
+    color: var(--text-dark);
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 0 !important;
+    margin-bottom: 2px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 14px 20px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.product-nav .list-group-item:hover:not(.active) {
+    background: #eef1f6;
+    border-left-color: var(--gold);
+}
+
+.product-nav .list-group-item.active,
+.product-nav .list-group-item:active {
+    background: var(--navy) !important;
+    color: #fff !important;
+    border-left-color: var(--gold) !important;
+    font-weight: 600;
+}
+
+/* 子选项缩进（若导航含二级项） */
+.product-nav .stable-usd-sub-options .list-group-item {
+    font-size: 0.88rem;
+    padding: 10px 16px;
+    background: #f0f2f5;
+}
+
+.product-nav .stable-usd-sub-options .list-group-item.active {
+    background: var(--navy) !important;
+    color: #fff !important;
+}
+
+/* 右侧面板 */
+#product-performance-content {
+    min-height: 200px;
+    max-width: 920px;
+}
+
+#product-performance-content .product-detail {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 1.5rem;
+    overflow: visible;
+}
+
+/* 修复 product-detail 内 bootstrap container/row 负边距导致的超框 */
+#product-performance-content .product-detail > .container {
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#product-performance-content .product-detail > .container > .row {
+    --bs-gutter-x: 1rem;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#product-performance-content .product-detail > .container > .row > [class*="col-"] {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+#product-performance-content h3 {
+    color: var(--navy);
+    font-weight: 700;
+}
+
+#product-performance-content .strategy-subtitle {
+    color: var(--gold);
+    font-weight: 500;
+}
+
+/* 时间切换按钮 */
+#product-performance-content .btn-group .btn,
+[id$="-chart-controls"] .btn {
+    background: var(--bg-gray);
+    color: var(--text-dark);
+    border: 1px solid var(--border-light);
+    border-radius: 6px !important;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    transition: all 0.2s;
+    margin: 0 2px;
+}
+
+#product-performance-content .btn-group .btn:hover,
+[id$="-chart-controls"] .btn:hover {
+    background: #e8ecf1;
+    border-color: #ced4da;
+}
+
+#product-performance-content .btn-group .btn.active,
+[id$="-chart-controls"] .btn.active {
+    background: var(--navy);
+    color: #fff;
+    border-color: var(--navy);
+    font-weight: 600;
+}
+
+/* 产品信息表格 */
+#product-performance-content .table {
+    font-size: 0.9rem;
+    max-width: 860px;
     margin-bottom: 0;
 }
-#product-list .list-group-item.active, #product-list .list-group-item:active {
-    background: #000;
-    color: #fff;
+
+#product-performance-content .table th {
+    background: var(--bg-gray);
+    color: var(--text-dark);
     font-weight: 600;
-    box-shadow: 0 4px 16px rgba(26,37,48,0.12);
-    border: none;
-}
-#product-list .list-group-item:hover:not(.active) {
-    background: #e4e6eb;
-    color: #1a2530;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-bottom: 2px solid var(--border-light);
 }
 
-/* 时间范围按钮样式 */
-#stable-chart-controls .btn,
-#balanced-chart-controls .btn {
-    background: #f5f6fa;
-    color: #1a2530;
-    border: none;
-    border-radius: 8px !important;
-    font-size: 0.9rem;
+.facts-label {
+    width: 40%;
+    color: var(--text-muted);
     font-weight: 500;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    padding: 8px 16px;
 }
 
-#stable-chart-controls .btn:hover,
-#balanced-chart-controls .btn:hover {
-    background: #e4e6eb;
-    color: #1a2530;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+/* 核心指标条 */
+.metrics-bar {
+    max-width: 860px;
+    gap: 12px;
 }
 
-#stable-chart-controls .btn.active,
-#balanced-chart-controls .btn.active {
-    background: #000;
-    color: #fff;
-    font-weight: 600;
-    box-shadow: 0 4px 16px rgba(26,37,48,0.12);
-    border: none;
+.metric-item {
+    flex: 1;
+    background: var(--bg-gray);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 14px 8px;
+}
+
+.metric-value {
+    font-family: var(--font-number);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.3;
+}
+
+.metric-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 4px;
 }
 
 @media (max-width: 768px) {
-    /* 产品列表按钮在手机版缩小美化 */
-    #product-list .list-group-item {
-        font-size: 0.9rem;
-        padding: 12px 16px;
-        margin-bottom: 12px;
-        border-radius: 12px !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-    
-    #product-list .list-group-item:last-child {
-        margin-bottom: 0;
-    }
-    
-    #product-list .list-group-item.active, 
-    #product-list .list-group-item:active {
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    
-    #product-list .list-group-item:hover:not(.active) {
-        box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-    }
-    
-    /* 子菜单按钮也缩小 */
-    #product-list .stable-sub-options .list-group-item,
-    #product-list .stable-usd-sub-options .list-group-item,
-    #product-list .stable-coin-sub-options .list-group-item {
-        font-size: 0.85rem;
-        padding: 10px 14px;
-        margin-bottom: 8px;
-        border-radius: 10px !important;
-    }
-    
-    .list-group-item.list-group-item-action {
-        font-size: 0.9rem;
-        padding: 12px 16px;
-    }
-    
-    /* 产品介绍区域标题 */
-    #products-performance h2 {
-        font-size: 1.75rem;
-    }
-    
-    /* 核心数据卡片 */
-    #about .display-6 {
-        font-size: 1.5rem;
-    }
-    
-    /* 手机竖屏：核心数据2x2布局，缩小字体 */
-    @media (max-width: 768px) and (orientation: portrait) {
-        #about .display-6 {
-            font-size: 1.1rem;
-        }
-        #about .card-body p {
-            font-size: 0.85rem;
-        }
-        #about .card-body {
-            padding: 1rem 0.5rem;
-        }
-    }
-    
-    /* 手机横屏：保持原来的字体大小和布局（竖着4个） */
-    @media (max-width: 768px) and (orientation: landscape) {
-        #about .display-6 {
-            font-size: 1.5rem;
-        }
-        #about .row > div {
-            flex: 0 0 100%;
-            max-width: 100%;
-        }
-    }
-    
-    /* 未来规划卡片 */
-    #future-plans h2 {
-        font-size: 1.75rem;
-    }
-    
-    /* 页脚文字 */
-    footer p {
-        font-size: 0.9rem;
-    }
-    
-    /* 图表容器 */
-    .performance-chart {
-        padding: 15px;
-    }
-    
-    /* 按钮组间距 */
-    #stable-chart-controls,
-    #balanced-chart-controls,
-    #aggressive-chart-controls,
-    #stable-usd-chart-controls {
-        display: flex;
+    .metrics-bar {
         flex-wrap: wrap;
         gap: 8px;
     }
-    
-    #stable-chart-controls .btn,
-    #balanced-chart-controls .btn,
-    #aggressive-chart-controls .btn,
-    #stable-usd-chart-controls .btn {
-        font-size: 0.85rem;
-        padding: 6px 12px;
+    .metric-item {
+        flex: 0 0 calc(50% - 4px);
+        padding: 10px 6px;
     }
-    
-    /* 表格优化 */
-    .table {
-        font-size: 0.9rem;
+    .metric-value {
+        font-size: 0.95rem;
     }
-    
-    .table th,
-    .table td {
-        padding: 0.5rem 0.25rem;
-        white-space: nowrap;
-    }
-    
-    /* 投资组合概览表格 */
-    #investment-summary .table td {
-        white-space: normal;
-        word-break: break-word;
-    }
-    
-    /* 投资明细表格 */
-    #currentHoldingTable,
-    #closedPositionTable,
-    #investmentDetailTableContainer {
-        max-height: 400px !important;
-        overflow-x: auto !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch;
-        display: block;
-        width: 100%;
-    }
-    
-    #currentHoldingTable .table,
-    #closedPositionTable .table,
-    #investmentDetailTable {
-        font-size: 0.85rem;
-        width: 100%;
-        min-width: 700px; /* 确保表格有最小宽度，触发横向滚动 */
-        margin-bottom: 0;
-    }
-    
-    #currentHoldingTable .table th,
-    #currentHoldingTable .table td,
-    #closedPositionTable .table th,
-    #closedPositionTable .table td,
-    #investmentDetailTable th,
-    #investmentDetailTable td {
-        padding: 0.4rem 0.5rem;
-        font-size: 0.8rem;
-        vertical-align: middle;
-    }
-    
-    /* 产品名称字段允许换行（投资组合明细表：第1列） */
-    #currentHoldingTable .table th:first-child,
-    #currentHoldingTable .table td:first-child,
-    #closedPositionTable .table th:first-child,
-    #closedPositionTable .table td:first-child {
-        white-space: normal;
-        word-break: break-word;
-        min-width: 120px;
-        max-width: 150px;
-    }
-    
-    /* 投资明细记录表：产品名称（第3列）和操作类型（第4列）允许换行 */
-    #investmentDetailTable th:nth-child(3),
-    #investmentDetailTable td:nth-child(3),
-    #investmentDetailTable th:nth-child(4),
-    #investmentDetailTable td:nth-child(4) {
-        white-space: normal;
-        word-break: break-word;
-        min-width: 100px;
-        max-width: 120px;
-    }
-    
-    /* 投资组合明细表：其他字段不允许换行 */
-    #currentHoldingTable .table th:not(:first-child),
-    #currentHoldingTable .table td:not(:first-child),
-    #closedPositionTable .table th:not(:first-child),
-    #closedPositionTable .table td:not(:first-child) {
-        white-space: nowrap;
-    }
-    
-    /* 投资明细记录表：其他字段不允许换行（除了产品名称和操作类型） */
-    #investmentDetailTable th:not(:nth-child(3)):not(:nth-child(4)),
-    #investmentDetailTable td:not(:nth-child(3)):not(:nth-child(4)) {
-        white-space: nowrap;
-    }
-    
-    /* 确保表头在滚动时保持固定 */
-    #currentHoldingTable .table thead,
-    #closedPositionTable .table thead,
-    #investmentDetailTable thead {
-        position: sticky;
-        top: 0;
-        z-index: 10;
+    .metric-label {
+        font-size: 0.72rem;
     }
 }
 
-.anchor-fix {
-    scroll-margin-top: 60px;
+/* 图表容器 */
+.performance-chart {
+    background: var(--bg-white);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
 }
 
-.products-content-pl {
-    padding-left: 0;
-}
-@media (min-width: 768px) {
-    .products-content-pl {
-        padding-left: 24px;
-    }
-}
-
-#assetAllocationChart {
-    max-height: 240px;
-    height: 120px;
-}
-
-/* 手机版收益曲线图表样式 */
-@media (max-width: 768px) {
-    #assetAllocationChart {
-        max-height: 300px;
-        height: 250px;
-    }
-    
-    /* 确保图表容器有足够的内边距，防止图例和日期超出 */
-    #investment-summary .card-body {
-        padding: 1rem;
-        overflow: hidden;
-    }
-    
-    /* 图表容器包装，确保内容不超出 */
-    #investment-summary .card-body > div {
-        overflow: hidden;
-        position: relative;
-    }
-}
-
-/* 合作伙伴logo样式 */
-.partners-grid {
-    margin-top: 1rem;
-}
-
-.partner-logo {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 0.75rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    height: 60px;
+/* 产品区图表尺寸约束，防止 canvas 被拉伸变形 */
+#product-performance-content .chart-container {
+    position: relative;
     width: 100%;
+    max-width: 860px;
+    height: 340px;
+    min-height: 280px;
+    overflow: visible;
+    border-radius: 8px;
+}
+
+#product-performance-content [id$="-monthly-pnl-container"] {
+    height: 300px;
+    min-height: 260px;
+    padding-bottom: 36px;
+}
+
+#product-performance-content .chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+/*
+ * 进取系列「完整业绩 + 月度盈亏」：同一 .chart-container 内先有标题与图例，再是 canvas。
+ * 固定 height + canvas height:100% 会使 canvas 仍按整盒高度解析，与标题/图例叠高后溢出，
+ * 坐标轴标签会压到下一区块（手机端明显）。改为容器高度随内容撑开，canvas 用固定像素高度。
+ */
+#product-performance-content #aggressive-full-chart-container,
+#product-performance-content #aggressive-monthly-pnl-container {
+    height: auto;
+    min-height: 0;
+}
+
+#product-performance-content #aggressive-full-chart-container {
+    margin-bottom: 0.5rem;
+}
+
+#product-performance-content #aggressive-full-chart-container canvas#aggressiveFullChart {
+    height: 320px !important;
+}
+
+#product-performance-content #aggressive-monthly-pnl-container canvas#aggressiveMonthlyPnLChart {
+    height: 220px !important;
+}
+
+#product-performance-content .container {
+    max-width: 860px;
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#product-performance-content .table-responsive {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+@media (min-width: 992px) {
+    .product-nav-col {
+        position: relative;
+        align-self: flex-start;
+    }
+
+    .product-nav-col .product-nav {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 96px;
+        z-index: 20;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+    }
+}
+
+/* ============================================
+   板块5：投资者专区
+   ============================================ */
+#investment-summary {
+    background: var(--bg-gray);
+    scroll-margin-top: 80px;
+}
+
+/* 深色摘要卡片（旧版保留兼容） */
+.summary-card-dark {
+    background: var(--navy);
+    color: #fff;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    height: 100%;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.summary-card-dark .summary-value {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    font-weight: 700;
+    color: #fff;
+    word-break: break-word;
+    line-height: 1.3;
+    margin-top: 0.35rem;
+}
+
+.summary-card-dark .summary-label {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 概览卡片（新版） */
+.overview-card {
+    background: var(--navy);
+    color: #fff;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 60px;
+    text-align: center;
 }
 
-.partner-logo:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.overview-value {
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    font-weight: 700;
+    color: #fff;
+    word-break: break-word;
+    line-height: 1.3;
 }
 
-.partner-logo img {
-    max-width: 90%;
-    max-height: 90%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-    opacity: 0.8;
-    transition: all 0.3s ease;
+.overview-label {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 0.35rem;
+    letter-spacing: 0.5px;
 }
 
-/* 为每个logo单独设置尺寸，方便调整 */
-.partner-logo .logo-1 {
-    max-width: 110%;
-    max-height: 110%;
+.overview-coin {
+    color: var(--gold);
+    font-weight: 600;
 }
 
-.partner-logo .logo-2 {
-    max-width: 120%;
-    max-height: 120%;
+/* 精简投资明细表格 */
+#simplifiedDetailTable {
+    font-size: 0.85rem;
 }
 
-.partner-logo .logo-3 {
-    max-width: 75%;
-    max-height: 75%;
+#simplifiedDetailTable th {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-light);
+    padding: 0.5rem 0.5rem;
 }
 
-.partner-logo .logo-4 {
-    max-width: 80%;
-    max-height: 80%;
+#simplifiedDetailTable td {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.82rem;
+    border-bottom: 1px solid var(--border-light);
 }
 
-.partner-logo:hover img {
-    opacity: 1;
-    filter: brightness(0) invert(1);
+/* 币种切换 pill */
+.currency-pills .btn {
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid var(--border-light);
+    background: var(--bg-white);
+    color: var(--text-dark);
+    transition: all 0.2s;
 }
 
-/* 响应式调整 */
-@media (max-width: 768px) {
-    .partners-grid {
-        margin-top: 0.5rem;
-    }
-    
-    .partners-grid .row,
-    #partners-row {
-        --bs-gutter-y: 0.75rem;
-        --bs-gutter-x: 0.75rem;
-    }
-    
-    .partner-logo {
-        height: 40px;
-        min-height: 40px;
-        padding: 0.4rem;
-        border-radius: 6px;
-    }
-    
-    .partner-logo img {
-        max-width: 85%;
-        max-height: 85%;
-    }
-    
-    /* 缩小各个logo的尺寸 */
-    .partner-logo .logo-1 {
-        max-width: 100%;
-        max-height: 100%;
-    }
-    
-    .partner-logo .logo-2 {
-        max-width: 110%;
-        max-height: 110%;
-    }
-    
-    .partner-logo .logo-3 {
-        max-width: 70%;
-        max-height: 70%;
-    }
-    
-    .partner-logo .logo-4 {
-        max-width: 75%;
-        max-height: 75%;
-    }
-    
-    /* 页脚区域调整 */
-    footer .col-md-6 {
-        margin-bottom: 2rem !important;
-    }
-    
-    footer p {
-        max-width: 100% !important;
-    }
+.currency-pills .btn.active {
+    background: var(--navy);
+    color: #fff;
+    border-color: var(--navy);
 }
 
-/* 产品信息表格标签列 */
-.facts-label {
-    width: 40%;
+/* 持仓表格 */
+.holdings-table thead {
+    background: transparent;
 }
 
-@media (max-width: 768px) {
-    .facts-label {
-        width: 35%;
-        min-width: 100px;
-    }
-    /* 确保表格在竖屏时值列对齐 */
-    #product-performance-content .table {
-        table-layout: fixed;
-        width: 100%;
-    }
-    #product-performance-content .table td:not(.facts-label) {
-        text-align: left;
-        padding-left: 1rem;
-        word-break: break-word;
-    }
-    /* 确保两个表格在竖屏时标签宽度一致 */
-    #product-performance-content .row > div:first-child .table .facts-label,
-    #product-performance-content .row > div:last-child .table .facts-label {
-        width: 35%;
-        min-width: 100px;
-    }
+.holdings-table thead th {
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.5rem 0.5rem;
+    color: var(--text-muted);
+    background-color: #f8f9fa;
+    border-bottom: 2px solid var(--border-light);
+}
+
+.holdings-table tbody tr:nth-child(even) {
+    background: var(--bg-gray);
+}
+
+.holdings-table tbody td {
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* 当前持仓/已清仓切换 */
+.holding-tabs .nav-link {
+    color: var(--text-muted);
+    font-weight: 500;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.75rem 1.25rem;
+    transition: all 0.2s;
+}
+
+.holding-tabs .nav-link.active {
+    color: var(--navy);
+    border-bottom-color: var(--gold);
+    font-weight: 600;
+}
+
+.holding-tabs .nav-link:hover {
+    color: var(--navy);
+}
+
+/* 收益颜色 */
+.text-positive {
+    color: var(--positive) !important;
+}
+
+.text-negative {
+    color: var(--negative) !important;
 }
 
 /* 投资操作按钮组 */
@@ -816,29 +772,282 @@ footer {
     gap: 0.5rem;
 }
 
-@media (max-width: 768px) {
-    .investment-actions {
-        flex-direction: row;
-        justify-content: space-between;
-        gap: 0.5rem;
+#assetAllocationChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* ============================================
+   板块6：团队介绍
+   ============================================ */
+#team {
+    background: var(--bg-white);
+}
+
+.team-card {
+    padding: 2rem 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.team-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(10, 22, 40, 0.08);
+}
+
+.team-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d1d5db, #e5e7eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.team-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.team-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 0.25rem;
+}
+
+.team-role {
+    font-size: 0.85rem;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.team-bio {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+/* ============================================
+   板块7：合规信息
+   ============================================ */
+.compliance-section {
+    background: var(--navy);
+    color: #fff;
+}
+
+.compliance-badge {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 0.35rem;
+    line-height: 1.3;
+}
+
+.compliance-badge-en {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.72);
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.compliance-authority {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0.25rem;
+}
+
+.compliance-authority-en {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.compliance-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.compliance-list li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.5;
+}
+
+.compliance-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+}
+
+/* 双列铺满右侧，避免单列挤在左侧、右侧大面积留白 */
+.compliance-list-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+}
+
+.compliance-list-grid li {
+    margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+    .compliance-list-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 2rem;
+        row-gap: 0.75rem;
     }
-    
-    .investment-actions .btn {
-        flex: 1;
-        width: auto;
-        margin: 0 !important;
-        font-size: 0.85rem;
-        padding: 0.5rem 0.75rem;
-        white-space: nowrap;
+
+    .compliance-list-grid li {
+        padding-left: 22px;
+        font-size: 1rem;
+        line-height: 1.55;
     }
-    
-    .investment-actions .btn i {
-        font-size: 0.9rem;
-        margin-right: 0.25rem;
+
+    .compliance-list-grid li::before {
+        top: 9px;
     }
 }
 
-/* 币种转换行 */
+/* ============================================
+   板块8：页脚
+   ============================================ */
+.site-footer {
+    background: var(--footer-bg);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.footer-heading {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    letter-spacing: 0.5px;
+}
+
+.footer-text {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 380px;
+}
+
+.footer-divider {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.footer-copyright {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* 联系我们：与「支持平台」留出间距，并靠右对齐 */
+@media (min-width: 768px) {
+    .footer-col-contact {
+        padding-left: 2rem;
+        text-align: right;
+    }
+
+    .footer-col-contact .footer-text {
+        margin-left: auto;
+    }
+}
+
+/* 合作伙伴 logo */
+.partners-grid {
+    margin-top: 0.5rem;
+}
+
+.partner-logo {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.partner-logo:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.partner-logo img {
+    max-width: 90%;
+    max-height: 90%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.65;
+    transition: opacity 0.3s;
+}
+
+.partner-logo:hover img {
+    opacity: 1;
+}
+
+.partner-logo .logo-1 { max-width: 110%; max-height: 110%; }
+.partner-logo .logo-2 { max-width: 120%; max-height: 120%; }
+.partner-logo .logo-3 { max-width: 75%; max-height: 75%; }
+.partner-logo .logo-4 { max-width: 80%; max-height: 80%; }
+
+/* ============================================
+   Modals
+   ============================================ */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-light);
+    padding: 1.25rem 1.5rem;
+}
+
+.modal-title {
+    font-weight: 700;
+    color: var(--navy);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-light);
+    padding: 1rem 1.5rem;
+}
+
+.modal-footer .btn-primary {
+    background: var(--navy);
+    border-color: var(--navy);
+}
+
+.modal-footer .btn-primary:hover {
+    background: var(--navy-light);
+    border-color: var(--navy-light);
+}
+
+/* 币种转换相关 */
 .conversion-row {
     margin-bottom: 1rem;
 }
@@ -853,59 +1062,502 @@ footer {
     justify-content: center;
 }
 
-@media (max-width: 576px) {
-    /* 核心数据区域 */
-    #about {
-        padding: 2rem 0 !important;
+.currency-table th {
+    background: var(--bg-gray);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   Buttons overrides
+   ============================================ */
+.btn-primary {
+    background: var(--navy);
+    border-color: var(--navy);
+    padding: 10px 24px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: var(--navy-light);
+    border-color: var(--navy-light);
+    transform: translateY(-1px);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 0.2rem rgba(197, 165, 90, 0.15);
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+.fade-in {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
-    
-    #about h2 {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   Responsive — Tablet (<=1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+    .hero-title {
+        letter-spacing: 4px;
+    }
+}
+
+/* ============================================
+   Responsive — Mobile (<=768px)
+   ============================================ */
+@media (max-width: 768px) {
+    /* Hero */
+    .hero-section {
+        min-height: 400px;
+        padding-top: 70px;
+    }
+
+    .hero-content {
+        padding: 2.5rem 0;
+    }
+
+    /* Stats */
+    .stat-card {
+        padding: 1.25rem 1rem;
+    }
+
+    .stat-number {
         font-size: 1.5rem;
-        margin-bottom: 2rem !important;
     }
-    
-    /* 产品介绍区域 */
+
+    .stat-label {
+        font-size: 0.78rem;
+    }
+
+    /* Products: stack layout */
+    .product-nav {
+        margin-bottom: 1.5rem;
+    }
+
+    .product-layout-row {
+        --bs-gutter-x: 1rem;
+    }
+
+    #products-performance .product-content-col {
+        padding-left: 0.25rem;
+    }
+
+    .product-nav .list-group-item {
+        font-size: 0.88rem;
+        padding: 12px 16px;
+    }
+
+    .product-nav .stable-usd-sub-options .list-group-item {
+        font-size: 0.82rem;
+        padding: 10px 14px;
+    }
+
+    /* Tables */
+    .table {
+        font-size: 0.88rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem 0.35rem;
+        white-space: nowrap;
+    }
+
+    .facts-label {
+        width: 35%;
+        min-width: 100px;
+    }
+
+    #product-performance-content .table {
+        table-layout: fixed;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    #product-performance-content .table td:not(.facts-label) {
+        text-align: left;
+        padding-left: 0.75rem;
+        word-break: break-word;
+    }
+
+    /* Chart controls */
+    [id$="-chart-controls"] {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    [id$="-chart-controls"] .btn {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+
+    .performance-chart {
+        padding: 12px;
+    }
+
+    #product-performance-content .chart-container {
+        height: 300px;
+        min-height: 240px;
+        max-width: 100%;
+    }
+
+    #product-performance-content [id$="-monthly-pnl-container"] {
+        height: 260px;
+        min-height: 220px;
+        padding-bottom: 24px;
+    }
+
+    /* 进取「完整业绩走势」：手机端全宽、略低高度 */
+    #product-performance-content #aggressive-full-chart-container {
+        max-width: 100%;
+    }
+
+    #product-performance-content #aggressive-full-chart-container canvas#aggressiveFullChart {
+        height: 220px !important;
+    }
+
+    /* Investment summary */
+    #investment-summary .table td {
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    #investment-summary .card-body {
+        padding: 1rem;
+        overflow: hidden;
+    }
+
+    /* 摘要卡片移动端 */
+    .summary-card-dark {
+        padding: 1rem;
+    }
+
+    .summary-card-dark .summary-value {
+        font-size: 1rem;
+    }
+
+    .summary-card-dark .summary-label {
+        font-size: 0.7rem;
+    }
+
+    /* 概览卡片移动端 */
+    .overview-card {
+        padding: 1rem;
+    }
+
+    .overview-value {
+        font-size: 1rem;
+    }
+
+    .overview-label {
+        font-size: 0.7rem;
+    }
+
+    /* 币种切换移动端 */
+    .currency-pills .btn {
+        padding: 4px 12px;
+        font-size: 0.78rem;
+    }
+
+    /* 持仓Tab移动端 */
+    .holding-tabs .nav-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    /* 精简投资明细移动端 */
+    #simplifiedDetailTable th,
+    #simplifiedDetailTable td {
+        padding: 0.35rem 0.3rem;
+        font-size: 0.75rem;
+    }
+
+    /* Team */
+    .team-card {
+        padding: 1.25rem 0.75rem;
+    }
+
+    .team-avatar {
+        width: 70px;
+        height: 70px;
+    }
+
+    .team-name {
+        font-size: 0.95rem;
+    }
+
+    .team-bio {
+        font-size: 0.78rem;
+    }
+
+    /* Compliance */
+    .compliance-badge {
+        font-size: 1.4rem;
+    }
+
+    .compliance-badge-en {
+        font-size: 0.9rem;
+    }
+
+    /* Footer */
+    .footer-text {
+        max-width: 100% !important;
+    }
+
+    .partner-logo {
+        height: 42px;
+        padding: 0.4rem;
+    }
+
+    .partner-logo .logo-1 { max-width: 100%; max-height: 100%; }
+    .partner-logo .logo-2 { max-width: 110%; max-height: 110%; }
+    .partner-logo .logo-3 { max-width: 70%; max-height: 70%; }
+    .partner-logo .logo-4 { max-width: 75%; max-height: 75%; }
+
+    /* Investment detail tables */
+    #currentHoldingTable,
+    #closedPositionTable,
+    #investmentDetailTableContainer {
+        max-height: 400px !important;
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        display: block;
+        width: 100%;
+    }
+
+    #currentHoldingTable .table,
+    #closedPositionTable .table,
+    #investmentDetailTable {
+        font-size: 0.82rem;
+        width: 100%;
+        min-width: 700px;
+        margin-bottom: 0;
+    }
+
+    #currentHoldingTable .table th,
+    #currentHoldingTable .table td,
+    #closedPositionTable .table th,
+    #closedPositionTable .table td,
+    #investmentDetailTable th,
+    #investmentDetailTable td {
+        padding: 0.4rem 0.5rem;
+        font-size: 0.78rem;
+        vertical-align: middle;
+    }
+
+    #currentHoldingTable .table th:first-child,
+    #currentHoldingTable .table td:first-child,
+    #closedPositionTable .table th:first-child,
+    #closedPositionTable .table td:first-child {
+        white-space: normal;
+        word-break: break-word;
+        min-width: 120px;
+        max-width: 150px;
+    }
+
+    #investmentDetailTable th:nth-child(3),
+    #investmentDetailTable td:nth-child(3),
+    #investmentDetailTable th:nth-child(4),
+    #investmentDetailTable td:nth-child(4) {
+        white-space: normal;
+        word-break: break-word;
+        min-width: 100px;
+        max-width: 120px;
+    }
+
+    #currentHoldingTable .table th:not(:first-child),
+    #currentHoldingTable .table td:not(:first-child),
+    #closedPositionTable .table th:not(:first-child),
+    #closedPositionTable .table td:not(:first-child) {
+        white-space: nowrap;
+    }
+
+    #investmentDetailTable th:not(:nth-child(3)):not(:nth-child(4)),
+    #investmentDetailTable td:not(:nth-child(3)):not(:nth-child(4)) {
+        white-space: nowrap;
+    }
+
+    #currentHoldingTable .table thead,
+    #closedPositionTable .table thead,
+    #investmentDetailTable thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    /* Investment actions */
+    .investment-actions {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .investment-actions .btn {
+        flex: 1;
+        margin: 0 !important;
+        font-size: 0.82rem;
+        padding: 0.5rem 0.5rem;
+        white-space: nowrap;
+    }
+
+    /* Section title */
+    .section-title {
+        font-size: 1.6rem;
+    }
+}
+
+/* ============================================
+   Responsive — Small Mobile (<=576px)
+   ============================================ */
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+    }
+
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .hero-section {
+        min-height: 360px;
+    }
+
+    /* Stats cards */
+    .stat-card {
+        padding: 1rem 0.75rem;
+    }
+
+    .stat-number {
+        font-size: 1.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.72rem;
+    }
+
+    /* Products */
     #products-performance {
         padding: 2rem 0 !important;
     }
-    
-    /* 未来规划区域 */
-    #future-plans {
-        padding: 2rem 0 !important;
+
+    /* Team */
+    .team-avatar {
+        width: 60px;
+        height: 60px;
     }
-    
-    #future-plans .card-title {
-        font-size: 1.1rem;
+
+    .team-name {
+        font-size: 0.88rem;
     }
-    
-    #future-plans .card-text {
-        font-size: 0.9rem;
+
+    .team-role {
+        font-size: 0.78rem;
     }
-    
-    /* 弹窗表格优化 */
-    .currency-table {
+
+    .team-bio {
+        font-size: 0.75rem;
+    }
+
+    /* Compliance */
+    .compliance-badge {
+        font-size: 1.2rem;
+    }
+
+    .compliance-badge-en {
+        font-size: 0.82rem;
+        margin-bottom: 0.85rem;
+    }
+
+    .compliance-authority {
+        font-size: 0.95rem;
+    }
+
+    .compliance-list li {
         font-size: 0.85rem;
     }
-    
-    .currency-table th,
-    .currency-table td {
-        padding: 0.5rem 0.25rem;
+
+    .compliance-list-grid {
+        gap: 0.7rem;
     }
-    
-    /* 弹窗按钮组 */
+
+    /* Modals */
     .modal-footer {
         flex-direction: column;
         gap: 0.5rem;
     }
-    
+
     .modal-footer .btn {
         width: 100%;
     }
-    
-    /* 币种转换行在手机上垂直堆叠 */
+
+    .currency-table {
+        font-size: 0.82rem;
+    }
+
+    .currency-table th,
+    .currency-table td {
+        padding: 0.5rem 0.25rem;
+    }
+
     .conversion-row .col-md-3,
     .conversion-row .col-md-2,
     .conversion-row .col-md-1 {
         margin-bottom: 1rem;
     }
-} 
+
+    /* Section title */
+    .section-title {
+        font-size: 1.4rem;
+        padding-bottom: 14px;
+    }
+
+    .section-title::after {
+        width: 40px;
+        height: 2px;
+    }
+}
+
+/* ============================================
+   Orientation: Portrait on Mobile
+   ============================================ */
+@media (max-width: 768px) and (orientation: portrait) {
+    #about .stat-number {
+        font-size: 1.1rem;
+    }
+
+    #about .stat-label {
+        font-size: 0.72rem;
+    }
+
+    #about .stat-card {
+        padding: 1rem 0.5rem;
+    }
+}
+
+/* ============================================
+   Orientation: Landscape on Mobile
+   ============================================ */
+@media (max-width: 768px) and (orientation: landscape) {
+    #about .stat-number {
+        font-size: 1.5rem;
+    }
+}
