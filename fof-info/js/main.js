@@ -613,7 +613,7 @@ function renderStableCoinBtcChart(rangeDays = 30) {
     }
 
     const labels = dataSlice.map(d => d.date);
-    const originalNavValues = normalizeSeries(dataSlice.map(d => d.nav));
+    const originalNavValues = dataSlice.map(d => d.nav);
 
     // 单位净值×BTC 对比图：始终用成立以来全量数据，不随上方时间范围切换
     const comboSlice = stableCoinBtcData;
