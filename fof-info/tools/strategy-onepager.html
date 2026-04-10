@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01 Capital — Alpha-Bridge & Deep-Growth One-Pager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="icon" href="../images/icon.jpg" type="image/jpeg">
+    <style>
+        :root {
+            --navy: #0a1628;
+            --navy-light: #12243d;
+            --gold: #c5a55a;
+            --gold-hover: #d4b76a;
+            --bg-white: #ffffff;
+            --bg-gray: #f8f9fa;
+            --text-dark: #1a1a2e;
+            --text-muted: #6c757d;
+            --positive: #22c55e;
+            --negative: #ef4444;
+            --border-light: #e2e8f0;
+            --font-brand: 'Times New Roman', 'Playfair Display', 'Georgia', serif;
+            --font-body: 'Playfair Display', 'Times New Roman', 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+            --font-number: 'Inter', 'Helvetica Neue', 'Arial', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.5;
+            color: var(--text-dark);
+            background: var(--bg-white);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 32px 24px;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: var(--navy);
+            color: #fff;
+            padding: 28px 36px 22px;
+            margin: 0 -32px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(rgba(197,165,90,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(197,165,90,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        .brand {
+            font-family: var(--font-brand);
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #fff;
+        }
+        .header-right {
+            text-align: right;
+        }
+        .header-product-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
+        .header-subtitle {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.55);
+            margin-top: 2px;
+        }
+
+        /* ── Section Title ── */
+        .section-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--navy);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--gold);
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Grid Layout ── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* ── Company Intro ── */
+        .intro-section {
+            margin-top: 20px;
+        }
+        .company-intro {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+        .company-intro strong {
+            color: var(--text-dark);
+        }
+
+        /* ── Team ── */
+        .team-row {
+            display: flex;
+            gap: 16px;
+            margin-top: 10px;
+        }
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        .team-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d1d5db, #e5e7eb);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .team-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .team-info .name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+        .team-info .role {
+            font-size: 0.72rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+        .team-info .desc {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+        }
+
+        /* ── Product Card ── */
+        .products-section {
+            margin-top: 20px;
+        }
+        .product-card {
+            background: var(--bg-gray);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+        .product-card .product-subtitle {
+            font-size: 0.75rem;
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .product-card .product-desc {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 10px;
+            flex: 1;
+        }
+
+        /* ── Fact Table ── */
+        .fact-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+        }
+        .fact-table td {
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-number);
+        }
+        .fact-table td:first-child {
+            color: var(--text-muted);
+            font-weight: 500;
+            width: 42%;
+            font-family: var(--font-body);
+        }
+        .fact-table td:last-child {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        /* ── Metrics Bar ── */
+        .metrics-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .metric-box {
+            flex: 1;
+            background: var(--navy);
+            border-radius: 8px;
+            padding: 10px 8px;
+            text-align: center;
+        }
+        .metric-box .val {
+            font-family: var(--font-number);
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .metric-box .val.positive { color: var(--positive); }
+        .metric-box .val.negative { color: var(--negative); }
+        .metric-box .lbl {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.55);
+            margin-top: 2px;
+        }
+
+        /* ── Monthly Returns Table ── */
+        .returns-section {
+            margin-top: 20px;
+        }
+        .returns-wrapper {
+            overflow-x: auto;
+        }
+        .returns-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-number);
+            font-size: 0.75rem;
+            text-align: center;
+            table-layout: fixed;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .returns-table th,
+        .returns-table td {
+            padding: 5px 4px;
+            white-space: nowrap;
+            font-size: 0.75rem;
+        }
+        .returns-table th {
+            background: var(--navy);
+            color: #fff;
+            font-weight: 600;
+        }
+        .returns-table th:first-child,
+        .returns-table td:first-child {
+            text-align: left;
+            padding-left: 8px;
+        }
+        .returns-table td {
+            border-bottom: 1px solid var(--border-light);
+        }
+        .returns-table td:first-child {
+            font-weight: 600;
+            color: var(--navy);
+            font-family: var(--font-body);
+        }
+        .returns-table tr:nth-child(even) {
+            background: var(--bg-gray);
+        }
+        .returns-table .positive { color: var(--positive); }
+        .returns-table .negative { color: var(--negative); }
+
+        .returns-table-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            margin-top: 18px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        .footer strong {
+            color: var(--navy);
+        }
+
+        /* ── Disclaimer ── */
+        .disclaimer {
+            font-size: 0.62rem;
+            color: #999;
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+
+        /* ── Print ── */
+        @media print {
+            body { background: #fff; }
+            .page { max-width: 100%; padding: 0 20px 16px; }
+            .header { margin: 0 -20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <!-- Header -->
+    <div class="header">
+        <div class="header-inner">
+            <div>
+                <div class="brand">01 CAPITAL</div>
+                <div style="font-size:0.75rem; color:rgba(255,255,255,0.45); margin-top:4px; font-style:italic; font-family: 'Playfair Display', serif;">
+                    Expertise in Selection, Excellence in Performance
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-product-name">Alpha-Bridge & Deep-Growth</div>
+                <div class="header-subtitle">策略组合系列 One-Pager &nbsp;|&nbsp; BVI Approved Investment Manager</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 1: Company & Team -->
+    <div class="intro-section">
+        <div class="section-title">公司 & 团队介绍</div>
+        <div class="company-intro">
+            <strong>01 Capital</strong> 是一家专注于系统化策略的数字资产管理机构，持有 BVI 投资管理人牌照（Approved Investment Manager）。
+            公司依托自研的高频交易基础设施与 7×24 实时风控监控系统，管理规模超 $30M。
+            核心团队成员拥有传统量化交易与加密市场多年实战经验，致力于通过严格的风控框架为投资者实现长期稳健的复利增长。
+        </div>
+        <div class="team-row">
+            <div class="team-member">
+                <div class="team-avatar"><img src="../images/miao.png" alt="Miaomiao Ge"></div>
+                <div class="team-info">
+                    <div class="name">Miaomiao Ge</div>
+                    <div class="role">Managing Partner</div>
+                    <div class="desc">统筹公司整体运营与战略方向</div>
+                </div>
+            </div>
+            <div class="team-member">
+                <div class="team-avatar"><img src="../images/linfeng.png" alt="Linfeng Dong"></div>
+                <div class="team-info">
+                    <div class="name">Linfeng Dong</div>
+                    <div class="role">CTO</div>
+                    <div class="desc">资深量化交易员兼系统工程师</div>
+                </div>
+            </div>
+            <div class="team-member">
+                <div class="team-avatar"><img src="../images/jiaxin1.png" alt="Jiaxin Wei"></div>
+                <div class="team-info">
+                    <div class="name">Jiaxin Wei</div>
+                    <div class="role">CRO</div>
+                    <div class="desc">风控框架设计及量化团队管理</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Product Cards -->
+    <div class="products-section">
+        <div class="section-title">产品介绍</div>
+        <div class="grid-2">
+            <!-- Product A: Alpha-Bridge -->
+            <div class="product-card">
+                <h3>Alpha-Bridge</h3>
+                <div class="product-subtitle">平衡型 FOF · 套利 + 多因子</div>
+                <div class="product-desc">
+                    以套利策略为基础配置，叠加少量多因子趋势策略，在控制整体风险的前提下追求超越纯套利的回报。
+                    套利部分提供稳定收益底仓，多因子部分捕捉市场趋势中的超额机会。
+                </div>
+
+                <div class="metrics-row" id="balanced-metrics">
+                    <!-- JS 填充 -->
+                </div>
+            </div>
+
+            <!-- Product B: Deep-Growth -->
+            <div class="product-card">
+                <h3>Deep-Growth</h3>
+                <div class="product-subtitle">进取型 FOF · 多因子趋势</div>
+                <div class="product-desc">
+                    聚焦各类趋势策略，通过系统化模型捕捉中短期市场趋势与波动机会。
+                    策略追求较高的绝对回报，也会经历更明显的净值波动与阶段性回撤。
+                </div>
+
+                <div class="metrics-row" id="growth-metrics">
+                    <!-- JS 填充 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Monthly Returns -->
+    <div class="returns-section">
+        <div class="section-title">成立以来月度收益率</div>
+
+        <div style="margin-bottom: 16px;">
+            <div class="returns-table-title">Alpha-Bridge</div>
+            <div class="returns-wrapper">
+                <table class="returns-table" id="balanced-returns-table">
+                    <thead><tr><th>年份</th><th>1月</th><th>2月</th><th>3月</th><th>4月</th><th>5月</th><th>6月</th><th>7月</th><th>8月</th><th>9月</th><th>10月</th><th>11月</th><th>12月</th><th>全年</th></tr></thead>
+                    <tbody id="balanced-returns-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <div class="returns-table-title">Deep-Growth</div>
+            <div class="returns-wrapper">
+                <table class="returns-table" id="growth-returns-table">
+                    <thead><tr><th>年份</th><th>1月</th><th>2月</th><th>3月</th><th>4月</th><th>5月</th><th>6月</th><th>7月</th><th>8月</th><th>9月</th><th>10月</th><th>11月</th><th>12月</th><th>全年</th></tr></thead>
+                    <tbody id="growth-returns-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <strong>01 Capital</strong> &nbsp;|&nbsp; BVI Approved Investment Manager &nbsp;|&nbsp; 01primelabs@gmail.com
+        <div class="disclaimer">
+            本文件仅供信息参考之用，不构成投资建议或要约邀请。过往业绩不代表未来表现。投资有风险，请在做出投资决策前咨询专业顾问。
+            &copy; 2026 01 Capital. All rights reserved.
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const DATA_BASE = 'https://data.01capital.info/arbcus/';
+
+    function parseCSV(text) {
+        const lines = text.trim().split('\n');
+        const headers = lines[0].split(',');
+        return lines.slice(1).map(line => {
+            const vals = line.split(',');
+            const obj = {};
+            headers.forEach((h, i) => obj[h.trim()] = (vals[i] || '').trim());
+            return obj;
+        });
+    }
+
+    function normDate(raw) {
+        if (!raw) return '';
+        const d = raw.replace(/\//g, '-');
+        const parts = d.split('-');
+        if (parts.length >= 3) {
+            return `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`;
+        }
+        return d;
+    }
+
+    function computeMonthlyReturns(rows) {
+        const months = {};
+        rows.forEach(r => {
+            const ym = r.date.substring(0, 7);
+            if (!months[ym]) months[ym] = { first: r.nav, last: r.nav, firstDate: r.date, lastDate: r.date };
+            else {
+                if (r.date < months[ym].firstDate) { months[ym].first = r.nav; months[ym].firstDate = r.date; }
+                if (r.date > months[ym].lastDate) { months[ym].last = r.nav; months[ym].lastDate = r.date; }
+            }
+        });
+
+        const result = {};
+        const ymKeys = Object.keys(months).sort();
+
+        for (let i = 0; i < ymKeys.length; i++) {
+            const ym = ymKeys[i];
+            const [y, m] = ym.split('-').map(Number);
+            if (!result[y]) result[y] = {};
+
+            let prevNav;
+            if (i > 0) {
+                prevNav = months[ymKeys[i - 1]].last;
+            } else {
+                prevNav = months[ym].first;
+            }
+            const ret = ((months[ym].last / prevNav) - 1) * 100;
+            result[y][m] = ret;
+        }
+
+        return result;
+    }
+
+    function computeMetrics(rows) {
+        if (rows.length < 2) return {};
+        const first = rows[0].nav;
+        const last = rows[rows.length - 1].nav;
+        const totalReturn = ((last / first) - 1) * 100;
+
+        const d0 = new Date(rows[0].date);
+        const d1 = new Date(rows[rows.length - 1].date);
+        const days = (d1 - d0) / (1000 * 60 * 60 * 24);
+        const annualized = days > 0 ? (Math.pow(last / first, 365 / days) - 1) * 100 : 0;
+
+        let peak = -Infinity, mdd = 0;
+        rows.forEach(r => {
+            if (r.nav > peak) peak = r.nav;
+            const dd = (r.nav - peak) / peak;
+            if (dd < mdd) mdd = dd;
+        });
+
+        const dailyReturns = [];
+        for (let i = 1; i < rows.length; i++) {
+            dailyReturns.push(rows[i].nav / rows[i - 1].nav - 1);
+        }
+        const mean = dailyReturns.reduce((a, b) => a + b, 0) / dailyReturns.length;
+        const variance = dailyReturns.reduce((a, b) => a + (b - mean) ** 2, 0) / dailyReturns.length;
+        const std = Math.sqrt(variance);
+        const sharpe = std > 0 ? (mean / std) * Math.sqrt(365) : 0;
+
+        return {
+            totalReturn: totalReturn.toFixed(2),
+            annualized: annualized.toFixed(2),
+            maxDrawdown: (mdd * 100).toFixed(2),
+            sharpe: sharpe.toFixed(2),
+            lastNav: last.toFixed(6)
+        };
+    }
+
+    function renderMetrics(containerId, metrics) {
+        const el = document.getElementById(containerId);
+        if (!el) return;
+        const retClass = parseFloat(metrics.totalReturn) >= 0 ? 'positive' : 'negative';
+        const retSign = parseFloat(metrics.totalReturn) >= 0 ? '+' : '';
+        const annClass = parseFloat(metrics.annualized) >= 0 ? 'positive' : 'negative';
+        const annSign = parseFloat(metrics.annualized) >= 0 ? '+' : '';
+        el.innerHTML = `
+            <div class="metric-box"><div class="val ${retClass}">${retSign}${metrics.totalReturn}%</div><div class="lbl">累计收益</div></div>
+            <div class="metric-box"><div class="val ${annClass}">${annSign}${metrics.annualized}%</div><div class="lbl">年化收益</div></div>
+            <div class="metric-box"><div class="val">${metrics.maxDrawdown}%</div><div class="lbl">最大回撤</div></div>
+            <div class="metric-box"><div class="val">${metrics.sharpe}</div><div class="lbl">Sharpe</div></div>
+        `;
+    }
+
+    function renderReturnsTable(bodyId, monthlyReturns) {
+        const tbody = document.getElementById(bodyId);
+        if (!tbody) return;
+        const years = Object.keys(monthlyReturns).sort();
+        let html = '';
+        years.forEach(y => {
+            const mr = monthlyReturns[y];
+            html += `<tr><td>${y}</td>`;
+            let yearProduct = 1;
+            let hasAny = false;
+            for (let m = 1; m <= 12; m++) {
+                if (mr[m] !== undefined) {
+                    const v = mr[m];
+                    const cls = v >= 0 ? 'positive' : 'negative';
+                    const sign = v >= 0 ? '+' : '';
+                    html += `<td class="${cls}">${sign}${v.toFixed(2)}%</td>`;
+                    yearProduct *= (1 + v / 100);
+                    hasAny = true;
+                } else {
+                    html += `<td>—</td>`;
+                }
+            }
+            if (hasAny) {
+                const yr = (yearProduct - 1) * 100;
+                const cls = yr >= 0 ? 'positive' : 'negative';
+                const sign = yr >= 0 ? '+' : '';
+                html += `<td style="font-weight:700" class="${cls}">${sign}${yr.toFixed(2)}%</td>`;
+            } else {
+                html += `<td>—</td>`;
+            }
+            html += '</tr>';
+        });
+        tbody.innerHTML = html;
+    }
+
+    async function loadData(csvFile) {
+        const resp = await fetch(DATA_BASE + csvFile);
+        const text = await resp.text();
+        const raw = parseCSV(text);
+        const rows = raw
+            .map(r => ({ date: normDate(r.date || r.Date), nav: parseFloat(r['NAV per unit']) }))
+            .filter(r => r.date && !isNaN(r.nav))
+            .sort((a, b) => a.date.localeCompare(b.date));
+        return rows;
+    }
+
+    async function init() {
+        try {
+            const [balancedRows, growthRows] = await Promise.all([
+                loadData('balanced.csv'),
+                loadData('growth.csv')
+            ]);
+
+            const balancedMetrics = computeMetrics(balancedRows);
+            const growthMetrics = computeMetrics(growthRows);
+            renderMetrics('balanced-metrics', balancedMetrics);
+            renderMetrics('growth-metrics', growthMetrics);
+
+            const balancedMonthly = computeMonthlyReturns(balancedRows);
+            const growthMonthly = computeMonthlyReturns(growthRows);
+            renderReturnsTable('balanced-returns-body', balancedMonthly);
+            renderReturnsTable('growth-returns-body', growthMonthly);
+        } catch (e) {
+            console.error('加载数据失败:', e);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>
+
+</body>
+</html>
