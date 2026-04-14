@@ -2114,6 +2114,16 @@ function formatDateToYMD(dateStr) {
 }
 
 // 赎回功能相关函数
+function getRedemptionDisplayFractionDigits(currency) {
+    return currency === 'BTC' ? 4 : 2;
+}
+
+/** 与界面 toLocaleString / toFixed 展示精度一致，用于赎回金额与持仓上限比较 */
+function roundAmountForRedemptionDisplay(value, currency) {
+    const d = getRedemptionDisplayFractionDigits(currency);
+    return Number(Number(value).toFixed(d));
+}
+
 function showRedemptionModal() {
     // 重置表单
     document.getElementById('redemptionForm').reset();
@@ -2321,16 +2331,16 @@ function handleRedemptionSubmit() {
         }
     }
     
+    const amountRounded = roundAmountForRedemptionDisplay(amount, currency);
+    const maxRounded = roundAmountForRedemptionDisplay(maxAmount, currency);
+    
     // 快赎金额限制（仅适用于USDT）
     const fastRedemptionLimit = 1000000;
     
     // 先检查快赎金额限制（如果币种是USDT且金额超过快赎限额）
-    // 如果金额超过快赎限额，优先显示快赎金额限制错误（除非明显超过最大可赎回金额）
+    // 超过快赎时：仅在「展示精度下」仍超过最大可赎回金额时提示持仓不足；否则提示快赎限额
     if (currency === 'USDT' && amount > fastRedemptionLimit) {
-        // 使用更宽松的比较，处理浮点数精度问题
-        // 如果金额明显超过最大可赎回金额（差值大于0.01），才显示最大可赎回金额错误
-        if (amount > maxAmount && (amount - maxAmount) > 0.01) {
-            // 明显超过最大可赎回金额
+        if (amountRounded > maxRounded) {
             const formattedMaxAmount = maxAmount.toLocaleString('zh-CN', {
                 minimumFractionDigits: currency === 'BTC' ? 4 : 2,
                 maximumFractionDigits: currency === 'BTC' ? 4 : 2
@@ -2341,7 +2351,7 @@ function handleRedemptionSubmit() {
             })} ${currency}`);
             return;
         } else {
-            // 超过快赎限额但未明显超过最大可赎回金额（包括等于或接近的情况）
+            // 超过快赎限额，且在展示精度下未超过最大可赎回（或持平）
             alert(`超过快赎金额，无法提交。\n单次快赎金额上限：${fastRedemptionLimit.toLocaleString('zh-CN')} ${currency}\n赎回金额：${amount.toLocaleString('zh-CN', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
@@ -2351,7 +2361,7 @@ function handleRedemptionSubmit() {
     }
     
     // 检查赎回金额是否超过最大可赎回金额（非USDT或USDT但未超过快赎限额的情况）
-    if (amount > maxAmount) {
+    if (amountRounded > maxRounded) {
         const formattedMaxAmount = maxAmount.toLocaleString('zh-CN', {
             minimumFractionDigits: currency === 'BTC' ? 4 : 2,
             maximumFractionDigits: currency === 'BTC' ? 4 : 2
