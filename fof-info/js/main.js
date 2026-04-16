@@ -1241,6 +1241,8 @@ function updateMetricsBar(facts) {
 
 // 登录模块和个人投资摘要
 let currentUser = null;
+/** 防止网络慢时重复点击登录导致重复插入导航栏「已登录」状态 */
+let loginRequestInProgress = false;
 
 /**
  * 生成 SHA-256 hash 的辅助函数
@@ -1358,7 +1360,12 @@ async function handleLogin() {
         errorElement.classList.remove('d-none');
         return;
     }
-    
+
+    if (loginRequestInProgress) {
+        return;
+    }
+    loginRequestInProgress = true;
+
     try {
         // 生成用户凭证的hash（使用降级方案支持非安全上下文）
         const combined = username.toLowerCase() + ':' + password;
@@ -1460,6 +1467,8 @@ async function handleLogin() {
         
         errorElement.textContent = message;
         errorElement.classList.remove('d-none');
+    } finally {
+        loginRequestInProgress = false;
     }
 }
 
@@ -1512,6 +1521,10 @@ async function showInvestmentSummary() {
 function updateUIAfterLogin() {
     const username = currentUser || '';
 
+    document.querySelectorAll('li.nav-user-menu').forEach(function(el) {
+        el.remove();
+    });
+
     const navLoginBtn = document.getElementById('navLoginBtn');
     if (navLoginBtn) {
         const navLoginItem = navLoginBtn.closest('.nav-item');
@@ -1554,10 +1567,9 @@ function handleLogout() {
         investmentSummaryLink.style.display = 'none';
     }
 
-    const navUserMenu = document.getElementById('navUserMenu');
-    if (navUserMenu) {
-        navUserMenu.remove();
-    }
+    document.querySelectorAll('li.nav-user-menu').forEach(function(el) {
+        el.remove();
+    });
 
     const investmentSummary = document.getElementById('investment-summary');
     if (investmentSummary) {
