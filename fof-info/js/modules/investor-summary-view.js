@@ -4,7 +4,9 @@ import {
 } from './config.js';
 import {
     computeReturnMetrics,
-    calculateAnnualizedReturnFromDays
+    calculateAnnualizedReturnFromDays,
+    computePostRedemptionFundReturn,
+    formatPostRedemptionReturnCell
 } from './summary-utils.js';
 
 const productData = PRODUCT_DATA;
@@ -554,68 +556,92 @@ export function renderInvestorSummarySection(container, userData, username, opti
     if (isBalancedRedeemed && balancedClosedData) {
         const coin = balancedClosedData.coin || 'USDT';
         const dec = (coin === 'BTC' || coin === 'ETH') ? 4 : 2;
+        const postReturnCell = formatPostRedemptionReturnCell(
+            computePostRedemptionFundReturn(balancedClosedData, balancedAllLatestData)
+        );
         closedPositionsRows.push(`<tr>
             <td>${productData['balanced'].title}</td><td>${coin}</td>
             <td>${balancedClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
             <td>${balancedClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
             <td>${balancedClosedReturnRate}%</td><td>${balancedClosedHoldingDays}</td>
             <td>${balancedClosedAnnualizedReturn}%</td><td>${formatDateToYMD(balancedClosedData.date)}</td>
+            ${postReturnCell}
         </tr>`);
     }
 
     if (isArbitrageRedeemed && arbitrageClosedData) {
         const coin = arbitrageClosedData.coin || 'USDT';
         const dec = (coin === 'BTC' || coin === 'ETH') ? 4 : 2;
+        const postReturnCell = formatPostRedemptionReturnCell(
+            computePostRedemptionFundReturn(arbitrageClosedData, arbitrageAllLatestData)
+        );
         closedPositionsRows.push(`<tr>
             <td>${productData['stable-usd'].title}</td><td>${coin}</td>
             <td>${arbitrageClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
             <td>${arbitrageClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
             <td>${arbitrageClosedReturnRate}%</td><td>${arbitrageClosedHoldingDays}</td>
             <td>${arbitrageClosedAnnualizedReturn}%</td><td>${formatDateToYMD(arbitrageClosedData.date)}</td>
+            ${postReturnCell}
         </tr>`);
     }
 
     if (isArbitrage2Redeemed && arbitrage2ClosedData) {
         const coin = arbitrage2ClosedData.coin || 'USDT';
         const dec = (coin === 'BTC' || coin === 'ETH') ? 4 : 2;
+        const postReturnCell = formatPostRedemptionReturnCell(
+            computePostRedemptionFundReturn(arbitrage2ClosedData, arbitrage2AllLatestData)
+        );
         closedPositionsRows.push(`<tr>
             <td>${productData['stable-usd'].title}</td><td>${coin}</td>
             <td>${arbitrage2ClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
             <td>${arbitrage2ClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
             <td>${arbitrage2ClosedReturnRate}%</td><td>${arbitrage2ClosedHoldingDays}</td>
             <td>${arbitrage2ClosedAnnualizedReturn}%</td><td>${formatDateToYMD(arbitrage2ClosedData.date)}</td>
+            ${postReturnCell}
         </tr>`);
     }
 
     if (isArbitrageCoinBtcRedeemed && arbitrageCoinBtcClosedData) {
+        const postReturnCell = formatPostRedemptionReturnCell(
+            computePostRedemptionFundReturn(arbitrageCoinBtcClosedData, arbitrageCoinBtcAllLatestData)
+        );
         closedPositionsRows.push(`<tr>
             <td>${productData['stable-coin-btc'].title}</td><td>${arbitrageCoinBtcClosedData.coin || 'BTC'}</td>
             <td>${arbitrageCoinBtcClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4})}</td>
             <td>${arbitrageCoinBtcClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4})}</td>
             <td>${arbitrageCoinBtcClosedReturnRate}%</td><td>${arbitrageCoinBtcClosedHoldingDays}</td>
             <td>${arbitrageCoinBtcClosedAnnualizedReturn}%</td><td>${formatDateToYMD(arbitrageCoinBtcClosedData.date)}</td>
+            ${postReturnCell}
         </tr>`);
     }
 
     if (isArbitrageEthRedeemed && arbitrageEthClosedData) {
+        const postReturnCell = formatPostRedemptionReturnCell(
+            computePostRedemptionFundReturn(arbitrageEthClosedData, arbitrageEthAllLatestData)
+        );
         closedPositionsRows.push(`<tr>
             <td>Stable-Harbor-ETH</td><td>${arbitrageEthClosedData.coin || 'ETH'}</td>
             <td>${arbitrageEthClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4})}</td>
             <td>${arbitrageEthClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: 4, maximumFractionDigits: 4})}</td>
             <td>${arbitrageCoinEthClosedReturnRate}%</td><td>${arbitrageCoinEthClosedHoldingDays}</td>
             <td>${arbitrageCoinEthClosedAnnualizedReturn}%</td><td>${formatDateToYMD(arbitrageEthClosedData.date)}</td>
+            ${postReturnCell}
         </tr>`);
     }
 
     if (isGrowthRedeemed && growthClosedData) {
         const coin = growthClosedData.coin || 'USDT';
         const dec = (coin === 'BTC' || coin === 'ETH') ? 4 : 2;
+        const postReturnCell = formatPostRedemptionReturnCell(
+            computePostRedemptionFundReturn(growthClosedData, growthAllLatestData)
+        );
         closedPositionsRows.push(`<tr>
             <td>${productData['aggressive'].title}</td><td>${coin}</td>
             <td>${growthClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
             <td>${growthClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
             <td>${growthClosedReturnRate}%</td><td>${growthClosedHoldingDays}</td>
             <td>${growthClosedAnnualizedReturn}%</td><td>${formatDateToYMD(growthClosedData.date)}</td>
+            ${postReturnCell}
         </tr>`);
     }
 
@@ -714,8 +740,9 @@ export function renderInvestorSummarySection(container, userData, username, opti
                             <thead><tr>
                                 <th>产品名称</th><th>币种</th><th>本金</th><th>清仓价值</th>
                                 <th>收益率</th><th>持仓天数</th><th>年化收益率</th><th>清仓日期</th>
+                                <th>清仓后净值涨幅</th>
                             </tr></thead>
-                            <tbody>${closedPositionsRows.length > 0 ? closedPositionsRows.join('') : '<tr><td colspan="8" class="text-center text-muted">暂无已清仓记录</td></tr>'}</tbody>
+                            <tbody>${closedPositionsRows.length > 0 ? closedPositionsRows.join('') : '<tr><td colspan="9" class="text-center text-muted">暂无已清仓记录</td></tr>'}</tbody>
                         </table>
                     </div>
                 </div>

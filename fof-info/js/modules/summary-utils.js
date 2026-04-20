@@ -34,6 +34,36 @@ export function calculateAnnualizedReturnFromDays(returnRate, days) {
     return ((Math.pow(1 + returnRate / 100, 365 / days) - 1) * 100).toFixed(2);
 }
 
+// 计算"清仓后净值涨幅"：用用户记录里的 nav（基金单位净值，已扣交易团队 carry、未扣 FOF 层个人 mgmt/carry）
+// 以清仓当日 nav 为基准，比较最新 nav 的涨跌。
+// 返回数值（百分比，保留原精度）或 null（表示"无可展示的后续数据"）。
+// null 的判定：
+//   - 缺参数、nav 无效
+//   - 最新记录日期不晚于清仓日（没有清仓后的后续记录）
+//   - 清仓后 nav 与清仓日 nav 差异小于 1e-9（基金净值未真正更新，例如专户清仓后停更）
+export function computePostRedemptionFundReturn(clearRecord, latestRecord) {
+    if (!clearRecord || !latestRecord) return null;
+    const cNav = Number(clearRecord.nav);
+    const lNav = Number(latestRecord.nav);
+    if (!Number.isFinite(cNav) || !Number.isFinite(lNav) || cNav === 0) return null;
+    const clearTs = new Date(clearRecord.date).getTime();
+    const latestTs = new Date(latestRecord.date).getTime();
+    if (!Number.isFinite(clearTs) || !Number.isFinite(latestTs)) return null;
+    if (latestTs <= clearTs) return null;
+    if (Math.abs(lNav - cNav) < 1e-9) return null;
+    return (lNav / cNav - 1) * 100;
+}
+
+// 渲染"清仓后净值涨幅"单元格：null 显示为 "-"，其余带正负号与颜色
+export function formatPostRedemptionReturnCell(rate) {
+    if (rate === null || rate === undefined || Number.isNaN(rate)) {
+        return '<td class="text-muted">-</td>';
+    }
+    const cls = rate >= 0 ? 'text-positive' : 'text-negative';
+    const sign = rate >= 0 ? '+' : '';
+    return `<td class="${cls}">${sign}${rate.toFixed(2)}%</td>`;
+}
+
 export function computeReturnMetrics(records) {
     const latest = getLatestActiveRecord(records);
     const first = getEarliestActiveRecord(records);
