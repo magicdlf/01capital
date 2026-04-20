@@ -682,21 +682,6 @@ export function renderInvestorSummarySection(container, userData, username, opti
         simplifiedDetailsHtml = '<tr><td colspan="4" class="text-center text-muted">暂无记录</td></tr>';
     }
 
-    // 分红日期提示
-    const dividendHint = (() => {
-        const user = username && username.toLowerCase();
-        if (["octopus", "sam", "jennifer", "alex"].includes(user)) {
-            return '<div class="text-muted small mt-1" style="font-size:0.75rem;">上次分红：2025-01-06</div>';
-        } else if (["bon", "ying", "tt"].includes(user)) {
-            return '<div class="text-muted small mt-1" style="font-size:0.75rem;">上次分红：2025-07-04</div>';
-        } else if (user === "hp") {
-            return '<div class="text-muted small mt-1" style="font-size:0.75rem;">上次分红：2025-12-18</div>';
-        } else if (user === "turbo") {
-            return '<div class="text-muted small mt-1" style="font-size:0.75rem;">上次分红：2025-12-12</div>';
-        }
-        return '';
-    })();
-
     const summaryHtml = `
         <div class="container">
             <h2 class="section-title text-center mb-5">投资者专区</h2>
@@ -714,7 +699,6 @@ export function renderInvestorSummarySection(container, userData, username, opti
             <div class="row g-3 mb-4" id="overviewCards">
                 ${defaultOverviewHtml}
             </div>
-            ${dividendHint}
 
             <!-- 投资组合：当前持仓 / 已清仓 -->
             <div class="card mb-4">
