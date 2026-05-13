@@ -50,8 +50,7 @@ class CodeManager {
         try {
             const response = await fetch(`${this.configPath}?t=${new Date().getTime()}`, {
                 method: 'GET',
-                mode: 'cors',
-                credentials: 'omit',
+                mode: 'same-origin',
                 headers: {
                     'Accept': 'application/json'
                 }
@@ -74,8 +73,7 @@ class CodeManager {
             const filePath = this.getCodeFilePath(code);
             const response = await fetch(`${filePath}?t=${new Date().getTime()}`, {
                 method: 'GET',
-                mode: 'cors',
-                credentials: 'omit',
+                mode: 'same-origin',
                 headers: {
                     'Accept': 'application/json'
                 }
