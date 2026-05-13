@@ -3,9 +3,18 @@
  * 为每个用户创建独立的编码文件，实现完全隔离
  */
 
+// 在脚本解析阶段捕获脚本自身 URL，用于推算 data/ 路径（与加载页面深度无关）
+const _codeManagerScriptSrc = document.currentScript ? document.currentScript.src : '';
+
 class CodeManager {
     constructor() {
-        this.dataBaseUrl = 'https://data.01capital.info/arbcus';
+        // 从脚本 URL 推算 fof-info/ 根路径，例如：
+        //   .../fof-info/js/code-manager.js  =>  .../fof-info/
+        // 不依赖 Abacus 远端地址，直接读取本地 data/codes/ 文件
+        const scriptBase = _codeManagerScriptSrc
+            ? _codeManagerScriptSrc.substring(0, _codeManagerScriptSrc.lastIndexOf('/js/') + 1)
+            : '';
+        this.dataBaseUrl = (scriptBase || '') + 'data';
         this.codesDir = this.dataBaseUrl + '/codes/';
         this.configPath = this.dataBaseUrl + '/codes-config.json';
         this.codeLength = 8;
