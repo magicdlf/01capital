@@ -53,7 +53,8 @@ class UserDataUpdater:
         self.csv_files = {
             "arbitrage": "arbitrage_investor.csv",
             "balanced": "balanced_investor.csv", 
-            "arbitrage_coin": "arbitrage_coin_investor.csv"
+            "arbitrage_coin": "arbitrage_coin_investor.csv",
+            "paarb": "paarb_investor.csv"
         }
         
         # Store user data
@@ -119,7 +120,8 @@ class UserDataUpdater:
                     "investments": {
                         "balanced": [],
                         "arbitrage": [],
-                        "arbitrage_coin": []
+                        "arbitrage_coin": [],
+                        "paarb": []
                     }
                 }
             
@@ -142,7 +144,7 @@ class UserDataUpdater:
                 print(f"Warning: Skipping invalid data for {investor} on {row.get('Date', 'unknown date')}: {e}")
     
     def update_existing_json_files(self):
-        """Update existing JSON files with new data"""
+        """Update existing JSON files with new data (merge, do not overwrite)"""
         if not self.json_save_dir.exists():
             print(f"JSON save directory {self.json_save_dir} does not exist")
             return
@@ -156,13 +158,20 @@ class UserDataUpdater:
                 
                 username = existing_data.get('username', '')
                 if username in self.users_data:
-                    # Update with new data
                     new_data = self.users_data[username]
-                    new_data['created_at'] = existing_data.get('created_at', new_data['created_at'])
-                    
-                    # Write updated data
+
+                    # Merge: only update the investment types this script processed;
+                    # all other fields (shared_secret, investment_details, arbitrage2,
+                    # arbitrage_eth, growth, etc.) are preserved from the existing file.
+                    merged = existing_data.copy()
+                    if 'investments' not in merged:
+                        merged['investments'] = {}
+                    for inv_type, records in new_data['investments'].items():
+                        merged['investments'][inv_type] = records
+
+                    # Write merged data
                     with open(json_file, 'w', encoding='utf-8') as file:
-                        json.dump(new_data, file, indent=2, ensure_ascii=False)
+                        json.dump(merged, file, indent=2, ensure_ascii=False)
                     
                     print(f"Updated {json_file.name} for user {username}")
                     updated_count += 1

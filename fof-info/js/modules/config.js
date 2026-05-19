@@ -88,5 +88,6 @@ export const FUND_NAME_MAPPING = {
     HPU: 'Stable-Harbor-USDT',
     binggan: 'Stable-Harbor-BTC',
     HPE: 'Stable-Harbor-ETH',
-    aggressive: 'Deep-Growth'
+    aggressive: 'Deep-Growth',
+    paarb: 'Arbitrage-USDT'
 };

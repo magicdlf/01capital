@@ -42,6 +42,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
     let arbitrageCoinBtcAllLatestData = null;
     let arbitrageEthAllLatestData = null;
     let growthAllLatestData = null;
+    let paarbAllLatestData = null;
     
     if (userData && userData.investments) {
         const balancedAll = userData.investments.balanced || [];
@@ -73,6 +74,11 @@ export function renderInvestorSummarySection(container, userData, username, opti
         if (growthAll.length > 0) {
             growthAllLatestData = [...growthAll].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
         }
+
+        const paarbAll = userData.investments.paarb || [];
+        if (paarbAll.length > 0) {
+            paarbAllLatestData = [...paarbAll].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        }
     }
     
     // 判断是否已赎回（最新记录本金<1）
@@ -82,6 +88,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
     const isArbitrageCoinBtcRedeemed = arbitrageCoinBtcAllLatestData && (arbitrageCoinBtcAllLatestData.principal || 0) < 1;
     const isArbitrageEthRedeemed = arbitrageEthAllLatestData && (arbitrageEthAllLatestData.principal || 0) < 1;
     const isGrowthRedeemed = growthAllLatestData && (growthAllLatestData.principal || 0) < 1;
+    const isPaarbRedeemed = paarbAllLatestData && (paarbAllLatestData.principal || 0) < 1;
     
     console.log('Current user:', username);
     console.log('Latest balanced data for', username, ':', balancedAllLatestData);
@@ -90,6 +97,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
     console.log('Latest arbitrage coin BTC data for', username, ':', arbitrageCoinBtcAllLatestData);
     console.log('Latest arbitrage coin ETH data for', username, ':', arbitrageEthAllLatestData);
     console.log('Latest growth data for', username, ':', growthAllLatestData);
+    console.log('Latest paarb data for', username, ':', paarbAllLatestData);
     
     // 计算持仓天数和收益率
     let balancedHoldingDays = 0;
@@ -110,6 +118,9 @@ export function renderInvestorSummarySection(container, userData, username, opti
     let growthHoldingDays = 0;
     let growthReturnRate = 0;
     let growthAnnualizedReturn = 0;
+    let paarbHoldingDays = 0;
+    let paarbReturnRate = 0;
+    let paarbAnnualizedReturn = 0;
     
     if (balancedAllLatestData && !isBalancedRedeemed) {
         console.log('Processing balanced data for', username);
@@ -173,6 +184,14 @@ export function renderInvestorSummarySection(container, userData, username, opti
         growthReturnRate = metrics.returnRate;
         growthAnnualizedReturn = metrics.annualizedReturn;
     }
+
+    if (paarbAllLatestData && !isPaarbRedeemed) {
+        console.log('Processing paarb data for', username);
+        const metrics = computeReturnMetrics(userData.investments.paarb || []);
+        paarbHoldingDays = metrics.holdingDays;
+        paarbReturnRate = metrics.returnRate;
+        paarbAnnualizedReturn = metrics.annualizedReturn;
+    }
     
     // 计算已清仓产品的清仓前数据
     let balancedClosedData = null;
@@ -199,6 +218,10 @@ export function renderInvestorSummarySection(container, userData, username, opti
     let growthClosedHoldingDays = 0;
     let growthClosedReturnRate = '0.00';
     let growthClosedAnnualizedReturn = '0.00';
+    let paarbClosedData = null;
+    let paarbClosedHoldingDays = 0;
+    let paarbClosedReturnRate = '0.00';
+    let paarbClosedAnnualizedReturn = '0.00';
     
     // 计算已清仓的Alpha-Bridge数据
     if (isBalancedRedeemed && userData && userData.investments) {
@@ -307,6 +330,24 @@ export function renderInvestorSummarySection(container, userData, username, opti
             }
             growthClosedReturnRate = growthClosedData.total_return !== undefined ? (growthClosedData.total_return * 100).toFixed(2) : '0.00';
             growthClosedAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(growthClosedReturnRate), growthClosedHoldingDays);
+        }
+    }
+
+    // 计算已清仓的Arbitrage-USDT (paarb)数据
+    if (isPaarbRedeemed && userData && userData.investments) {
+        const paarbAllRecords = (userData.investments.paarb || [])
+            .filter(record => (record.principal || 0) >= 1)
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
+        if (paarbAllRecords.length > 0) {
+            paarbClosedData = paarbAllRecords[0];
+            const paarbFirstRecord = paarbAllRecords[paarbAllRecords.length - 1];
+            if (paarbFirstRecord && paarbClosedData) {
+                paarbClosedHoldingDays = Math.ceil(
+                    (new Date(paarbClosedData.date) - new Date(paarbFirstRecord.date)) / (1000 * 60 * 60 * 24)
+                ) + 1;
+            }
+            paarbClosedReturnRate = paarbClosedData.total_return !== undefined ? (paarbClosedData.total_return * 100).toFixed(2) : '0.00';
+            paarbClosedAnnualizedReturn = calculateAnnualizedReturnFromDays(parseFloat(paarbClosedReturnRate), paarbClosedHoldingDays);
         }
     }
 
@@ -446,6 +487,28 @@ export function renderInvestorSummarySection(container, userData, username, opti
         }
     }
 
+    // 处理 Arbitrage-USDT (paarb)（同样逻辑）
+    if (paarbAllLatestData) {
+        console.log('Adding paarb data to assetsByCoin');
+        const coin = paarbAllLatestData.coin || 'USDT';
+        if (!assetsByCoin[coin]) {
+            assetsByCoin[coin] = {
+                totalNetNav: 0,
+                totalNetPnl: 0,
+                realizedPnl: 0,
+                unrealizedPnl: 0,
+                holdingCount: 0
+            };
+        }
+        assetsByCoin[coin].totalNetNav += paarbAllLatestData.net_nav;
+        assetsByCoin[coin].totalNetPnl += paarbAllLatestData.net_pnl;
+        assetsByCoin[coin].realizedPnl += paarbAllLatestData.realized_pnl;
+        assetsByCoin[coin].unrealizedPnl += paarbAllLatestData.net_pnl;
+        if ((paarbAllLatestData.principal || 0) >= 1) {
+            assetsByCoin[coin].holdingCount++;
+        }
+    }
+
     console.log('Final assetsByCoin:', assetsByCoin);
 
     // ===== 新版投资者专区 =====
@@ -550,6 +613,20 @@ export function renderInvestorSummarySection(container, userData, username, opti
         </tr>`);
     }
 
+    if (paarbAllLatestData && !isPaarbRedeemed) {
+        const coin = paarbAllLatestData.coin || 'USDT';
+        const dec = (coin === 'BTC' || coin === 'ETH') ? 4 : 2;
+        const rr = parseFloat(paarbReturnRate);
+        currentHoldingsRows.push(`<tr>
+            <td>Arbitrage-USDT</td><td>${coin}</td>
+            <td>${paarbAllLatestData.principal.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
+            <td>${paarbAllLatestData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
+            <td class="${rr >= 0 ? 'text-positive' : 'text-negative'}">${paarbReturnRate}%</td>
+            <td>${paarbHoldingDays}</td><td>${paarbAnnualizedReturn}%</td>
+            <td>${paarbAllLatestData ? formatDateToYMD(paarbAllLatestData.date) : '-'}</td>
+        </tr>`);
+    }
+
     // 构建已清仓行（仅包含已清仓的产品）
     const closedPositionsRows = [];
 
@@ -641,6 +718,22 @@ export function renderInvestorSummarySection(container, userData, username, opti
             <td>${growthClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
             <td>${growthClosedReturnRate}%</td><td>${growthClosedHoldingDays}</td>
             <td>${growthClosedAnnualizedReturn}%</td><td>${formatDateToYMD(growthClosedData.date)}</td>
+            ${postReturnCell}
+        </tr>`);
+    }
+
+    if (isPaarbRedeemed && paarbClosedData) {
+        const coin = paarbClosedData.coin || 'USDT';
+        const dec = (coin === 'BTC' || coin === 'ETH') ? 4 : 2;
+        const postReturnCell = formatPostRedemptionReturnCell(
+            computePostRedemptionFundReturn(paarbClosedData, paarbAllLatestData)
+        );
+        closedPositionsRows.push(`<tr>
+            <td>Arbitrage-USDT</td><td>${coin}</td>
+            <td>${paarbClosedData.principal.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
+            <td>${paarbClosedData.net_nav.toLocaleString('zh-CN', {minimumFractionDigits: dec, maximumFractionDigits: dec})}</td>
+            <td>${paarbClosedReturnRate}%</td><td>${paarbClosedHoldingDays}</td>
+            <td>${paarbClosedAnnualizedReturn}%</td><td>${formatDateToYMD(paarbClosedData.date)}</td>
             ${postReturnCell}
         </tr>`);
     }
@@ -925,12 +1018,23 @@ export function renderInvestorSummarySection(container, userData, username, opti
                     }))
             );
 
+            const paarbReturns = filterToMonthEnd(
+                (userData?.investments?.paarb || [])
+                    .filter(record => (record.principal || 0) > 1)
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map(record => ({
+                        x: formatDateToYMD(record.date),
+                        y: record.total_return * 100 // 转换为百分比
+                    }))
+            );
+
             console.log('Balanced returns data:', balancedReturns);
             console.log('Arbitrage returns data:', arbitrageReturns);
             console.log('Arbitrage2 returns data:', arbitrage2Returns);
             console.log('Arbitrage coin BTC returns data:', arbitrageCoinBtcReturns);
             console.log('Arbitrage coin ETH returns data:', arbitrageCoinEthReturns);
             console.log('Growth returns data:', growthReturns);
+            console.log('Paarb returns data:', paarbReturns);
 
             // 准备图表数据
             const datasets = [];
@@ -1076,6 +1180,28 @@ export function renderInvestorSummarySection(container, userData, username, opti
                             }
                             // 如果是最后一个点且不是月末，则最后一段用虚线
                             if (ctx.p1DataIndex === growthReturns.length - 1 && !lastPointIsMonthEnd) {
+                                return [5, 5];
+                            }
+                            return [];
+                        }
+                    }
+                });
+            }
+            if (paarbReturns.length > 0) {
+                const lastPointIsMonthEnd = paarbReturns[paarbReturns.length - 1].isMonthEnd;
+                datasets.push({
+                    label: 'Arbitrage-USDT',
+                    data: paarbReturns,
+                    borderColor: '#f39c12',
+                    backgroundColor: 'rgba(243,156,18,0.1)',
+                    tension: 0.2,
+                    fill: false,
+                    segment: {
+                        borderDash: ctx => {
+                            if (isPaarbRedeemed) {
+                                return [];
+                            }
+                            if (ctx.p1DataIndex === paarbReturns.length - 1 && !lastPointIsMonthEnd) {
                                 return [5, 5];
                             }
                             return [];
