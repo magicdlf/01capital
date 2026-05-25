@@ -1157,22 +1157,30 @@ let monthlyPnLCharts = {};
 
 function calculateMonthlyPnL(data) {
     if (!data || data.length < 2) return [];
-    const grouped = {};
+    // 按年-月聚合，记录该月最早/最晚的数据点
+    const months = {};
     data.forEach(item => {
         const d = new Date(item.date);
         const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-        if (!grouped[key]) grouped[key] = [];
-        grouped[key].push(item);
+        const t = d.getTime();
+        if (!months[key]) {
+            months[key] = { firstNav: item.nav, lastNav: item.nav, firstT: t, lastT: t };
+        } else {
+            if (t < months[key].firstT) { months[key].firstNav = item.nav; months[key].firstT = t; }
+            if (t > months[key].lastT) { months[key].lastNav = item.nav; months[key].lastT = t; }
+        }
     });
+    // 月度收益 = 本月末 NAV / 上月末 NAV - 1
+    // 第一个月没有"上月末"，退化为本月内 first → last
+    const sortedKeys = Object.keys(months).sort();
     const result = [];
-    Object.keys(grouped).sort().forEach(month => {
-        const items = grouped[month].sort((a, b) => new Date(a.date) - new Date(b.date));
-        if (items.length < 2) return;
-        const first = items[0].nav;
-        const last = items[items.length - 1].nav;
-        const pnl = ((last - first) / first * 100);
-        result.push({ month, pnl: parseFloat(pnl.toFixed(2)) });
-    });
+    for (let i = 0; i < sortedKeys.length; i++) {
+        const key = sortedKeys[i];
+        const baseNav = i > 0 ? months[sortedKeys[i - 1]].lastNav : months[key].firstNav;
+        if (!baseNav) continue;
+        const pnl = (months[key].lastNav / baseNav - 1) * 100;
+        result.push({ month: key, pnl: parseFloat(pnl.toFixed(2)) });
+    }
     return result;
 }
 
@@ -1940,51 +1948,53 @@ function renderFullPerformanceChart(testData, liveData) {
 }
 
 function calculateMonthlyPnLSplitByPeriod(testData, liveData) {
-    const result = [];
-
+    // 按年-月聚合，记录该月最早/最晚 NAV
     function groupByMonth(data) {
-        const grouped = {};
-        data.forEach(item => {
+        const months = {};
+        (data || []).forEach(item => {
             const d = new Date(item.date);
             const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-            if (!grouped[key]) grouped[key] = [];
-            grouped[key].push(item);
+            const t = d.getTime();
+            if (!months[key]) {
+                months[key] = { firstNav: item.nav, lastNav: item.nav, firstT: t, lastT: t };
+            } else {
+                if (t < months[key].firstT) { months[key].firstNav = item.nav; months[key].firstT = t; }
+                if (t > months[key].lastT) { months[key].lastNav = item.nav; months[key].lastT = t; }
+            }
         });
-        return grouped;
+        return months;
     }
 
-    const testGrouped = groupByMonth(testData);
-    const liveGrouped = groupByMonth(liveData);
+    // 在一个分段（测试期 / 实盘期）内部计算月度收益：
+    // 当月末 NAV / 上一个有数据月份的月末 NAV - 1；第一个月退化为本月 first→last
+    function computeSegment(months) {
+        const sortedKeys = Object.keys(months).sort();
+        const out = {};
+        for (let i = 0; i < sortedKeys.length; i++) {
+            const key = sortedKeys[i];
+            const baseNav = i > 0 ? months[sortedKeys[i - 1]].lastNav : months[key].firstNav;
+            if (!baseNav) continue;
+            out[key] = (months[key].lastNav / baseNav - 1) * 100;
+        }
+        return out;
+    }
 
-    const allMonths = new Set([...Object.keys(testGrouped), ...Object.keys(liveGrouped)]);
+    const testMonths = groupByMonth(testData);
+    const liveMonths = groupByMonth(liveData);
+    const testPnL = computeSegment(testMonths);
+    const livePnL = computeSegment(liveMonths);
+
+    const allMonths = new Set([...Object.keys(testMonths), ...Object.keys(liveMonths)]);
     const sortedMonths = [...allMonths].sort();
 
+    const result = [];
     for (const month of sortedMonths) {
-        const hasTest = testGrouped[month] && testGrouped[month].length >= 2;
-        const hasLive = liveGrouped[month] && liveGrouped[month].length >= 2;
-
-        if (hasTest) {
-            const items = testGrouped[month].sort((a, b) => new Date(a.date) - new Date(b.date));
-            const pnl = ((items[items.length - 1].nav - items[0].nav) / items[0].nav * 100);
-            const shortMonth = month.substring(2);
-            result.push({ month, label: shortMonth + ' 测', pnl: parseFloat(pnl.toFixed(2)), isTest: true });
+        const shortMonth = month.substring(2);
+        if (testPnL[month] !== undefined) {
+            result.push({ month, label: shortMonth + ' 测', pnl: parseFloat(testPnL[month].toFixed(2)), isTest: true });
         }
-        if (hasLive) {
-            const items = liveGrouped[month].sort((a, b) => new Date(a.date) - new Date(b.date));
-            const pnl = ((items[items.length - 1].nav - items[0].nav) / items[0].nav * 100);
-            const shortMonth = month.substring(2);
-            result.push({ month, label: shortMonth + ' 盘', pnl: parseFloat(pnl.toFixed(2)), isTest: false });
-        }
-        if (!hasTest && !hasLive) {
-            const testItems = testGrouped[month] || [];
-            const liveItems = liveGrouped[month] || [];
-            const shortMonth = month.substring(2);
-            if (testItems.length === 1) {
-                result.push({ month, label: shortMonth + ' 测', pnl: 0, isTest: true });
-            }
-            if (liveItems.length === 1) {
-                result.push({ month, label: shortMonth + ' 盘', pnl: 0, isTest: false });
-            }
+        if (livePnL[month] !== undefined) {
+            result.push({ month, label: shortMonth + ' 盘', pnl: parseFloat(livePnL[month].toFixed(2)), isTest: false });
         }
     }
     return result;
