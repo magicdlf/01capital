@@ -39,8 +39,8 @@ export const PRODUCT_DATA = {
         alt: '稳健系列-BTC本位业绩'
     },
     balanced: {
-        title: 'Alpha-Bridge',
-        desc: 'Alpha-Bridge 以套利策略为基础配置，叠加少量多因子趋势策略，在控制整体风险的前提下追求超越纯套利的回报。套利部分提供稳定收益底仓，多因子部分捕捉市场趋势中的超额机会。',
+        title: 'Alpha-Spring',
+        desc: 'Alpha-Spring 以套利策略为基础配置，叠加少量多因子趋势策略，在控制整体风险的前提下追求超越纯套利的回报。套利部分提供稳定收益底仓，多因子部分捕捉市场趋势中的超额机会。',
         facts: [
             { label: '成立时间', value: '2024/8/1' },
             { label: '策略成分', value: '套利 + 多因子' },
@@ -71,7 +71,7 @@ export const PRODUCT_DATA = {
 };
 
 export const PRODUCT_FUND_MAPPING = {
-    balanced: 'Alpha-Bridge',
+    balanced: 'Alpha-Spring',
     arbitrage: 'Stable-Harbor-USDT',
     arbitrage_coin_btc: 'Stable-Harbor-BTC',
     arbitrage_eth: 'Stable-Harbor-ETH',
@@ -79,12 +79,12 @@ export const PRODUCT_FUND_MAPPING = {
 };
 
 export const FUND_NAME_MAPPING = {
-    balanced: 'Alpha-Bridge',
+    balanced: 'Alpha-Spring',
     arbitrage: 'Stable-Harbor-USDT',
     arbitrage_coin: 'Stable-Harbor-BTC',
     arbitrage_eth: 'Stable-Harbor-ETH',
     growth: 'Deep-Growth',
-    zerone: 'Alpha-Bridge',
+    zerone: 'Alpha-Spring',
     HPU: 'Stable-Harbor-USDT',
     binggan: 'Stable-Harbor-BTC',
     HPE: 'Stable-Harbor-ETH',

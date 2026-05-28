@@ -223,7 +223,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
     let paarbClosedReturnRate = '0.00';
     let paarbClosedAnnualizedReturn = '0.00';
     
-    // 计算已清仓的Alpha-Bridge数据
+    // 计算已清仓的Alpha-Spring数据
     if (isBalancedRedeemed && userData && userData.investments) {
         const balancedAllRecords = (userData.investments.balanced || [])
             .filter(record => (record.principal || 0) >= 1)
@@ -354,7 +354,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
     // 按币种分组计算总资产和收益
     const assetsByCoin = {};
     
-    // 处理 Alpha-Bridge 数据（即使本金为 0 也统计资产和收益，但不计入当前持仓数量）
+    // 处理 Alpha-Spring 数据（即使本金为 0 也统计资产和收益，但不计入当前持仓数量）
     if (balancedAllLatestData) {
         console.log('Adding balanced data to assetsByCoin');
         const coin = balancedAllLatestData.coin;

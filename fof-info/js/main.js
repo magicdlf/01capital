@@ -2397,7 +2397,7 @@ function handleRedemptionSubmit() {
     
     // 获取产品名称
     const productNames = {
-        'balanced': 'Alpha-Bridge',
+        'balanced': 'Alpha-Spring',
         'stable-usd': 'Stable-Harbor-USDT',
         'stable-coin-btc': 'Stable-Harbor-BTC',
         'stable-coin-eth': 'Stable-Harbor-ETH',
