@@ -14,11 +14,11 @@ export function getLatestRecord(records, predicate = null) {
 }
 
 export function getLatestActiveRecord(records) {
-    return getLatestRecord(records, (record) => (record.principal || 0) > 1);
+    return getLatestRecord(records, (record) => (record.principal || 0) >= 1);
 }
 
 export function getEarliestActiveRecord(records) {
-    const list = Array.isArray(records) ? records.filter((record) => (record.principal || 0) > 1) : [];
+    const list = Array.isArray(records) ? records.filter((record) => (record.principal || 0) >= 1) : [];
     if (!list.length) return null;
     return list.sort(sortByDateAsc)[0];
 }

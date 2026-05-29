@@ -159,7 +159,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
         console.log('Processing arbitrage coin ETH data for', username);
         // 获取当前投资者的所有Stable-Harbor-ETH记录（仅使用 investments.arbitrage_eth），筛选本金>1的记录（已赎回的用户不显示后续数据）
         let arbitrageCoinEthRecords = Array.isArray(userData.investments.arbitrage_eth)
-            ? userData.investments.arbitrage_eth.filter(record => (record.principal || 0) > 1)
+            ? userData.investments.arbitrage_eth.filter(record => (record.principal || 0) >= 1)
             : [];
         // 取最早一条
         const arbitrageCoinEthFirstRecord = arbitrageCoinEthRecords.length
@@ -959,7 +959,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
             // 筛选本金>1的记录（已赎回的用户不显示后续数据）
             const balancedReturns = filterToMonthEnd(
                 (userData?.investments?.balanced || [])
-                    .filter(record => (record.principal || 0) > 1)
+                    .filter(record => (record.principal || 0) >= 1)
                     .sort((a, b) => new Date(a.date) - new Date(b.date))
                     .map(record => ({
                         x: formatDateToYMD(record.date),
@@ -969,7 +969,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
 
             const arbitrageReturns = filterToMonthEnd(
                 (userData?.investments?.arbitrage || [])
-                    .filter(record => (record.principal || 0) > 1)
+                    .filter(record => (record.principal || 0) >= 1)
                     .sort((a, b) => new Date(a.date) - new Date(b.date))
                     .map(record => ({
                         x: formatDateToYMD(record.date),
@@ -979,7 +979,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
 
             const arbitrage2Returns = filterToMonthEnd(
                 (userData?.investments?.arbitrage2 || [])
-                    .filter(record => (record.principal || 0) > 1)
+                    .filter(record => (record.principal || 0) >= 1)
                     .sort((a, b) => new Date(a.date) - new Date(b.date))
                     .map(record => ({
                         x: formatDateToYMD(record.date),
@@ -989,7 +989,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
 
             const arbitrageCoinBtcReturns = filterToMonthEnd(
                 (userData?.investments?.arbitrage_coin || [])
-                    .filter(record => record.coin === 'BTC' && (record.principal || 0) > 1)
+                    .filter(record => record.coin === 'BTC' && (record.principal || 0) >= 1)
                     .sort((a, b) => new Date(a.date) - new Date(b.date))
                     .map(record => ({
                         x: formatDateToYMD(record.date),
@@ -1000,7 +1000,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
             // ETH 组合：只使用 investments.arbitrage_eth
             const arbitrageCoinEthReturns = filterToMonthEnd(
                 (userData?.investments?.arbitrage_eth || [])
-                    .filter(record => (record.principal || 0) > 1)
+                    .filter(record => (record.principal || 0) >= 1)
                     .sort((a, b) => new Date(a.date) - new Date(b.date))
                     .map(record => ({
                         x: formatDateToYMD(record.date),
@@ -1010,7 +1010,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
 
             const growthReturns = filterToMonthEnd(
                 (userData?.investments?.growth || [])
-                    .filter(record => (record.principal || 0) > 1)
+                    .filter(record => (record.principal || 0) >= 1)
                     .sort((a, b) => new Date(a.date) - new Date(b.date))
                     .map(record => ({
                         x: formatDateToYMD(record.date),
@@ -1020,7 +1020,7 @@ export function renderInvestorSummarySection(container, userData, username, opti
 
             const paarbReturns = filterToMonthEnd(
                 (userData?.investments?.paarb || [])
-                    .filter(record => (record.principal || 0) > 1)
+                    .filter(record => (record.principal || 0) >= 1)
                     .sort((a, b) => new Date(a.date) - new Date(b.date))
                     .map(record => ({
                         x: formatDateToYMD(record.date),
